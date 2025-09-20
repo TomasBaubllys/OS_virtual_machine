@@ -25,4 +25,4 @@ typedef struct CPU {
 
 int init_cpu(CPU* cpu);
 
-#endif
+#endif // CPU_H_INCLUDED
