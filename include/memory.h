@@ -7,20 +7,21 @@
 #define MEM_SUPERVISOR_MEMORY_SIZE 64
 #define MEM_SHARED_MEMORY_SIZE 32
 
-#define MEM_TOTAL_MEMORY MEM_USER_MEMORY_SIZE + MEM_SHARED_MEM_SIZE + MEM_SUPERVISOR_MEMORY_SIZE
+#define MEM_TOTAL_MEMORY MEM_USER_MEMORY_SIZE + MEM_SHARED_MEMORY_SIZE + MEM_SUPERVISOR_MEMORY_SIZE
 
 #define MEM_MAX_ADDRESS 0xe40
 
-#define MEM_BAD_ADDRESS_ERR "Maximum address exceeded" 
+#define MEM_BAD_ADDRESS_ERR "Maximum address exceeded\n" 
 
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
 
 typedef struct Memory {
 	// uint32_t user[MEM_USER_MEMORY_SIZE];
 	// uint32_t shared[MEM_SHARED_MEM_SIZE];
 	// uint32_t supervisor[MEM_SUPERVISOR_MEMORY_SIZE];
-	uint32_t memory[MEM_TOTAL_MEMORY]
+	uint32_t memory[MEM_TOTAL_MEMORY];
 } Memory;
 
 int init_memory(Memory* mem);

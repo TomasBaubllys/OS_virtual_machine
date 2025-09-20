@@ -27,31 +27,31 @@ uint32_t read_word(Memory* mem, const uint16_t address) {
 	uint32_t word = 0;	
 	
 	if(address % MEM_WORD_SIZE == 1) {
-		word = mem -> memory[index] << 8;
+		word = (mem -> memory[index]) << 8;
 		word |= (mem -> memory[index + 1] & 0xff000000) >> 24; 
 		return word;
 	}
 	
 	if(address % MEM_WORD_SIZE == 2) {		
-		word = mem -> memory[index] << 16;
+		word = (mem -> memory[index]) << 16;
 		word |= (mem -> memory[index + 1] & 0xffff0000) >> 16; 
 		return word;
 	}
 	
 	if(address % MEM_WORD_SIZE == 3) {
-		word = mem -> memory[index] << 24;
+		word = (mem -> memory[index]) << 24;
 		word |= (mem -> memory[index + 1] & 0xffffff00) >> 8; 
 		return word;
 	}
 } 			
 
 int write_word(Memory* mem, const uint16_t address, const uint32_t word) {
-	if(address > MEM_MAX_ADDRESS) {
+	if(address > MEM_MAX_ADDRESS - MEM_WORD_SIZE) {
 		fprintf(stderr, MEM_BAD_ADDRESS_ERR);
 		return -1;
 	}
 	
-	uint8_t = rem = address % MEM_WORD_SIZE;
+	uint8_t rem = address % MEM_WORD_SIZE;
 	uint16_t index = address / MEM_WORD_SIZE;
 
 	if(rem == 0) {
@@ -72,8 +72,7 @@ int write_word(Memory* mem, const uint16_t address, const uint32_t word) {
 	if(rem == 2) {
 		mem -> memory[index] &= 0xffff0000;
 		mem -> memory[index] = (mem -> memory[index]) | (word >> 16);
-		
-
+				
 		mem -> memory[index + 1] &= 0x0000ffff;
 		mem -> memory[index + 1] |= word << 16;
 		return 0;
