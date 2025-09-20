@@ -31,6 +31,6 @@ uint32_t read_word(Memory* mem, const uint16_t address);
 int write_word(Memory* mem, const uint16_t address, const uint32_t word); 
  
 // prints memory from start address till end address, they must be aligned to a word a.k.a divisible by 4
-void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end);
+void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end, uint8_t column_count);
 
 #endif

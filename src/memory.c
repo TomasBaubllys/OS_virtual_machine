@@ -12,7 +12,7 @@ int init_memory(Memory* mem) {
 
 
 uint32_t read_word(Memory* mem, const uint16_t address) {
-	if(address > MEM_MAX_ADDRESS - MEM_WORD_SIZE)	{
+	if(address >= MEM_MAX_ADDRESS - MEM_WORD_SIZE)	{
 		fprintf(stderr, MEM_BAD_ADDRESS_ERR);
 		return 0;
 	}
@@ -46,7 +46,7 @@ uint32_t read_word(Memory* mem, const uint16_t address) {
 } 			
 
 int write_word(Memory* mem, const uint16_t address, const uint32_t word) {
-	if(address > MEM_MAX_ADDRESS - MEM_WORD_SIZE) {
+	if(address >= MEM_MAX_ADDRESS - MEM_WORD_SIZE) {
 		fprintf(stderr, MEM_BAD_ADDRESS_ERR);
 		return -1;
 	}
@@ -91,8 +91,44 @@ int write_word(Memory* mem, const uint16_t address, const uint32_t word) {
 }
 
 
-void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end) {
+void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end, uint8_t column_count) {
 	if(start >= end) {
 		return;
+	}
+	
+	// round both numbers to be divisible by 4 
+
+	if(end >= MEM_MAX_ADDRESS) {
+		fprintf(stream, MEM_BAD_ADDRESS_ERR);
+	}	
+	
+	// take the floor
+	start /= MEM_WORD_SIZE;
+	
+	if(end % MEM_WORD_SIZE != 0) {
+		if(end >= MEM_MAX_ADDRESS - MEM_WORD_SIZE) {
+			 end /= 4;
+		}
+		else {
+			 end = (end / 4) + 1;
+		}
+	}
+	else {
+		end /= 4;
+	}	
+	
+	uint8_t counter = column_count;
+	fprintf(stream, "\n%8x :", start * 4);
+
+	// print the memory (optimize later)
+	while(start <= end) {
+		fprintf(stream, "%8x ", mem -> memory[start]);
+		++start;
+		--counter;
+		
+		if(counter <= 0) {
+			fprintf(stream, "\n%8x :", start * 4);
+			counter = column_count;
+		}
 	}
 }
