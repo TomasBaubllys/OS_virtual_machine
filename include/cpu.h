@@ -8,19 +8,19 @@
 #define _CPU_SUPERVISOR_MODE 1
 
 typedef struct CPU {
-	uint16_t pc;
-	uint16_t pi;
-	uint16_t si;
-	uint16_t tr;
+	uint16_t pc;			// program counter
+	uint16_t pi;			// program interupt register
+	uint16_t si;			// supervisor interupt register
+	uint16_t tr;			// page table register
 
-	uint8_t ti;
-	uint8_t sf;
-	uint8_t mr;
-	uint8_t ss;
+	uint8_t ti;			// timer register
+	uint8_t sf;			// flag register
+	uint8_t mr;			// mode register
+	uint8_t ss;			// semafor register
 
-	uint32_t ra;
-	uint32_t rb;
-	uint32_t rc;	
+	uint32_t ra;			// general purpose register
+	uint32_t rb;			// general purpose register
+	uint32_t rc;			// general purpose register, also used for loops
 } CPU;
 
 int init_cpu(CPU* cpu);
