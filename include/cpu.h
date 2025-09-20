@@ -3,9 +3,9 @@
 
 #include<stdint.h>
 
-#define _CPU_DEFAULT_TIMER_VALUE 10
-#define _CPU_USER_MODE 0
-#define _CPU_SUPERVISOR_MODE 1
+#define CPU_DEFAULT_TIMER_VALUE 10
+#define CPU_USER_MODE 0
+#define CPU_SUPERVISOR_MODE 1
 
 typedef struct CPU {
 	uint16_t pc;			// program counter
