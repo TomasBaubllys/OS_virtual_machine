@@ -16,4 +16,8 @@ typedef struct Hard_disk {
 
 int init_hard_disk(Hard_disk* hard_disk);
 
+int write_byte_hard_disk(Hard_disk* hard_disk, uint16_t address, uint8_t value);
+
+int write_word_hard_disk(Hard_disk* hard_disk, uint16_t address, uint32_t value);
+
 #endif // HARD_DISK_H_INCLUDED

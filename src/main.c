@@ -12,6 +12,7 @@ int main(int argc, char* argv[]) {
 	assert(init_memory(&memory) == 0);	
 	assert(init_hard_disk(&hard_disk) == 0);
 
+	assert(write_word_hard_disk(&hard_disk, 0x16, 0xffffffff) == 0);
 	/*while(1) {
 		// main loop
 	}*/

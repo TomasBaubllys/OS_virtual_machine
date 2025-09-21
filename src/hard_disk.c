@@ -43,3 +43,55 @@ int init_hard_disk(Hard_disk* hard_disk) {
 
 	return 0;
 }
+
+int write_byte_hard_disk(Hard_disk* hard_disk, uint16_t address, uint8_t value) {
+	if(!hard_disk) {
+		return -1;
+	}
+	
+	if(!hard_disk -> fptr) {
+		return -1;
+	}
+
+	if(address >= HD_MAX_HARD_DISK_ADDRESS) {
+		return -1;
+	}
+
+	if(fseek(hard_disk -> fptr, address, SEEK_SET) != 0) {
+		perror("fseek");
+		return -1;
+	}
+
+	if(fwrite(&value, sizeof(value), 1, hard_disk -> fptr) != 1) {
+		perror("fwrite");
+	}
+	
+	rewind(hard_disk -> fptr);
+	return 0;
+}
+
+int write_word_hard_disk(Hard_disk* hard_disk, uint16_t address, uint32_t value) {
+	if(!hard_disk) {
+		return -1;
+	}
+	
+	if(!hard_disk -> fptr) {
+		return -1;
+	}
+
+	if(address >= HD_MAX_HARD_DISK_ADDRESS) {
+		return -1;
+	}
+
+	if(fseek(hard_disk -> fptr, address, SEEK_SET) != 0) {
+		perror("fseek");
+		return -1;
+	}
+
+	if(fwrite(&value, sizeof(value), 1, hard_disk -> fptr) != 1) {
+		perror("fwrite");
+	}
+	
+	rewind(hard_disk -> fptr);
+	return 0;
+}
