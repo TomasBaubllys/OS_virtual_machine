@@ -118,7 +118,7 @@ void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end, uint
 	}	
 	
 	uint8_t counter = column_count;
-	fprintf(stream, "\n%8x :", start * 4);
+	fprintf(stream, "\n%*x :", MEM_MAX_ADDRESS_LENGTH, start * 4);
 
 	// print the memory (optimize later)
 	while(start <= end) {
@@ -127,7 +127,7 @@ void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end, uint
 		--counter;
 		
 		if(counter <= 0) {
-			fprintf(stream, "\n%8x :", start * 4);
+			fprintf(stream, "\n%*x :", MEM_MAX_ADDRESS_LENGTH, start * 4);
 			counter = column_count;
 		}
 	}

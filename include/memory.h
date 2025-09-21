@@ -10,7 +10,7 @@
 #define MEM_TOTAL_MEMORY MEM_USER_MEMORY_SIZE + MEM_SHARED_MEMORY_SIZE + MEM_SUPERVISOR_MEMORY_SIZE
 
 #define MEM_MAX_ADDRESS 0xe40
-
+#define MEM_MAX_ADDRESS_LENGTH 3
 #define MEM_BAD_ADDRESS_ERR "Maximum address exceeded\n" 
 
 #include <string.h>
