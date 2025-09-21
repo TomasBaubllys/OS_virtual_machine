@@ -1,21 +1,10 @@
-#include "../include/memory.h"
-#include "../include/cpu.h"
-#include "../include/hard_disk.h"
+#include "../include/real_machine.h"
 #include <assert.h>
 
 int main(int argc, char* argv[]) {
-	CPU cpu;
-	Memory memory;
-	Hard_disk hard_disk;	
+	Real_machine real_machine;
 
-	assert(init_cpu(&cpu) == 0);
-	assert(init_memory(&memory) == 0);	
-	assert(init_hard_disk(&hard_disk) == 0);
-
-	assert(write_word_hard_disk(&hard_disk, 0x16, 0xffffffff) == 0);
-	/*while(1) {
-		// main loop
-	}*/
+	assert(init_real_machine(&real_machine) == 0);
 
 	return 0;
 }

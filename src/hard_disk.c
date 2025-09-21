@@ -60,6 +60,21 @@ int init_hard_disk(Hard_disk* hard_disk) {
 	return 0;
 }
 
+int close_hard_disk(Hard_disk* hard_disk) {
+	if(!hard_disk) {
+		return -1;
+	}
+
+	if(!hard_disk -> fptr) {
+		return -1;
+	}
+	
+	fclose(hard_disk -> fptr);
+	hard_disk -> fptr = NULL;
+
+	return 0;
+}
+
 int write_byte_hard_disk(Hard_disk* hard_disk, uint16_t address, uint8_t value) {
 	if(read_write_arg_check_hard_disk(hard_disk, address) != 0) {
 		return -1;
@@ -106,15 +121,18 @@ uint32_t read_word_hard_disk(Hard_disk* hard_disk, uint16_t address) {
 	}
 
 	if(fseek(hard_disk -> fptr, address, SEEK_SET) != 0) {
+		perror("fseek");
 		return 0;
 	}
 
 	uint32_t value = 0;
 
 	if(fread(&value, sizeof(value), 1, hard_disk -> fptr) != 1) {
+		perror("fread");
 		return 0;
 	}
 
+	rewind(hard_disk -> fptr);
 	return value;
 }
 
@@ -128,14 +146,50 @@ uint8_t read_byte_hard_disk(Hard_disk* hard_disk, uint16_t address) {
 	}
 	
 	if(fseek(hard_disk -> fptr, address, SEEK_SET) != 0) {
+		perror("fseek");
 		return 0;
 	}
 
 	uint8_t value = 0;
 		
 	if(fread(&value, sizeof(value), 1, hard_disk -> fptr) != 1) {
+		perror("fread");
 		return 0;
 	}
+	
+	rewind(hard_disk -> fptr);
 
 	return value;
 }
+
+uint8_t* read_stream_hard_disk(Hard_disk* hard_disk, uint16_t address, uint16_t bytes_to_read) {
+	if(read_write_arg_check_hard_disk(hard_disk, address) != 0) {
+		return NULL;
+	}
+	
+	if(address + bytes_to_read >= HD_MAX_HARD_DISK_ADDRESS) {
+		return NULL;
+	}
+
+	uint8_t* stream = malloc(bytes_to_read);
+
+	if(!stream) {
+		perror("malloc");
+		return NULL;
+	}
+	
+	if(fseek(hard_disk -> fptr, address, SEEK_SET) != 0) {
+		perror("fseek");
+		free(stream);
+		return NULL;
+	}
+
+	if(fread(stream, sizeof(uint8_t), bytes_to_read, hard_disk -> fptr) != bytes_to_read) {
+		free(stream);
+		perror("fread");
+		return NULL;
+	}
+
+	return stream;
+}
+

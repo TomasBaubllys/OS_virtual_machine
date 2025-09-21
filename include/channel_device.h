@@ -1,5 +1,5 @@
-#ifndef CHANNEL_DEVICE_INCLUDED
-#define CHANNEL_DEVICE_INCLUDED
+#ifndef CHANNEL_DEVICE_H_INCLUDED
+#define CHANNEL_DEVICE_H_INCLUDED
 
 #include <stdint.h>
 
@@ -18,4 +18,4 @@ typedef struct Channel_device {
 
 int init_channel_device(Channel_device* channel_dev);
 
-#endif // CHANNEL_DEVICE_INCLUDED
+#endif // CHANNEL_DEVICE_H_INCLUDED
