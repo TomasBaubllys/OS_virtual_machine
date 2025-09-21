@@ -1,7 +1,7 @@
 #ifndef CPU_H_INCLUDED
 #define CPU_H_INCLUDED
 
-#include<stdint.h>
+#include <stdint.h>
 
 #define CPU_DEFAULT_TIMER_VALUE 10
 #define CPU_USER_MODE 0

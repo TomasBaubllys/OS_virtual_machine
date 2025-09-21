@@ -1,4 +1,4 @@
-include "../include/cpu.h"
+#include "../include/cpu.h"
 
 int init_cpu(CPU* cpu) {
 	if(!cpu) {

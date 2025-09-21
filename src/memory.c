@@ -107,18 +107,18 @@ void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end, uint
 	
 	if(end % MEM_WORD_SIZE != 0) {
 		if(end >= MEM_MAX_ADDRESS - MEM_WORD_SIZE) {
-			 end /= 4;
+			 end /= MEM_WORD_SIZE;
 		}
 		else {
-			 end = (end / 4) + 1;
+			 end = (end / MEM_WORD_SIZE) + 1;
 		}
 	}
 	else {
-		end /= 4;
+		end /= MEM_WORD_SIZE;
 	}	
 	
 	uint8_t counter = column_count;
-	fprintf(stream, "\n%*x :", MEM_MAX_ADDRESS_LENGTH, start * 4);
+	fprintf(stream, "\n%*x :", MEM_MAX_ADDRESS_LENGTH, start * MEM_WORD_SIZE);
 
 	// print the memory (optimize later)
 	while(start <= end) {
@@ -127,7 +127,7 @@ void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end, uint
 		--counter;
 		
 		if(counter <= 0) {
-			fprintf(stream, "\n%*x :", MEM_MAX_ADDRESS_LENGTH, start * 4);
+			fprintf(stream, "\n%*x :", MEM_MAX_ADDRESS_LENGTH, start * MEM_WORD_SIZE);
 			counter = column_count;
 		}
 	}
