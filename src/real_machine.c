@@ -53,7 +53,8 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			real_machine -> cpu.ra = x * 16 + y;
 			break;
 		}
-		// cycle commands
+		// cycle commands 
+		// LOxy
 		case 0x4c4f: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
@@ -67,6 +68,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			}
 			break;
 		}
+		// JUxy
 		case 0x4a55: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
