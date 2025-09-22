@@ -27,31 +27,36 @@ int init_real_machine(Real_machine* real_machine) {
 int execute_command(Real_machine* real_machine, uint32_t command) {
 	uint16_t com_code = command >> 16;
 	uint16_t args = command & 0x0000ffff;				// gets trown away in some cases	
-	uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
-	uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 
 	switch(com_code) {
 		// memory commands
 		// MOxy
-		case 0x4d4f:
+		case 0x4d4f: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x == 0xff || y == 0xff) {
 				return -1;
 			}
 			
 			real_machine -> cpu.ra = x * 16 + y;
 			break;
-
+		}
 		// aritmetic commands
 		// APxy	
-		case 0x4150:
+		case 0x4150: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x == 0xff || y == 0xff) {
 				return -1;
 			}
 			
 			real_machine -> cpu.ra = x * 16 + y;
 			break;
+		}
 		// cycle commands
-		case 0x4c4f:
+		case 0x4c4f: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(real_machine -> cpu.rc > 0) {
 				if(x == 0xff || y == 0xff) {
 					return -1;
@@ -61,13 +66,17 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 				(real_machine -> cpu.pc) = x * 16 + y; 
 			}
 			break;
-		case 0x4a55:
+		}
+		case 0x4a55: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x == 0xff || y == 0xff) {
 				return -1;
 			}
 			
 			real_machine -> cpu.pc = x * 16 + y;
 			break;
+		}
 		default:
 			return -1;
 	}
