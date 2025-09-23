@@ -30,6 +30,10 @@ int main(int argc, char* argv[]) {
 	uint32_t com12 = 0x58527262;
 	// ANrb
 	uint32_t com13 = 0x414E7262;
+	// NOra
+	uint32_t com14 = 0x4E4F7261;
+	 
+	//TODO test CMxy and CRRB
 
 
 	execute_command(&real_machine, com1);
@@ -68,6 +72,10 @@ int main(int argc, char* argv[]) {
 
 	execute_command(&real_machine, com13);
 	assert(real_machine.cpu.ra == (62 & 43));
+
+	execute_command(&real_machine, com14);
+	assert(real_machine.cpu.ra == ~42);
+
 	
 	printf("%d\n", real_machine.cpu.ra);
 	printf("%d\n", real_machine.cpu.rb);

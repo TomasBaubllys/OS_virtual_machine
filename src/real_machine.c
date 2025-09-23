@@ -90,6 +90,13 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 					return -1;
 			}
 		}
+		// LBxy
+		// value at address x*16 + y copying to RA
+		// 
+	
+
+		// LR 
+
 		// aritmetic commands
 		// APxy	
 		case 0x4150: {
@@ -223,6 +230,61 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 					return -1;
 			}			
 				
+			break;
+		}
+		// CMcy
+		// (x*16 + y == ra)
+		case 0x434d:{
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+			if(x == 0xff || y == 0xff) {
+				return -1;
+			}
+
+			// ZF = 1 CF = 0
+			if(x * 16 + y == real_machine -> cpu.ra){
+				real_machine -> cpu.sf ^= 0x0002; // 0000 0000 0000 0010
+				real_machine -> cpu.sf &= 0xfffe; // 1111 1111 1111 1110
+			}
+			// ZF = 0 CF = 1
+			else if(x * 16 + y < real_machine -> cpu.ra){
+				real_machine -> cpu.sf &=  0xfffd; // 1111 1111 1111 1101
+				real_machine -> cpu.sf ^= 0x0001; // 0000 0000 0000 0001
+			}
+			// ZF = 0 CF = 0
+			else{
+				real_machine -> cpu.sf &= 0xfffd;
+				real_machine -> cpu.sf &= 0xfffe;
+			}
+
+			break;
+		}
+		// CRRB
+		// rb == ra
+		case 0x4352:{
+			uint16_t reg = command & 0x0000ffff;
+			uint8_t reg_nr = get_register_num(reg);
+
+			if(reg_nr != get_register_num(real_machine -> cpu.rb)){
+				return -1;
+			}
+
+			// ZF = 1 CF = 0
+			if(real_machine -> cpu.rb == real_machine -> cpu.ra){
+				real_machine -> cpu.sf ^= 0x0002; // 0000 0000 0000 0010
+				real_machine -> cpu.sf &= 0xfffe; // 1111 1111 1111 1110
+			}
+			// ZF = 0 CF = 1
+			else if(real_machine -> cpu.rb < real_machine -> cpu.ra){
+				real_machine -> cpu.sf &=  0xfffd; // 1111 1111 1111 1101
+				real_machine -> cpu.sf ^= 0x0001; // 0000 0000 0000 0001
+			}
+			// ZF = 0 CF = 0
+			else{
+				real_machine -> cpu.sf &= 0xfffd;
+				real_machine -> cpu.sf &= 0xfffe;
+			}
+
 			break;
 		}
 		// cycle commands 
