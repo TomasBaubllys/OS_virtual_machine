@@ -296,6 +296,36 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 
 			break;
 		}
+		// NOa
+		// NOT a
+		case 0x4e4f:{
+			uint16_t reg = command & 0x0000ffff;
+			uint8_t reg_nr = get_register_num(reg);
+
+			if(reg == CPU_UNKNOWN_REGISTER){
+				return -1;
+			}
+
+			switch (reg_nr)
+			{
+				case RA:
+					real_machine -> cpu.ra = ~real_machine -> cpu.ra;
+					break;
+				case RB:
+					real_machine -> cpu.rb = ~real_machine -> cpu.rb;
+					break;
+				case RC:
+					real_machine -> cpu.rc = ~real_machine -> cpu.rc;
+					break;
+				default:
+					return -1;
+					break;
+			}
+
+			break;
+
+		}
+
 
 
 		// JUxy
