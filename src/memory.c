@@ -6,14 +6,14 @@ int init_memory(Memory* mem) {
 	}	
 
 	memset(mem -> memory, 0, sizeof(mem -> memory));	
-    memset(mem -> used_pages, 0, sizeof(mem -> used_pages))
+    	memset(mem -> used_pages, 0, sizeof(mem -> used_pages));
     
-    for(uint8_t i = 0; i < MEM_PAGE_COUNT; ++i) {
-        mem -> free_pages[i] = i;
-    }
+    	for(uint8_t i = 0; i < MEM_PAGE_COUNT; ++i) {
+        	mem -> free_pages[i] = i;
+    	}
 
-    mem -> used_page_count = 0;
-    mem -> free_page_count = MEM_PAGE_COUNT;
+    	mem -> used_page_count = 0;
+    	mem -> free_page_count = MEM_PAGE_COUNT;
 
 	return 0;
 }
