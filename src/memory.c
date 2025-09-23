@@ -13,7 +13,7 @@ int init_memory(Memory* mem) {
     	}
 
     	mem -> used_page_count = 0;
-    	mem -> free_page_count = MEM_PAGE_COUNT;
+    	mem -> free_page_count = MEM_USER_PAGE_COUNT;
 
 	return 0;
 }
@@ -151,7 +151,7 @@ uint8_t get_free_page(Memory* mem) {
     uint8_t free_page_num = mem -> free_pages[mem -> free_page_count];
 
     // and insert it into used pages also to the back
-    if(mem -> used_page_count >= MEM_PAGE_COUNT - 1) {
+    if(mem -> used_page_count > MEM_USER_PAGE_COUNT - 1) {
         return MEM_INTERNAL_PAGING_ERR_MISMATCH_SIZES;
     }
 
@@ -163,11 +163,11 @@ uint8_t get_free_page(Memory* mem) {
 
 
 int return_page(Memory* mem, uint8_t page_num) {
-    if(page_num >= MEM_PAGE_COUNT) {
+    if(page_num >= MEM_USER_PAGE_COUNT) {
         return -1;
     } 
 
-    if(mem -> used_page_count >= MEM_PAGE_COUNT) {
+    if(mem -> used_page_count > MEM_USER_PAGE_COUNT) {
         return -1;
     }
 
@@ -180,7 +180,7 @@ int return_page(Memory* mem, uint8_t page_num) {
     }
 
     // check if the page was actually found or the cycle just ended
-    if(index == MEM_PAGE_COUNT) {
+    if(index == MEM_USER_PAGE_COUNT) {
         return -1;
     }
 
@@ -192,7 +192,7 @@ int return_page(Memory* mem, uint8_t page_num) {
     --(mem -> used_page_count);
 
     // add the page to the back of free_pages
-    if(mem -> free_page_count >= MEM_PAGE_COUNT) {
+    if(mem -> free_page_count >= MEM_USER_PAGE_COUNT) {
         return -1;
     }
 
