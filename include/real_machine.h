@@ -7,11 +7,14 @@
 #include "channel_device.h"
 #include "util.h"
 
+typedef struct Virtual_machine Virtual_machine;
+
 typedef struct Real_machine {
 	CPU cpu;
 	Memory mem;
 	Hard_disk hd;
 	Channel_device ch_dev; 
+	VIrtual_machine* vm;
 } Real_machine;
 
 int init_real_machine(Real_machine* real_machine); 
