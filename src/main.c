@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
 	uint32_t com10 = 0x4D557261;
 	// DVra
 	uint32_t com11 = 0x44567262;
+	// 
 
 
 	execute_command(&real_machine, com1);
@@ -55,12 +56,7 @@ int main(int argc, char* argv[]) {
 	execute_command(&real_machine, com10);
 	assert(real_machine.cpu.ra == 5041);
 
-	printf("%d\n", real_machine.cpu.ra);
-	printf("%d\n", real_machine.cpu.rb);
-
 	execute_command(&real_machine, com11);
-	printf("%d\n", real_machine.cpu.ra);
-	printf("%d\n", real_machine.cpu.rb);
 	assert(real_machine.cpu.ra == 5041 / 238);
 	assert(real_machine.cpu.rb == 5041 % 238);
 	
