@@ -1,11 +1,33 @@
 #include "../include/real_machine.h"
+#include "../include/virtual_machine.h"
 #include <assert.h>
 
 int main(int argc, char* argv[]) {
 	Real_machine real_machine;
-
 	assert(init_real_machine(&real_machine) == 0);
+
+	Virtual_machine vm1;
+	assert(init_virtual_machine(&real_machine, &vm1) == 0);
+
+	Virtual_machine vm2;
+	assert(init_virtual_machine(&real_machine, &vm2) == 0);
 	
+	Virtual_machine vm3;
+	assert(init_virtual_machine(&real_machine, &vm3) == 0);
+
+	Virtual_machine vm4;
+	assert(init_virtual_machine(&real_machine, &vm4) == -1);
+	
+	assert(destroy_virtual_machine(&vm2) == 0);
+	assert(destroy_virtual_machine(&vm3) == 0);
+	
+	Virtual_machine vm5;
+	assert(init_virtual_machine(&real_machine, &vm5) == 0);
+	
+	Virtual_machine vm6;
+	assert(init_virtual_machine(&real_machine, &vm6) == 0);
+	fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 16);	
+
 	uint32_t com1 = 0x4D4F6666;
 	uint32_t com2 = 0x41506666;
 	// LRrb

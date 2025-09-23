@@ -11,8 +11,10 @@
 
 #define MEM_PAGE_COUNT 57
 #define MEM_PAGE_SIZE 16
+#define MEM_USER_PAGE_COUNT 51
 
 #define MEM_MAX_ADDRESS 0xe40
+#define MEM_MAX_USER_ADDRESS 0xcc00
 #define MEM_MAX_ADDRESS_LENGTH 3
 #define MEM_BAD_ADDRESS_ERR "Maximum address exceeded\n" 
 
