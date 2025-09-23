@@ -42,17 +42,53 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			break;
 		}
 		// LRa 
+		// copy RA value to a value
 		case 0x4c52: {	
 			uint16_t reg = command & 0x0000ffff;
-			uint8_t reg_nr = get_regiser_num(reg);
+			uint8_t reg_nr = get_register_num(reg);
 			if(reg_nr == CPU_UNKNOWN_REGISTER) {
 				return -1;
 			}
 
-			// copy RA to reg
-			
+			switch (reg_nr){
+				case RA:
+					// nothing
+					break;
+				case RB:
+					real_machine -> cpu.rb = real_machine -> cpu.ra;
+					break;
+				case RC:
+					real_machine -> cpu.rc = real_machine -> cpu.ra;
+					break;
+				default:
+					// other registers not allowed
+					return -1;
+			}			
 				
 			break;
+		}
+		// LLa
+		// copy a value to RB value
+		case 0x4c4c:{
+			uint16_t reg = command & 0x0000ffff;
+			uint8_t reg_nr = get_register_num(reg);
+			if(reg_nr == CPU_UNKNOWN_REGISTER){
+				return -1;
+			}
+
+			switch (reg_nr){
+				case RA:
+					real_machine -> cpu.rb = real_machine -> cpu.ra;
+					break;
+				case RB:
+					// nothing
+					break;
+				case RC:
+					real_machine -> cpu.rb = real_machine -> cpu.rc;
+					break;
+				default:
+					return -1;
+			}
 		}
 		// aritmetic commands
 		// APxy	
@@ -64,6 +100,129 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			}
 			
 			real_machine -> cpu.ra = x * 16 + y;
+			break;
+		}
+		// ADa
+		// add a value to RA 
+		case 0x4144:{
+			uint16_t reg = command & 0x0000ffff;
+			uint8_t reg_nr = get_register_num(reg);
+			if(reg_nr == CPU_UNKNOWN_REGISTER) {
+				return -1;
+			}
+
+			switch (reg_nr){
+				case RA:
+					real_machine -> cpu.ra += real_machine -> cpu.ra; 
+					break;
+				case RB:
+					real_machine -> cpu.ra += real_machine -> cpu.rb;
+					break;
+				case RC:
+					real_machine -> cpu.ra += real_machine -> cpu.rc;
+					break;
+				default:
+					// other registers not allowed
+					return -1;
+			}			
+				
+			break;
+		}
+		// SBa
+		// substract a value to RA 
+		case 0x5342:{
+			uint16_t reg = command & 0x0000ffff;
+			uint8_t reg_nr = get_register_num(reg);
+			if(reg_nr == CPU_UNKNOWN_REGISTER) {
+				return -1;
+			}
+
+			switch (reg_nr){
+				case RA:
+					real_machine -> cpu.ra -= real_machine -> cpu.ra; 
+					break;
+				case RB:
+					real_machine -> cpu.ra -= real_machine -> cpu.rb;
+					break;
+				case RC:
+					real_machine -> cpu.ra -= real_machine -> cpu.rc;
+					break;
+				default:
+					// other registers not allowed
+					return -1;
+			}			
+				
+			break;
+		}
+		// MUa
+		// multiplies a value by RA value 
+		// carry flag
+		// sf 0000011
+		case 0x4D55:{
+			uint16_t reg = command & 0x0000ffff;
+			uint8_t reg_nr = get_register_num(reg);
+			if(reg_nr == CPU_UNKNOWN_REGISTER) {
+				return -1;
+			}
+
+			switch (reg_nr){
+				case RA:
+					real_machine -> cpu.ra *= real_machine -> cpu.ra; 
+					break;
+				case RB:
+					real_machine -> cpu.ra *= real_machine -> cpu.rb;
+					break;
+				case RC:
+					real_machine -> cpu.ra *= real_machine -> cpu.rc;
+					break;
+				default:
+					// other registers not allowed
+					return -1;
+			}			
+				
+			break;
+		}
+		// DVa
+		// dividexs RA value by a value 
+		case 0x4456:{
+			uint16_t reg = command & 0x0000ffff;
+			uint8_t reg_nr = get_register_num(reg);
+			if(reg_nr == CPU_UNKNOWN_REGISTER) {
+				return -1;
+			}
+
+			switch (reg_nr){
+				case RA:
+					if(real_machine -> cpu.ra == 0){
+						real_machine -> cpu.si = 5;
+						return 0;
+					}
+					real_machine -> cpu.ra /= real_machine -> cpu.ra; 
+					
+					break;
+				case RB:
+					if(real_machine -> cpu.rb == 0){
+						real_machine -> cpu.si = 5;
+						return 0;
+					}
+					uint32_t temp = real_machine -> cpu.ra;
+					real_machine -> cpu.ra /= real_machine -> cpu.rb;
+					real_machine -> cpu.rb  = temp % real_machine -> cpu.rb;
+					break;
+				case RC:
+					if(real_machine -> cpu.rc == 0){
+						real_machine -> cpu.si = 5;
+						return 0;
+					}
+					uint32_t temp1 = real_machine -> cpu.ra;
+					real_machine -> cpu.ra /= real_machine -> cpu.rc;
+					real_machine -> cpu.rc  = temp1 % real_machine -> cpu.rc;
+					break;
+				default:
+					// other registers not allowed
+					return -1;
+			}			
+				
 			break;
 		}
 		// cycle commands 
@@ -81,6 +240,64 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			}
 			break;
 		}
+		// logic operations
+		// XRa
+		// a XOR RA
+		case 0x5852:{
+			uint16_t reg = command & 0x0000ffff;
+			uint8_t reg_nr = get_register_num(reg);
+
+			if(reg == CPU_UNKNOWN_REGISTER){
+				return -1;
+			}
+
+			switch (reg_nr){
+				case RA:
+					real_machine -> cpu.ra ^= real_machine -> cpu.ra; 
+					break;
+				case RB:
+					real_machine -> cpu.ra ^= real_machine -> cpu.rb;
+					break;
+				case RC:
+					real_machine -> cpu.ra ^= real_machine -> cpu.rc;
+					break;
+				default:
+					return -1;
+					break;
+			}
+
+			break;
+		}
+		// ANa
+		// a AND RA
+		case 0x414e:{
+			uint16_t reg = command & 0x0000ffff;
+			uint8_t reg_nr = get_register_num(reg);
+			
+			if(reg == CPU_UNKNOWN_REGISTER){
+				return -1;
+			}
+
+			switch (reg_nr)
+			{
+				case RA:
+					real_machine -> cpu.ra &= real_machine -> cpu.ra;
+					break;
+				case RB:
+					real_machine -> cpu.ra &= real_machine -> cpu.rb;
+					break;
+				case RC:
+					real_machine -> cpu.ra &= real_machine -> cpu.rb;
+					break;
+				default:
+					return -1;
+					break;
+			}
+
+			break;
+		}
+
+
 		// JUxy
 		case 0x4a55: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);

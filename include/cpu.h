@@ -28,7 +28,7 @@ typedef struct CPU {
 
 int init_cpu(CPU* cpu);
 
-uint8_t get_regiser_num(uint16_t reg_char);
+uint8_t get_register_num(uint16_t reg_char);
 
 enum Registers {
 	PC,
