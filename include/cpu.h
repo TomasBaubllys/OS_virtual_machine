@@ -2,10 +2,13 @@
 #define CPU_H_INCLUDED
 
 #include <stdint.h>
+#include "../include/util.h"
 
 #define CPU_DEFAULT_TIMER_VALUE 10
 #define CPU_USER_MODE 0
 #define CPU_SUPERVISOR_MODE 1
+
+#define CPU_UNKNOWN_REGISTER 0xff
 
 typedef struct CPU {
 	uint16_t pc;			// program counter
@@ -24,5 +27,21 @@ typedef struct CPU {
 } CPU;
 
 int init_cpu(CPU* cpu);
+
+uint8_t get_regiser_num(uint16_t reg_char);
+
+enum Registers {
+	PC,
+	PI,
+	SI,
+	TR,
+	TI,
+	SF,
+	MR,
+	SS,
+	RA,
+	RB,
+	RC
+};
 
 #endif // CPU_H_INCLUDED

@@ -18,9 +18,6 @@
 #include <stdint.h>
 
 typedef struct Memory {
-	// uint32_t user[MEM_USER_MEMORY_SIZE];
-	// uint32_t shared[MEM_SHARED_MEM_SIZE];
-	// uint32_t supervisor[MEM_SUPERVISOR_MEMORY_SIZE];
 	uint32_t memory[MEM_TOTAL_MEMORY];
 } Memory;
 

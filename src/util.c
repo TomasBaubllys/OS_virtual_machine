@@ -15,3 +15,16 @@ uint8_t char_hex_to_decimal(uint8_t ch) {
 
 	return 0xff;
 }
+
+
+uint8_t letter_to_lower(uint8_t ch) {
+	if(ch >= 'a' && ch <= 'z') {
+		return ch;
+	}	
+
+	if(ch >= 'A' && ch <= 'Z') {
+		return ch - 'A' + 'a';
+	}
+
+	return UTIL_BAD_ARG;
+}

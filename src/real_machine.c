@@ -41,6 +41,19 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			real_machine -> cpu.ra = x * 16 + y;
 			break;
 		}
+		// LRa 
+		case 0x4c52: {	
+			uint16_t reg = command & 0x0000ffff;
+			uint8_t reg_nr = get_regiser_num(reg);
+			if(reg_nr == CPU_UNKNOWN_REGISTER) {
+				return -1;
+			}
+
+			// copy RA to reg
+			
+				
+			break;
+		}
 		// aritmetic commands
 		// APxy	
 		case 0x4150: {
