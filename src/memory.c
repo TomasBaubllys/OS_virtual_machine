@@ -12,6 +12,9 @@ int init_memory(Memory* mem) {
         mem -> free_pages[i] = i;
     }
 
+    mem -> used_page_count = 0;
+    mem -> free_page_count = MEM_PAGE_COUNT;
+
 	return 0;
 }
 
@@ -135,4 +138,34 @@ void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end, uint
 			counter = column_count;
 		}
 	}
+}
+
+
+uint8_t get_free_page(Memory* mem) {
+    if(mem -> free_page_count == 0) {
+        return MEM_NO_FREE_PAGE_ERR;
+    }
+
+    // take the number from the back since its faster
+    --(mem -> free_page_count);
+    uint8_t free_page_num = mem -> free_pages[mem -> free_page_count];
+
+    // and insert it into used pages also to the back
+    if(mem -> used_page_count >= MEM_PAGE_COUNT - 1) {
+        return MEM_INTERNAL_PAGING_ERR_MISMATCH_SIZES;
+    }
+
+    mem -> used_pages[mem -> used_page_count] = free_page_num;
+    ++(mem -> used_page_count);
+
+    return free_page_num;
+}
+
+
+int return_page(Memory* mem, uint8_t page_num) {
+    if(page_num >= MEM_PAGE_COUNT) {
+        return -1;
+    } 
+
+    return 0;
 }
