@@ -9,6 +9,9 @@
 
 #define MEM_TOTAL_MEMORY MEM_USER_MEMORY_SIZE + MEM_SHARED_MEMORY_SIZE + MEM_SUPERVISOR_MEMORY_SIZE
 
+#define MEM_PAGE_COUNT 57
+#define MEM+PAGE_SIZE 16
+
 #define MEM_MAX_ADDRESS 0xe40
 #define MEM_MAX_ADDRESS_LENGTH 3
 #define MEM_BAD_ADDRESS_ERR "Maximum address exceeded\n" 
@@ -19,6 +22,8 @@
 
 typedef struct Memory {
 	uint32_t memory[MEM_TOTAL_MEMORY];
+    uint8_t free_pages[MEM_PAGE_COUNT];
+    uint8_t used_pages[MEM_PAGE_COUNT];
 } Memory;
 
 int init_memory(Memory* mem);

@@ -6,10 +6,14 @@ int init_memory(Memory* mem) {
 	}	
 
 	memset(mem -> memory, 0, sizeof(mem -> memory));	
+    memset(mem -> used_pages, 0, sizeof(mem -> used_pages))
+    
+    for(uint8_t i = 0; i < MEM_PAGE_COUNT; ++i) {
+        mem -> free_pages[i] = i;
+    }
 
 	return 0;
 }
-
 
 uint32_t read_word(Memory* mem, const uint16_t address) {
 	if(address >= MEM_MAX_ADDRESS - MEM_WORD_SIZE)	{
