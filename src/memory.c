@@ -6,10 +6,17 @@ int init_memory(Memory* mem) {
 	}	
 
 	memset(mem -> memory, 0, sizeof(mem -> memory));	
+    memset(mem -> used_pages, 0, sizeof(mem -> used_pages))
+    
+    for(uint8_t i = 0; i < MEM_PAGE_COUNT; ++i) {
+        mem -> free_pages[i] = i;
+    }
+
+    mem -> used_page_count = 0;
+    mem -> free_page_count = MEM_PAGE_COUNT;
 
 	return 0;
 }
-
 
 uint32_t read_word(Memory* mem, const uint16_t address) {
 	if(address >= MEM_MAX_ADDRESS - MEM_WORD_SIZE)	{
@@ -131,4 +138,66 @@ void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end, uint
 			counter = column_count;
 		}
 	}
+}
+
+
+uint8_t get_free_page(Memory* mem) {
+    if(mem -> free_page_count == 0) {
+        return MEM_NO_FREE_PAGE_ERR;
+    }
+
+    // take the number from the back since its faster
+    --(mem -> free_page_count);
+    uint8_t free_page_num = mem -> free_pages[mem -> free_page_count];
+
+    // and insert it into used pages also to the back
+    if(mem -> used_page_count >= MEM_PAGE_COUNT - 1) {
+        return MEM_INTERNAL_PAGING_ERR_MISMATCH_SIZES;
+    }
+
+    mem -> used_pages[mem -> used_page_count] = free_page_num;
+    ++(mem -> used_page_count);
+
+    return free_page_num;
+}
+
+
+int return_page(Memory* mem, uint8_t page_num) {
+    if(page_num >= MEM_PAGE_COUNT) {
+        return -1;
+    } 
+
+    if(mem -> used_page_count >= MEM_PAGE_COUNT) {
+        return -1;
+    }
+
+    // find the page in used pages
+    uint8_t index = 0;
+    for(index; index < mem -> used_page_count; ++index) {
+        if(mem -> used_pages[index] == page_num) {
+            break;
+        }
+    }
+
+    // check if the page was actually found or the cycle just ended
+    if(index == MEM_PAGE_COUNT) {
+        return -1;
+    }
+
+    // delete that page from the array
+    for(uint8_t i = index; i < mem -> used_page_count - 1; ++i) {
+        mem -> used_pages[i] = mem -> used_pages[i + 1];
+    }
+
+    --(mem -> used_page_count);
+
+    // add the page to the back of free_pages
+    if(mem -> free_page_count >= MEM_PAGE_COUNT) {
+        return -1;
+    }
+
+    mem -> free_pages[mem -> free_page_count] = page_num;
+    ++(mem -> free_page_count);
+
+    return 0;
 }
