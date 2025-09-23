@@ -167,5 +167,37 @@ int return_page(Memory* mem, uint8_t page_num) {
         return -1;
     } 
 
+    if(mem -> used_page_count >= MEM_PAGE_COUNT) {
+        return -1;
+    }
+
+    // find the page in used pages
+    uint8_t index = 0;
+    for(index; index < mem -> used_page_count; ++index) {
+        if(mem -> used_pages[index] == page_num) {
+            break;
+        }
+    }
+
+    // check if the page was actually found or the cycle just ended
+    if(index == MEM_PAGE_COUNT) {
+        return -1;
+    }
+
+    // delete that page from the array
+    for(uint8_t i = index; i < mem -> used_page_count - 1; ++i) {
+        mem -> used_pages[i] = mem -> used_pages[i + 1];
+    }
+
+    --(mem -> used_page_count);
+
+    // add the page to the back of free_pages
+    if(mem -> free_page_count >= MEM_PAGE_COUNT) {
+        return -1;
+    }
+
+    mem -> free_pages[mem -> free_page_count] = page_num;
+    ++(mem -> free_page_count);
+
     return 0;
 }
