@@ -109,8 +109,9 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
-			if(x > 0xf || y > 0xf) {
-				// real_machine -> cpu.pi =
+			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
 			}
 			
 			uint16_t vm_addr = x * 16 + y;
@@ -128,8 +129,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
-			if(x > 0xf || y > 0xf) {
-				// real_machine -> cpu.pi =
+			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
 			}
 			
 			uint16_t vm_addr = x * 16 + y;
@@ -148,7 +149,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
 			if(x > 0xf || y > 0xf || x * 16 + y > MEM_MAX_SHARED_ADDRESS) {
-				// real_machine -> cpu.pi =
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
 			}
 			
 			real_machine -> ch_dev.of = x * 16 + y;
@@ -164,7 +166,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
 			if(x > 0xf || y > 0xf || x * 16 + y > MEM_MAX_SHARED_ADDRESS) {
-				// real_machine -> cpu.pi =
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
 			}
 			
 			real_machine -> ch_dev.of = x * 16 + y;
@@ -177,12 +180,45 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		
 		// HD
 		case 0x4844: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
+			if(x > 0xf || y > 0xf || x * 16 + y > MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
+			}
+			
+			uint16_t v_addr = x * 16 + y;
+			
+			real_machine -> ch_dev.of = translate_to_real_address(real_machine, v_addr, real_machine -> vm[virtual_machine_index].page_table_index);
+			
+			real_machine -> ch_dev.of = x * 16 + y;
+			real_machine -> ch_dev.cb = real_machine -> cpu.rc;
+
+			real_machine -> ch_dev.dt = USER_MEM;
+			real_machine -> ch_dev.st = DISK_MEM;
+			real_machine -> cpu.si = RM_SI_BP;
+			break;
 		}	
 	
 		// HR
 		case 0x4852: {
-
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+			
+			if(x > 0xf || y > 0xf || x * 16 + y > MEM_MAX_SHARED_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
+			}
+			
+			uint16_t v_addr = x * 16 + y;
+			
+			real_machine -> ch_dev.of = translate_to_real_address(real_machine, v_addr, real_machine -> vm[virtual_machine_index].page_table_index);
+			real_machine -> ch_dev.dt = DISK_MEM;
+			real_machine -> ch_dev.st = USER_MEM;
+			real_machine -> ch_dev.cb = real_machine -> cpu.rc;
+			real_machine -> cpu.si = RM_SI_BP;
+			break;
 		}
 	
 		// I/O commands
@@ -223,6 +259,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			
 			real_machine -> ch_dev.dt = IO_STREAM;
 			real_machine -> ch_dev.st = USER_MEM;
+			real_machine -> ch_dev.cb = real_machine -> cpu.rc;
 			real_machine -> cpu.si = RM_SI_PSTR;
 			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
