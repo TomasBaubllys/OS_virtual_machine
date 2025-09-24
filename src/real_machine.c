@@ -24,7 +24,9 @@ int init_real_machine(Real_machine* real_machine) {
 	
 	// allocate space for RM_VM_MAX_COUNT virtual machines
 	real_machine -> vm = malloc(sizeof(Virtual_machine) * RM_VM_MAX_COUNT);
-
+		
+	real_machine -> vm_count = 0;
+	
 	return 0;
 };
 
@@ -428,6 +430,20 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 	return 0;
 }
 
+int add_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_machine) {
+	if(!real_machine || !virtual_machine) {
+		return -1;
+	} 
+
+	if(real_machine -> vm_count >= RM_VM_MAX_COUNT) {
+		return -1;
+	}
+
+	real_machine -> vm[real_machine -> vm_count] = *virtual_machine;
+	++(real_machine -> vm_count);
+	return 0;
+}
+
 int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index) {
 	if(!real_machine) {
 		return -1;
@@ -437,7 +453,7 @@ int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_ind
 		return -1;
 	}
 
-	if(virtual_machine_index >= RM_VM_MAX_COUNT) {
+	if(virtual_machine_index >= real_machine -> vm_count) {
 		return -1;
 	}
 
@@ -476,7 +492,7 @@ int write_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_in
 		return -1;
 	}
 
-	if(virtual_machine_index >= RM_VM_MAX_COUNT) {
+	if(virtual_machine_index >= real_machine -> vm_count) {
 		return -1;
 	}
 
