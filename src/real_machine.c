@@ -575,7 +575,7 @@ int remove_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_i
 		return -1;
 	}
 
-	if(destroy_virtual_machine(real_machine, real_machine -> vm[virtual_machine_index]) != 0) {
+	if(destroy_virtual_machine(real_machine, &(real_machine -> vm[virtual_machine_index])) != 0) {
 		return -1;
 	}
 	
@@ -595,18 +595,18 @@ int xchg(Real_machine* real_machine) {
 		return -1;
 	}
 	
-	// used by LWxy command of register must contain the address X
+	// used by LWxy command of register must contain the address 
 	if(real_machine -> ch_dev.dt == RA_REG && real_machine -> ch_dev.st == USER_MEM) {
-		real_machine -> cpu.ra = real_word(&(real_machine -> mem), real_machine -> ch_dev.of);	
+		real_machine -> cpu.ra = read_word(&(real_machine -> mem), real_machine -> ch_dev.of);	
 		return 0;
 	}
 		
-	// used by SWxy command of register must contain the address X
+	// used by SWxy command of register must contain the address
 	if(real_machine -> ch_dev.dt == USER_MEM && real_machine -> ch_dev.st == RA_REG) {
 		return write_word(&(real_machine -> mem), real_machine -> ch_dev.of, real_machine -> cpu.ra); 
 	}
 
-	// BPxy xy must be between 0 - 1F and contained in OF x
+	// BPxy xy must be between 0 - 1F and contained in OF
 	if(real_machine -> ch_dev.dt == RA_REG && real_machine -> ch_dev.st == SHARED_MEM) {
 		if(real_machine -> cpu.mr != 1) {
 			return -1;
@@ -622,7 +622,7 @@ int xchg(Real_machine* real_machine) {
 		return 0;
 	}
 	
-	// BGxy xy must be between 0 - 1F and contained in OF X
+	// BGxy xy must be between 0 - 1F and contained in OF 
 	if(real_machine -> ch_dev.dt == SHARED_MEM && real_machine -> ch_dev.st == RA_REG) {
 		if(real_machine -> cpu.mr != 1) {
 			return -1;
@@ -636,7 +636,7 @@ int xchg(Real_machine* real_machine) {
 
 	}
 	
-	// GEDA X
+	// GEDA 
 	if(real_machine -> ch_dev.dt == RA_REG && real_machine -> ch_dev.st == IO_STREAM) {
 		if(scanf("%x", &(real_machine -> cpu.ra)) != 1) {
 			return -1;
@@ -645,22 +645,69 @@ int xchg(Real_machine* real_machine) {
 		return 0;
 	}
 	
-	// PUTA X
+	// PUTA 
 	if(real_machine -> ch_dev.dt == IO_STREAM && real_machine -> ch_dev.st == RA_REG) {
 		printf("%x", real_machine -> cpu.ra);	
 	
 		return 0;
 	}
 	
-	// HRxy OF must contain the xy value
-	if(real_machine -> ch_dev.dt == DISK_MEM && real_machine -> ch_dev.st == USER_MEM) {
+	// HDxy OF must contain the xy value
+	if(real_machine -> ch_dev.dt == USER_MEM && real_machine -> ch_dev.st == DISK_MEM) {
+		uint32_t count = real_machine -> ch_dev.cb / MEM_WORD_SIZE;
+		uint8_t rem = real_machine -> ch_dev.cb % MEM_WORD_SIZE;
+		uint32_t addr_hd = real_machine -> cpu.ra;
+		uint16_t addr_mem = real_machine -> ch_dev.of; 		
+
+		for(uint32_t i = 0; i < size; ++i) {
+			uint32_t word = read_word_hard_disk(&(real_machine -> hd), addr_hd);
+			if(write_word(&(real_machine -> mem), addr_mem, word) != 0) {
+				return -1;
+			}
+			addr_hd += MEM_WORD_SIZE;
+			addr_mem += MEM_WORD_SIZE;
+		}	
+	
+		if(rem != 0) {
+			uint32_t word = 0;
+			
+			for(uint8_t i = 0; i < rem; ++i) {
+				word |= (read_byte_hard_disk(&(real_machine -> hd), addr_hd) << (8 * i));
+				++addr_hd;
+			}
 		
+			if(write_word(&(real_machine -> mem), addr_mem, word) != 0) {
+				return -1;
+			}
+		}
+	
 		return 0;
 	}
 	
 	// HDxy OF must contain the xy value
 	if(real_machine -> ch_dev.dt == USER_MEM && real_machine -> ch_dev.st == DISK_MEM) {
-			
+		uint32_t count = real_machine -> ch_dev.cb / MEM_WORD_SIZE;
+		uint8_t rem = real_machine -> ch_dev.cb % MEM_WORD_SIZE;
+		uint32_t addr_hd = real_machine -> cpu.ra;
+		uint16_t addr_mem = real_machine -> ch_dev.of;	
+	
+		for(uint32_t i = 0; i < count; ++i) {
+			uint32_t word = read_word(&(real_machine -> mem), addr_mem);
+			if(write_word_hard_disk(&(real_machine -> hd), addr_hd, word) != 0) {
+				return -1;
+			}
+			addr_hd += MEM_WORD_SIZE;
+			addr_mem += MEM_WORD_SIZE;
+		}
+	
+		if(rem != 0) {
+			uint32_t word = read_word(&(real_machine -> mem), addr_mem);
+			for(uint8_t i = 0; i < rem; ++i) {
+				if(write_byte_hard_disk(&(real_machine -> hd), addr_hd, (word >> (MEM_WORD_SIZE - i)) & 0xff) != 0) {
+					return -1;
+				}
+			}
+		}
 		
 		return 0;
 	}
