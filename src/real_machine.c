@@ -407,3 +407,53 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 	
 	return 0;
 }
+
+int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index) {
+	if(!real_machine) {
+		return -1;
+	}
+
+	if(!real_machine -> vm) {
+		return -1;
+	}
+
+	if(virtual_machine_index >= RM_MAX_VM_COUNT) {
+		return -1;
+	}
+
+	// cannot copy dead machines status
+	if(real_machine -> vm[virtual_machine_index] == 0) {
+		return -1;
+	}
+
+	real_machine -> cpu.ra = real_machine -> vm[virtual_machine_index].ra;
+	real_machine -> cpu.rb = real_machine -> vm[virtual_machine_index].rb;
+	real_machine -> cpu.rc = real_machine -> vm[virtual_machine_index].rc;
+	real_machine -> cpu.sf = real_machine -> vm[virtual_machine_index].sf;
+
+	// translate pc to its real value using addresing table
+	uint16_t v_addr = real_machine -> vm[virtual_machine_index].pc;
+	
+	// virtual page number
+	uint16_t v_page = (v_addr / 4) / 16;
+	
+	// offset from the begginning of the page
+	uint16_t offset = v_addr - (v_page * 16 * 4)	
+
+	// find the corresponding page in addressing table
+	uint8_t pg_index = real_machine -> vm[virtual_machine_index].page_table_index;
+	
+	// swap out the page to the real page
+	real_machine -> cpu.pc = (real_machine -> mem.memory[pg_index * 16 + v_page]) & 0x0000ffff;
+}
+
+// writes current real machine status to virtual machine
+int write_virtual_machine(Real_machine* real_mahine, uint8_t virtual_machine_index) {
+
+}
+
+// not implemented yet
+int destroy_real_machine(Real_machine* real_machine) {
+	return 0;
+}
+
