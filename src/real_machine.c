@@ -495,9 +495,53 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			break;
 
 		}
+		// JBxy
+		// control to address x*16 + y if CF = 0
+		case 0x4a42: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+			if(x == 0xff || y == 0xff) {
+				return -1;
+			}
 
+			if(((real_machine -> cpu.sf & 0x0001)) == 1){
+				real_machine -> vm[virtual_machine_index].pc = x * 16 + y;
+			}
 
+			break;
+		}
 
+		// JNxy
+		// control to address x*16 + y if ZF = 0
+		case 0x4a4e: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+			if(x == 0xff || y == 0xff) {
+				return -1;
+			}
+
+			
+
+			if(((real_machine -> cpu.sf & 0x0002)) == 0){
+				real_machine -> vm[virtual_machine_index].pc = x * 16 + y;
+			}
+
+			break;
+		}
+
+		//STOP
+		case 0x5354:{
+			uint16_t x = command & 0x0000ffff;
+
+			if(x != 0x4f50){
+				return -1;
+			}
+			else{
+				real_machine -> cpu.si = 4;
+			}
+
+			break;
+		}
 		default:
 			return -1;
 	}

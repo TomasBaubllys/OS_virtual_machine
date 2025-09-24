@@ -64,14 +64,21 @@ int test_main(int argc, char* argv[]) {
 	uint32_t com17 = 0x43527262;
 	// JZ3a
 	uint32_t com18 = 0x4A5A3361;
-	// TEST JA
-
+	// JA5b
+	uint32_t com19 = 0x4A413562;
+	// JA99
+	uint32_t com20 = 0x4A423939;
+	// JN82
+	uint32_t com21 = 0x4a4e3832;
+	// STOP
+	uint32_t com22 = 0x53544F50;
 
 	add_virtual_machine(&real_machine, &vm1);
 
 	execute_command(&real_machine, 0, com1);
 	execute_command(&real_machine, 0, com2);
 	execute_command(&real_machine, 0, com3);
+
 
 	assert(real_machine.cpu.ra == 510);
 	assert(real_machine.cpu.rb == 510);
@@ -122,6 +129,23 @@ int test_main(int argc, char* argv[]) {
 
 	execute_command(&real_machine, 0, com18);
 	assert((real_machine.vm[0].pc != 0x003a));
+
+	execute_command(&real_machine, 0, com19);
+	assert(real_machine.vm[0].pc == 0x005b);
+
+
+	execute_command(&real_machine, 0, com1);
+	execute_command(&real_machine, 0, com17);
+	execute_command(&real_machine, 0, com20);
+
+	assert(real_machine.vm[0].pc == 0x0099);
+
+	execute_command(&real_machine, 0, com17);
+	execute_command(&real_machine, 0, com21);
+	assert(real_machine.vm[0].pc == 0x0082);
+
+	execute_command(&real_machine, 0, com22);
+	assert(real_machine.cpu.si == 4);
 
 	
 	printf("%u\n", real_machine.cpu.ra);
