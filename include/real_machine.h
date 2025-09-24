@@ -7,6 +7,8 @@
 #include "channel_device.h"
 #include "util.h"
 
+#define RM_VM_MAX_COUNT 3
+
 typedef struct Virtual_machine Virtual_machine;
 
 typedef struct Real_machine {
