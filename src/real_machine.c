@@ -32,7 +32,6 @@ int init_real_machine(Real_machine* real_machine) {
 
 int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, uint32_t command) {
 	uint16_t com_code = command >> 16;
-	uint16_t args = command & 0x0000ffff;				// gets trown away in some cases	
 
 	if(virtual_machine_index >= real_machine -> vm_count) {
 		return -1;
@@ -110,6 +109,49 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 	
 
 		// LR 
+
+		// I/O commands
+		// GEDA
+		case 0x4745: {			
+			uint16_t rest_com = command & 0x0000ffff;
+			if(rest_com != 0x4441) {
+				return -1;
+			}
+			
+			real_machine -> ch_dev.dt = RA_REG;
+			real_machine -> ch_dev.st = IO_STREAM;
+			real_machine -> cpu.si = RM_SI_GEDA;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			break;		
+		}
+
+		// PUTA
+		case 0x5055: {
+			uint16_t rest_com = command & 0x0000ffff;
+			if(rest_com != 0x5441) {
+				return -1;
+			}
+		
+			real_machine -> ch_dev.dt = IO_STREAM;
+			real_machine -> ch_dev.st = RA_REG;
+			real_machine -> cpu.si = RM_SI_PUTA;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			break;
+		}
+		
+		// PSTR
+		case 0x5053: {
+			uint16_t rest_com = command & 0x0000ffff;
+			if(rest_com != 0x5452) {
+				return -1;
+			}
+			
+			real_machine -> ch_dev.dt = IO_STREAM;
+			real_machine -> ch_dev.st = USER_MEM;
+			real_machine -> cpu.si = RM_SI_PSTR;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			break;
+		}
 
 		// aritmetic commands
 		// APxy	
@@ -678,7 +720,7 @@ int xchg(Real_machine* real_machine) {
 		uint32_t addr_hd = real_machine -> cpu.ra;
 		uint16_t addr_mem = real_machine -> ch_dev.of; 		
 
-		for(uint32_t i = 0; i < size; ++i) {
+		for(uint32_t i = 0; i < count; ++i) {
 			uint32_t word = read_word_hard_disk(&(real_machine -> hd), addr_hd);
 			if(write_word(&(real_machine -> mem), addr_mem, word) != 0) {
 				return -1;
@@ -762,4 +804,13 @@ int xchg(Real_machine* real_machine) {
 	}
 
 	return 0;
+}
+
+void pi_si_reset(Real_machine* real_machine) {
+	if(!real_machine) {
+		return;
+	}
+
+	real_machine -> cpu.si = 0;
+	real_machine -> cpu.pi = 0;
 }

@@ -10,6 +10,17 @@
 #define RM_VM_MAX_COUNT 3
 #define RM_USER_VM_PAGE_INDEX_EXCEEDED 0xfffd
 
+#define RM_SI_GEDA 1
+#define RM_SI_PUTA 2
+#define RM_SI_PSTR 3
+#define RM_SI_LW 4
+#define RM_SI_SW 5
+#define RM_SI_BP 6
+#define RM_SI_BG 7
+#define RM_SI_HD 8
+#define RM_SI_HR 9
+#define RM_SI_STOP 10
+
 typedef struct Virtual_machine Virtual_machine;
 
 typedef struct Real_machine {
@@ -40,5 +51,7 @@ uint16_t translate_to_real_address(Real_machine *real_machine, uint16_t address,
 int destroy_real_machine(Real_machine* real_machine);
 
 int xchg(Real_machine* real_machine);
+
+void pi_si_reset(Real_machine* real_machine);
 
 #endif // REAL_MACHINE_H_INCLUDED
