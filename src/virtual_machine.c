@@ -13,6 +13,9 @@ int init_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_ma
 	virtual_machine -> pc = 0;
 	virtual_machine -> sf = 0;
 
+	// machine is initialized and running
+	virtual_machine -> status = 1;
+
 	// get a page for the page table
 	uint8_t page_table_index = get_free_page(&(real_machine -> mem));
 	

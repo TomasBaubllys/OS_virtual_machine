@@ -21,6 +21,9 @@ int init_real_machine(Real_machine* real_machine) {
 	if(init_channel_device(&(real_machine -> ch_dev)) != 0) {
 		return -1;
 	}
+	
+	// allocate space for RM_VM_MAX_COUNT virtual machines
+	real_machine -> vm = malloc(sizeof(Virtual_machine) * RM_VM_MAX_COUNT);
 
 	return 0;
 };
@@ -464,13 +467,46 @@ int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_ind
 	real_machine -> cpu.pc = (real_machine -> mem.memory[pg_index * 16 + v_page]) & 0x0000ffff;
 }
 
-// writes current real machine status to virtual machine
-int write_virtual_machine(Real_machine* real_mahine, uint8_t virtual_machine_index) {
+int write_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index) {
+	if(!real_machine) {
+		return -1;
+	}
 
+	if(!real_machine -> vm) {
+		return -1;
+	}
+
+	if(virtual_machine_index >= RM_VM_MAX_COUNT) {
+		return -1;
+	}
+
+	// cannot write to a killed machine
+	if((real_machine -> vm[virtual_machine_index]).status == 0) {
+		return -1;
+	}
+
+	real_machine -> vm[virtual_machine_index].ra = real_machine -> cpu.ra;
+	real_machine -> vm[virtual_machine_index].rb = real_machine -> cpu.rb;
+	real_machine -> vm[virtual_machine_index].rc = real_machine -> cpu.rc;
+	real_machine -> vm[virtual_machine_index].sf = real_machine -> cpu.sf;
+
+	// increment virtual machines pc by word size since command was completed
+	real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+	
+	return 0;
 }
+
+
 
 // not implemented yet
 int destroy_real_machine(Real_machine* real_machine) {
+	if(!real_machine) {
+		return -1;
+	}	
+
+	free(real_machine -> vm);
+	real_machine -> vm = NULL;
+
 	return 0;
 }
 

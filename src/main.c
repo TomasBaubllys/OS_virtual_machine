@@ -4,118 +4,13 @@
 
 int main(int argc, char* argv[]) {
 	Real_machine real_machine;
-	assert(init_real_machine(&real_machine) == 0);
 
-	Virtual_machine vm1;
-	assert(init_virtual_machine(&real_machine, &vm1) == 0);
+    	assert(init_real_machine(&real_machine) == 0);
 
-	Virtual_machine vm2;
-	assert(init_virtual_machine(&real_machine, &vm2) == 0);
+    	while(1) {
 	
-	Virtual_machine vm3;
-	assert(init_virtual_machine(&real_machine, &vm3) == 0);
 
-	Virtual_machine vm4;
-	assert(init_virtual_machine(&real_machine, &vm4) == -1);
-	
-	assert(destroy_virtual_machine(&real_machine, &vm2) == 0);
-	assert(destroy_virtual_machine(&real_machine, &vm3) == 0);
-	
-	Virtual_machine vm5;
-	assert(init_virtual_machine(&real_machine, &vm5) == 0);
-	
-	Virtual_machine vm6;
-	assert(init_virtual_machine(&real_machine, &vm6) == 0);
-	fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 16);	
-
-	uint32_t com1 = 0x4D4F6666;
-	uint32_t com2 = 0x41506666;
-	// LRrb
-	uint32_t com3 = 0x4C527262;
-	// LRpc
-	uint32_t com4 = 0x4C527063;
-	// MOee 
-	uint32_t com5 = 0x4D4F6565;
-	// LLra
-	uint32_t com6 = 0x4C4C7261;
-	// ADra
-	uint32_t com7 = 0x41447261;
-	// SBra
-	uint32_t com8 = 0x53427261;
-	// MO47
-	uint32_t com9 = 0x4D4F3437;
-	// MUra
-	uint32_t com10 = 0x4D557261;
-	// DVra
-	uint32_t com11 = 0x44567262;
-	// XRrb
-	uint32_t com12 = 0x58527262;
-	// ANrb
-	uint32_t com13 = 0x414E7262;
-	// NOra
-	uint32_t com14 = 0x4E4F7261;
-	// MO2b
-	uint32_t com15 = 0x4D4F3262;
-	//TODO test CMxy and CRRB
-	// CM2B
-	uint32_t com16 = 0x434D3262;
-	// CRrb
-	uint32_t com17 = 0x43527262;
-
-
-	execute_command(&real_machine, com1);
-	execute_command(&real_machine, com2);
-	execute_command(&real_machine, com3);
-
-	assert(real_machine.cpu.ra = 510);
-	assert(real_machine.cpu.rb = 510);
-
-	assert(execute_command(&real_machine, com4) == -1);
-
-	execute_command(&real_machine, com5);
-	execute_command(&real_machine, com6);
-
-	assert(real_machine.cpu.ra = 238);
-	assert(real_machine.cpu.rb = 238);
-
-	execute_command(&real_machine, com7);
-	assert(real_machine.cpu.ra == 476);
-
-	execute_command(&real_machine, com8);
-	assert(real_machine.cpu.ra == 0);
-
-	execute_command(&real_machine, com9);
-	assert(real_machine.cpu.ra == 71);
-
-	execute_command(&real_machine, com10);
-	assert(real_machine.cpu.ra == 5041);
-
-	execute_command(&real_machine, com11);
-	assert(real_machine.cpu.ra == 5041 / 238);
-	assert(real_machine.cpu.rb == 5041 % 238);
-
-	execute_command(&real_machine, com12);
-	assert(real_machine.cpu.ra == (21 ^ 43));
-
-	execute_command(&real_machine, com13);
-	assert(real_machine.cpu.ra == (62 & 43));
-
-	execute_command(&real_machine, com14);
-	assert(real_machine.cpu.ra == ~42);
-
-	execute_command(&real_machine, com15);
-	execute_command(&real_machine, com16);
-	assert(((real_machine.cpu.sf & 0x0002) >> 1) == 1);
-	assert((real_machine.cpu.sf & 0x0001) == 0);
-
-	execute_command(&real_machine, com8);
-	execute_command(&real_machine, com17);
-	assert(((real_machine.cpu.sf & 0x0002) >> 1) == 0);
-	assert((real_machine.cpu.sf & 0x0001) == 0);
-
-	
-	printf("%u\n", real_machine.cpu.ra);
-	printf("%u\n", real_machine.cpu.rb);
-		
+    	}	
+        
 	return 0;
 }
