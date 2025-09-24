@@ -433,12 +433,12 @@ int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_ind
 		return -1;
 	}
 
-	if(virtual_machine_index >= RM_MAX_VM_COUNT) {
+	if(virtual_machine_index >= RM_VM_MAX_COUNT) {
 		return -1;
 	}
 
 	// cannot copy dead machines status
-	if(real_machine -> vm[virtual_machine_index] == 0) {
+	if((real_machine -> vm[virtual_machine_index]).status == 0) {
 		return -1;
 	}
 
@@ -454,7 +454,7 @@ int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_ind
 	uint16_t v_page = (v_addr / 4) / 16;
 	
 	// offset from the begginning of the page
-	uint16_t offset = v_addr - (v_page * 16 * 4)	
+	uint16_t offset = v_addr - (v_page * 16 * 4);	
 
 	// find the corresponding page in addressing table
 	uint8_t pg_index = real_machine -> vm[virtual_machine_index].page_table_index;
