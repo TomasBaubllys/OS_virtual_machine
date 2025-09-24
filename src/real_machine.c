@@ -525,11 +525,11 @@ uint16_t translate_to_real_address(Real_machine *real_machine, uint16_t virtual_
 	uint16_t v_page = (virtual_address / MEM_WORD_SIZE) / 16;
 	
 	// offset from the virtual page
-	uint16_t offset = virtual_address - v_page * MEM_WORD_SIZE * 16;
+	uint16_t offset = virtual_address - (v_page * MEM_WORD_SIZE * 16);
 	
 	// find the corresponfing real page index
 	uint16_t r_page = real_machine -> mem.memory[page_table_index * 16 + v_page] & 0x0000ffff;
-
- 	return r_page * 16 + offset;
+	
+ 	return (r_page * 16 * 4) + offset;
 }
 
