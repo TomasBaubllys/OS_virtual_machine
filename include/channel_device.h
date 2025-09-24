@@ -2,6 +2,7 @@
 #define CHANNEL_DEVICE_H_INCLUDED
 
 #include <stdint.h>
+#include "memory.h"
 
 typedef struct Channel_device {
 	uint16_t sb;			// number of the block to copy from
@@ -16,6 +17,17 @@ typedef struct Channel_device {
 
 } Channel_device;
 
+enum Object_numbers {
+	USER_MEM = 1,
+	DISK_MEM,
+	IO_STREAM,
+	SHARED_MEM,
+	RA_REG
+};
+
 int init_channel_device(Channel_device* channel_dev);
+
+int set_registers_channel_device(Channel_device* channel_device, uint16_t sb, uint16_t db, uint8_t st, uint32_t cb, uint16_t of, uint8_t dt);
+
 
 #endif // CHANNEL_DEVICE_H_INCLUDED

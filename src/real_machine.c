@@ -588,3 +588,112 @@ int remove_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_i
 
 	return 0;
 }
+
+int xchg(Real_machine* real_machine) {
+	// "Performancas nesvarbu svarbu, svarbu, kad veiktu" - M. Grubliauskis 22/09/2025
+	if(!real_machine) {
+		return -1;
+	}
+	
+	// used by LWxy command of register must contain the address X
+	if(real_machine -> ch_dev.dt == RA_REG && real_machine -> ch_dev.st == USER_MEM) {
+		real_machine -> cpu.ra = real_word(&(real_machine -> mem), real_machine -> ch_dev.of);	
+		return 0;
+	}
+		
+	// used by SWxy command of register must contain the address X
+	if(real_machine -> ch_dev.dt == USER_MEM && real_machine -> ch_dev.st == RA_REG) {
+		return write_word(&(real_machine -> mem), real_machine -> ch_dev.of, real_machine -> cpu.ra); 
+	}
+
+	// BPxy xy must be between 0 - 1F and contained in OF x
+	if(real_machine -> ch_dev.dt == RA_REG && real_machine -> ch_dev.st == SHARED_MEM) {
+		if(real_machine -> cpu.mr != 1) {
+			return -1;
+		}		
+		
+		
+		if(real_machine -> ch_dev.of >=  MEM_MAX_SHARED_ADDRESS) {
+			return -1;
+		}
+		
+		real_machine -> cpu.ra = read_word(&(real_machine -> mem), real_machine -> ch_dev.of + MEM_BEG_SHARED_MEM);	
+
+		return 0;
+	}
+	
+	// BGxy xy must be between 0 - 1F and contained in OF X
+	if(real_machine -> ch_dev.dt == SHARED_MEM && real_machine -> ch_dev.st == RA_REG) {
+		if(real_machine -> cpu.mr != 1) {
+			return -1;
+		}
+	
+		if(real_machine -> ch_dev.of >=  MEM_MAX_SHARED_ADDRESS) {
+			return -1;
+		}
+
+		return write_word(&(real_machine -> mem), real_machine -> ch_dev.of + MEM_BEG_SHARED_MEM, real_machine -> cpu.ra);
+
+	}
+	
+	// GEDA X
+	if(real_machine -> ch_dev.dt == RA_REG && real_machine -> ch_dev.st == IO_STREAM) {
+		if(scanf("%x", &(real_machine -> cpu.ra)) != 1) {
+			return -1;
+		}
+	
+		return 0;
+	}
+	
+	// PUTA X
+	if(real_machine -> ch_dev.dt == IO_STREAM && real_machine -> ch_dev.st == RA_REG) {
+		printf("%x", real_machine -> cpu.ra);	
+	
+		return 0;
+	}
+	
+	// HRxy OF must contain the xy value
+	if(real_machine -> ch_dev.dt == DISK_MEM && real_machine -> ch_dev.st == USER_MEM) {
+		
+		return 0;
+	}
+	
+	// HDxy OF must contain the xy value
+	if(real_machine -> ch_dev.dt == USER_MEM && real_machine -> ch_dev.st == DISK_MEM) {
+			
+		
+		return 0;
+	}
+	
+	// PSTR prints a char array from the addrress saved in RA, RC, (CB) says how many bytes x
+	if(real_machine -> ch_dev.dt == IO_STREAM && real_machine -> ch_dev.st == USER_MEM) {
+		// check if it all fits in user memory
+		if(real_machine -> cpu.ra + real_machine -> ch_dev.cb >= MEM_MAX_USER_ADDRESS) {
+			return -1;
+		} 
+		
+		uint32_t size = (real_machine -> ch_dev.cb) / 4;
+		uint8_t rem = (real_machine -> ch_dev.cb) % 4;
+		uint32_t addr = real_machine -> cpu.ra;
+
+
+		if(rem != 0) {
+			++size;
+		}
+
+		uint32_t byte_count = real_machine -> ch_dev.cb;
+		for(uint32_t i = 0; i < size; ++i) {
+			uint32_t word = read_word(&(real_machine -> mem), addr);
+			addr += 4;
+			for(int b = 0; b < 4 || byte_count > 0; ++b) {
+				uint8_t ch = (word >> (8 * b)) & 0xff;
+				putchar(ch);
+				--byte_count;
+			}
+		}
+		
+		return 0;
+	}
+
+	return 0;
+}

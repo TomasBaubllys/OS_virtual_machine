@@ -37,7 +37,8 @@ int write_virtual_machine(Real_machine* real_mahine, uint8_t virtual_machine_ind
 
 uint16_t translate_to_real_address(Real_machine *real_machine, uint16_t address, uint8_t page_table_index);
 
-// not implemented yet
 int destroy_real_machine(Real_machine* real_machine);
+
+int xchg(Real_machine* real_machine);
 
 #endif // REAL_MACHINE_H_INCLUDED
