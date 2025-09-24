@@ -145,7 +145,7 @@ int test_main(int argc, char* argv[]) {
 	assert(real_machine.vm[0].pc == 0x0082);
 
 	execute_command(&real_machine, 0, com22);
-	assert(real_machine.cpu.si == 4);
+	assert(real_machine.cpu.si == RM_SI_STOP);
 
 	
 	printf("%u\n", real_machine.cpu.ra);

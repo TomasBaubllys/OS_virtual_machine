@@ -21,6 +21,13 @@
 #define RM_SI_HR 9
 #define RM_SI_STOP 10
 
+#define RM_PI_INVALID_ADDRESS 1
+#define RM_PI_INVALID_OPCODE 2
+#define RM_PI_INVALID_ASSIGNMENT 3
+#define RM_PI_OVERFLOW 4
+#define RM_PI_DIVISION_BY_ZERO 5
+
+
 typedef struct Virtual_machine Virtual_machine;
 
 typedef struct Real_machine {

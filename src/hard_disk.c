@@ -94,11 +94,12 @@ int write_byte_hard_disk(Hard_disk* hard_disk, uint16_t address, uint8_t value) 
 }
 
 int write_word_hard_disk(Hard_disk* hard_disk, uint16_t address, uint32_t value) {
+	// check if word will fit
 	if(read_write_arg_check_hard_disk(hard_disk, address) != 0) {
 		return -1;
 	}
 	
-	if(fseek(hard_disk -> fptr, address, SEEK_SET) != 0) {
+	if(fseek(hard_disk -> fptr, address, SEEK_SET) != 0) { 
 		perror("fseek");
 		return -1;
 	}

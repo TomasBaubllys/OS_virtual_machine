@@ -261,15 +261,15 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			switch (reg_nr){
 				case RA:
 					if(real_machine -> cpu.ra == 0){
-						real_machine -> cpu.si = 5;
+						real_machine -> cpu.pi = RM_PI_DIVISION_BY_ZERO;
 						return 0;
 					}
 					real_machine -> cpu.ra /= real_machine -> cpu.ra; 
 					
 					break;
 				case RB:
-					if(real_machine -> cpu.rb == 0){
-						real_machine -> cpu.si = 5;
+					if(real_machine -> cpu.rb == RM_PI_DIVISION_BY_ZERO){
+						real_machine -> cpu.pi = 5;
 						return 0;
 					}
 					uint32_t temp = real_machine -> cpu.ra;
@@ -277,8 +277,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 					real_machine -> cpu.rb  = temp % real_machine -> cpu.rb;
 					break;
 				case RC:
-					if(real_machine -> cpu.rc == 0){
-						real_machine -> cpu.si = 5;
+					if(real_machine -> cpu.rc == RM_PI_DIVISION_BY_ZERO){
+						real_machine -> cpu.pi = 5;
 						return 0;
 					}
 					uint32_t temp1 = real_machine -> cpu.ra;
@@ -292,7 +292,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
-		// CMcy
+		// CMxy
 		// (x*16 + y == ra)
 		case 0x434d:{
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
@@ -537,7 +537,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 				return -1;
 			}
 			else{
-				real_machine -> cpu.si = 4;
+				real_machine -> cpu.si = RM_SI_STOP;
 			}
 
 			break;
