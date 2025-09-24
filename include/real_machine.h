@@ -27,6 +27,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 
 int add_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_machine);
 
+int remove_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index);
+
 // copies current register values from virtual to real machine
 int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index);
 

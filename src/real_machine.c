@@ -566,3 +566,25 @@ uint16_t translate_to_real_address(Real_machine *real_machine, uint16_t virtual_
  	return (r_page * 16 * 4) + offset;
 }
 
+int remove_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index) {
+	if(!real_machine) {
+		return -1;
+	}
+
+	if(virtual_machine_index >= real_machine -> vm_count) {
+		return -1;
+	}
+
+	if(destroy_virtual_machine(real_machine, real_machine -> vm[virtual_machine_index]) != 0) {
+		return -1;
+	}
+	
+	// move reposition other machines in its place
+	for(uint8_t i = virtual_machine_index; i < real_machine -> vm_count - 1; ++i) {
+		real_machine -> vm[i] = real_machine -> vm[i + 1];
+	}
+
+	--(real_machine -> vm_count);
+
+	return 0;
+}
