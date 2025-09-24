@@ -103,13 +103,88 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
-		// LBxy
+		// LWxy
 		// value at address x*16 + y copying to RA
-		// 
+		case 0x4c57: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+			
+			if(x > 0xf || y > 0xf) {
+				// real_machine -> cpu.pi =
+			}
+			
+			uint16_t vm_addr = x * 16 + y;
+
+			uint16_t r_addr = translate_to_real_address(real_machine, vm_addr, real_machine -> vm[virtual_machine_index].page_table_index);
+			real_machine -> ch_dev.dt = RA_REG;  
+			real_machine -> ch_dev.st = USER_MEM;
+			
+			real_machine -> ch_dev.of = r_addr;
+			real_machine -> cpu.si = RM_SI_LW;
+			break;
+		}
+		// SWxy
+		case 0x5357: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+			
+			if(x > 0xf || y > 0xf) {
+				// real_machine -> cpu.pi =
+			}
+			
+			uint16_t vm_addr = x * 16 + y;
+
+			uint16_t r_addr = translate_to_real_address(real_machine, vm_addr, real_machine -> vm[virtual_machine_index].page_table_index);
+			real_machine -> ch_dev.dt = USER_MEM;
+			real_machine -> ch_dev.st = RA_REG;	
 	
+			real_machine -> ch_dev.of = r_addr;
+			real_machine -> cpu.si = RM_SI_SW;
+			break;
+		}
+		// BP
+		case 0x4250: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+			
+			if(x > 0xf || y > 0xf || x * 16 + y > MEM_MAX_SHARED_ADDRESS) {
+				// real_machine -> cpu.pi =
+			}
+			
+			real_machine -> ch_dev.of = x * 16 + y;
 
-		// LR 
+			real_machine -> ch_dev.dt = RA_REG;
+			real_machine -> ch_dev.st = SHARED_MEM;
+			real_machine -> cpu.si = RM_SI_BP;
+			break;
+		}
+		// BG
+		case 0x4247: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+			
+			if(x > 0xf || y > 0xf || x * 16 + y > MEM_MAX_SHARED_ADDRESS) {
+				// real_machine -> cpu.pi =
+			}
+			
+			real_machine -> ch_dev.of = x * 16 + y;
 
+			real_machine -> ch_dev.dt = SHARED_MEM;
+			real_machine -> ch_dev.st = RA_REG;
+			real_machine -> cpu.si = RM_SI_BP;
+			break;
+		}
+		
+		// HD
+		case 0x4844: {
+			
+		}	
+	
+		// HR
+		case 0x4852: {
+
+		}
+	
 		// I/O commands
 		// GEDA
 		case 0x4745: {			
