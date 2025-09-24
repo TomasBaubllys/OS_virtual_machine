@@ -460,9 +460,11 @@ int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_ind
 	if(real_address == VM_REAL_MACHINE_NULL || real_address == VM_MAX_VIRTUAL_ADDDRESS_EXCEEDED) {
 		return -1;
 	}
-
+	
 	// swap out the page to the real page
 	real_machine -> cpu.pc = real_address;
+
+	return 0;
 }
 
 int write_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index) {
