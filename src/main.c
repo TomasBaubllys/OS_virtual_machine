@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 	
 	Virtual_machine vm6;
 	assert(init_virtual_machine(&real_machine, &vm6) == 0);
-	fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 16);	
+	//fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 16);	
 
 	uint32_t com1 = 0x4D4F6666;
 	uint32_t com2 = 0x41506666;
@@ -54,8 +54,13 @@ int main(int argc, char* argv[]) {
 	uint32_t com13 = 0x414E7262;
 	// NOra
 	uint32_t com14 = 0x4E4F7261;
-	 
+	// MO2b
+	uint32_t com15 = 0x4D4F3262;
 	//TODO test CMxy and CRRB
+	// CM2B
+	uint32_t com16 = 0x434D3262;
+	// CRrb
+	uint32_t com17 = 0x43527262;
 
 
 	execute_command(&real_machine, com1);
@@ -98,9 +103,19 @@ int main(int argc, char* argv[]) {
 	execute_command(&real_machine, com14);
 	assert(real_machine.cpu.ra == ~42);
 
+	execute_command(&real_machine, com15);
+	execute_command(&real_machine, com16);
+	assert(((real_machine.cpu.sf & 0x0002) >> 1) == 1);
+	assert((real_machine.cpu.sf & 0x0001) == 0);
+
+	execute_command(&real_machine, com8);
+	execute_command(&real_machine, com17);
+	assert(((real_machine.cpu.sf & 0x0002) >> 1) == 0);
+	assert((real_machine.cpu.sf & 0x0001) == 0);
+
 	
-	printf("%d\n", real_machine.cpu.ra);
-	printf("%d\n", real_machine.cpu.rb);
+	printf("%u\n", real_machine.cpu.ra);
+	printf("%u\n", real_machine.cpu.rb);
 		
 	return 0;
 }

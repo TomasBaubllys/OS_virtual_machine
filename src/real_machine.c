@@ -265,9 +265,10 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			uint16_t reg = command & 0x0000ffff;
 			uint8_t reg_nr = get_register_num(reg);
 
-			if(reg_nr != get_register_num(real_machine -> cpu.rb)){
+			if(reg_nr != RB){
 				return -1;
 			}
+
 
 			// ZF = 1 CF = 0
 			if(real_machine -> cpu.rb == real_machine -> cpu.ra){
@@ -276,7 +277,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			}
 			// ZF = 0 CF = 1
 			else if(real_machine -> cpu.rb < real_machine -> cpu.ra){
-				real_machine -> cpu.sf &=  0xfffd; // 1111 1111 1111 1101
+				real_machine -> cpu.sf &= 0xfffd; // 1111 1111 1111 1101
 				real_machine -> cpu.sf ^= 0x0001; // 0000 0000 0000 0001
 			}
 			// ZF = 0 CF = 0
@@ -388,8 +389,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 
 		}
 
-
-
+		// JUMPS
 		// JUxy
 		case 0x4a55: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
@@ -401,6 +401,22 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			real_machine -> cpu.pc = x * 16 + y;
 			break;
 		}
+		// JZxy
+		// control to address x*16+y  if ZF=1
+		case 0x4a5a:{
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+			if(x == 0xff || y == 0xff) {
+				return -1;
+			}
+
+			if(((real_machine -> cpu.sf & 0x0002) >> 1) == 1){
+				real_machine -> cpu.pc = x * 16 + y;
+			}
+
+		}
+
+
 		default:
 			return -1;
 	}
