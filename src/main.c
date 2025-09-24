@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 
 	load_program_virtual_machine(&real_machine, 0, 0, test_program, 4);
 	
-	// fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS, 16);
+	fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 16);
 	
 	// execute first 4 commands of vm1	
 	assert(copy_virtual_machine(&real_machine, 0) == 0);
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 	execute_command(&real_machine, read_word(&real_machine.mem, real_machine.cpu.pc));
 	write_virtual_machine(&real_machine, 0);    	
 	
-	printf("%x\n", real_machine.cpu.ra);
+	printf("after program cpu.ra = %x\n", real_machine.cpu.ra);
 	
 	/*while(1) {
 	

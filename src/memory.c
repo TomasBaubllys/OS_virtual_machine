@@ -107,6 +107,7 @@ void fprint_memory(FILE* stream, Memory* mem, uint16_t start, uint16_t end, uint
 
 	if(end >= MEM_MAX_ADDRESS) {
 		fprintf(stream, MEM_BAD_ADDRESS_ERR);
+		return;
 	}	
 	
 	// take the floor
