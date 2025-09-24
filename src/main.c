@@ -20,19 +20,19 @@ int main(int argc, char* argv[]) {
 	
 	// execute first 4 commands of vm1	
 	assert(copy_virtual_machine(&real_machine, 0) == 0);
-	execute_command(&real_machine, read_word(&real_machine.mem, real_machine.cpu.pc));
+	execute_command(&real_machine, 0, read_word(&real_machine.mem, real_machine.cpu.pc));
 	assert(write_virtual_machine(&real_machine, 0) == 0);
 	
 	copy_virtual_machine(&real_machine, 0);
-	execute_command(&real_machine, read_word(&real_machine.mem, real_machine.cpu.pc));
+	execute_command(&real_machine, 0, read_word(&real_machine.mem, real_machine.cpu.pc));
 	write_virtual_machine(&real_machine, 0);    	
 	
 	copy_virtual_machine(&real_machine, 0);
-	execute_command(&real_machine, read_word(&real_machine.mem, real_machine.cpu.pc));
+	execute_command(&real_machine, 0, read_word(&real_machine.mem, real_machine.cpu.pc));
 	write_virtual_machine(&real_machine, 0);    	
 	
 	copy_virtual_machine(&real_machine, 0);
-	execute_command(&real_machine, read_word(&real_machine.mem, real_machine.cpu.pc));
+	execute_command(&real_machine, 0, read_word(&real_machine.mem, real_machine.cpu.pc));
 	write_virtual_machine(&real_machine, 0);    	
 	
 	printf("after program cpu.ra = %x\n", real_machine.cpu.ra);

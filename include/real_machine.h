@@ -23,7 +23,7 @@ typedef struct Real_machine {
 
 int init_real_machine(Real_machine* real_machine); 
 
-int execute_command(Real_machine* real_machine, uint32_t command);
+int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, uint32_t command);
 
 int add_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_machine);
 

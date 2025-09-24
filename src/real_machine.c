@@ -30,9 +30,13 @@ int init_real_machine(Real_machine* real_machine) {
 	return 0;
 };
 
-int execute_command(Real_machine* real_machine, uint32_t command) {
+int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, uint32_t command) {
 	uint16_t com_code = command >> 16;
 	uint16_t args = command & 0x0000ffff;				// gets trown away in some cases	
+
+	if(virtual_machine_index >= real_machine -> vm_count) {
+		return -1;
+	}
 
 	switch(com_code) {
 		// memory commands
@@ -45,6 +49,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			}
 			
 			real_machine -> cpu.ra = x * 16 + y;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// LRa 
@@ -70,7 +75,8 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 					// other registers not allowed
 					return -1;
 			}			
-				
+			
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;	
 			break;
 		}
 		// LLa
@@ -95,6 +101,8 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 				default:
 					return -1;
 			}
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			break;
 		}
 		// LBxy
 		// value at address x*16 + y copying to RA
@@ -113,6 +121,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			}
 			
 			real_machine -> cpu.ra = x * 16 + y;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// ADa
@@ -138,7 +147,8 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 					// other registers not allowed
 					return -1;
 			}			
-				
+			
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// SBa
@@ -165,6 +175,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 					return -1;
 			}			
 				
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// MUa
@@ -192,7 +203,8 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 					// other registers not allowed
 					return -1;
 			}			
-				
+			
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// DVa
@@ -235,7 +247,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 					// other registers not allowed
 					return -1;
 			}			
-				
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// CMcy
@@ -263,6 +275,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 				real_machine -> cpu.sf &= 0xfffe;
 			}
 
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// CRRB
@@ -291,7 +304,8 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 				real_machine -> cpu.sf &= 0xfffd;
 				real_machine -> cpu.sf &= 0xfffe;
 			}
-
+			
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// cycle commands 
@@ -305,7 +319,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 				}
 				
 				--(real_machine -> cpu.rc);
-				(real_machine -> cpu.pc) = x * 16 + y; 
+				(real_machine -> vm[virtual_machine_index].pc) = x * 16 + y; 
 			}
 			break;
 		}
@@ -334,7 +348,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 					return -1;
 					break;
 			}
-
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// ANa
@@ -362,7 +376,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 					return -1;
 					break;
 			}
-
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// NOa
@@ -390,7 +404,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 					return -1;
 					break;
 			}
-
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 
 		}
@@ -404,7 +418,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 				return -1;
 			}
 			
-			real_machine -> cpu.pc = x * 16 + y;
+			real_machine -> vm[virtual_machine_index].pc = x * 16 + y;
 			break;
 		}
 		// JZxy
@@ -417,7 +431,7 @@ int execute_command(Real_machine* real_machine, uint32_t command) {
 			}
 
 			if(((real_machine -> cpu.sf & 0x0002) >> 1) == 1){
-				real_machine -> cpu.pc = x * 16 + y;
+				real_machine -> vm[virtual_machine_index].pc = x * 16 + y;
 			}
 
 		}
@@ -507,7 +521,8 @@ int write_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_in
 	real_machine -> vm[virtual_machine_index].sf = real_machine -> cpu.sf;
 
 	// increment virtual machines pc by word size since command was completed
-	real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+	// real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+	// translate the address back to virtual memory
 	
 	return 0;
 }
