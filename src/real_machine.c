@@ -1,4 +1,5 @@
 #include "../include/real_machine.h"
+#include "../include/virtual_machine.h"
 
 int init_real_machine(Real_machine* real_machine) {
 	if(!real_machine) {

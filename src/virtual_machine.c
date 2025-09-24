@@ -5,7 +5,7 @@ int init_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_ma
 		return -1;
 	}
 	
-	virtual_machine -> rm = real_machine;
+	// virtual_machine -> rm = real_machine;
 
 	virtual_machine -> ra = 0;
 	virtual_machine -> rb = 0;
@@ -46,7 +46,7 @@ int init_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_ma
 }
 
 // return all the pages	
-int destroy_virtual_machine(Virtual_machine* virtual_machine) {
+int destroy_virtual_machine(Real_machine *real_machine, Virtual_machine* virtual_machine) {
 	if(!virtual_machine) {
 		return -1;
 	}
@@ -54,12 +54,12 @@ int destroy_virtual_machine(Virtual_machine* virtual_machine) {
 
 	for(uint8_t i = 0; i < VM_VIRTUAL_MACHINE_BLOCK_COUNT; ++i) {
 	// printf("%d\n", virtual_machine -> rm -> mem.memory[(virtual_machine -> page_table_index) * 16 + i]);
-		if(return_page(&(virtual_machine -> rm -> mem), (virtual_machine -> rm -> mem.memory[(virtual_machine -> page_table_index) * 16 + i]) & 0x00ff ) != 0) {
+		if(return_page(&(real_machine -> mem), (real_machine -> mem.memory[(virtual_machine -> page_table_index) * 16 + i]) & 0x00ff ) != 0) {
 			return -1;
 		} 
 	}
 	
-	if(return_page(&(virtual_machine -> rm -> mem), virtual_machine -> page_table_index * 16) != 0) {
+	if(return_page(&(real_machine -> mem), virtual_machine -> page_table_index * 16) != 0) {
 		return -1;
 	}
 
