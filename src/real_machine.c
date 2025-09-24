@@ -254,9 +254,18 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x5053: {
 			uint16_t rest_com = command & 0x0000ffff;
 			if(rest_com != 0x5452) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_OPCODE;
+				break;
 			}
 			
+			if(real_machine -> cpu.ra >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
+			}
+			
+			// translate ra address to a real address
+			real_machine -> cpu.ra = translate_to_real_address(real_machine, real_machine -> cpu.ra, real_machine -> vm[virtual_machine_index].page_table_index);			
+
 			real_machine -> ch_dev.dt = IO_STREAM;
 			real_machine -> ch_dev.st = USER_MEM;
 			real_machine -> ch_dev.cb = real_machine -> cpu.rc;
@@ -930,16 +939,16 @@ int xchg(Real_machine* real_machine) {
 	}
 	
 	// PSTR prints a char array from the addrress saved in RA, RC, (CB) says how many bytes x
+	// doesnt work if the pages are not linear need to translate inside this function
 	if(real_machine -> ch_dev.dt == IO_STREAM && real_machine -> ch_dev.st == USER_MEM) {
 		// check if it all fits in user memory
 		if(real_machine -> cpu.ra + real_machine -> ch_dev.cb >= MEM_MAX_USER_ADDRESS) {
 			return -1;
 		} 
 		
-		uint32_t size = (real_machine -> ch_dev.cb) / 4;
-		uint8_t rem = (real_machine -> ch_dev.cb) % 4;
+		uint32_t size = (real_machine -> ch_dev.cb) / MEM_WORD_SIZE;
+		uint8_t rem = (real_machine -> ch_dev.cb) % MEM_WORD_SIZE;
 		uint32_t addr = real_machine -> cpu.ra;
-
 
 		if(rem != 0) {
 			++size;
@@ -948,9 +957,9 @@ int xchg(Real_machine* real_machine) {
 		uint32_t byte_count = real_machine -> ch_dev.cb;
 		for(uint32_t i = 0; i < size; ++i) {
 			uint32_t word = read_word(&(real_machine -> mem), addr);
-			addr += 4;
-			for(int b = 0; b < 4 || byte_count > 0; ++b) {
-				uint8_t ch = (word >> (8 * b)) & 0xff;
+			addr += MEM_WORD_SIZE;
+			for(uint8_t b = 0; b < MEM_WORD_SIZE && byte_count > 0; ++b) {
+				uint8_t ch = (word >> (8 * (MEM_WORD_SIZE - b))) & 0xff;
 				putchar(ch);
 				--byte_count;
 			}
