@@ -66,5 +66,46 @@ int destroy_virtual_machine(Real_machine *real_machine, Virtual_machine* virtual
 		return -1;
 	}
 
+	// officialy its deceased
+	virtual_machine -> status = 0;
+
+	return 0;
+}
+
+int load_program_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index, uint16_t virtual_address, uint32_t* program, uint16_t program_len) {
+	if(!real_machine) {
+		return -1;
+	}
+
+	if(!program) {
+		return -1;
+	}
+
+	if(virtual_machine_index >= RM_VM_MAX_COUNT) {
+		return -1;
+	}
+
+	if(virtual_address >= VM_MAX_VIRTUAL_ADDRESS) {
+		return -1;
+	}	
+
+	if(virtual_address + program_len * 4 >= VM_MAX_VIRTUAL_ADDRESS) {
+		return -1;
+	}
+
+	uint16_t page_table_index = real_machine -> vm[virtual_machine_index].page_table_index;
+
+	// write the program to memory
+	for(uint16_t i = 0; i < program_len; ++i) {
+		// translate virtual_address to a real one
+		uint16_t real_address = translate_to_real_address(real_machine, virtual_address, page_table_index);	
+
+		// write to that real address	
+		write_word(&(real_machine -> mem), real_address, program[i]); 
+	
+		// increment virtual address by MEM_WORD_SIZE
+		virtual_address += MEM_WORD_SIZE;
+	}
+
 	return 0;
 }

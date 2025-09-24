@@ -8,6 +8,7 @@
 #include "util.h"
 
 #define RM_VM_MAX_COUNT 3
+#define RM_USER_VM_PAGE_INDEX_EXCEEDED 0xfffd
 
 typedef struct Virtual_machine Virtual_machine;
 
@@ -28,6 +29,8 @@ int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_ind
 
 // writes current real machine status to virtual machine
 int write_virtual_machine(Real_machine* real_mahine, uint8_t virtual_machine_index);
+
+uint16_t translate_to_real_address(Real_machine *real_machine, uint16_t address, uint8_t page_table_index);
 
 // not implemented yet
 int destroy_real_machine(Real_machine* real_machine);

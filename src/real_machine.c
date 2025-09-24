@@ -453,18 +453,16 @@ int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_ind
 
 	// translate pc to its real value using addresing table
 	uint16_t v_addr = real_machine -> vm[virtual_machine_index].pc;
-	
-	// virtual page number
-	uint16_t v_page = (v_addr / 4) / 16;
-	
-	// offset from the begginning of the page
-	uint16_t offset = v_addr - (v_page * 16 * 4);	
-
-	// find the corresponding page in addressing table
 	uint8_t pg_index = real_machine -> vm[virtual_machine_index].page_table_index;
-	
+		
+	uint16_t real_address = translate_to_real_address(real_machine, v_addr, pg_index);	
+
+	if(real_address == VM_REAL_MACHINE_NULL || real_address == VM_MAX_VIRTUAL_ADDDRESS_EXCEEDED) {
+		return -1;
+	}
+
 	// swap out the page to the real page
-	real_machine -> cpu.pc = (real_machine -> mem.memory[pg_index * 16 + v_page]) & 0x0000ffff;
+	real_machine -> cpu.pc = real_address;
 }
 
 int write_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index) {
@@ -508,5 +506,30 @@ int destroy_real_machine(Real_machine* real_machine) {
 	real_machine -> vm = NULL;
 
 	return 0;
+}
+
+
+uint16_t translate_to_real_address(Real_machine *real_machine, uint16_t virtual_address, uint8_t page_table_index) {
+	if(!real_machine) {
+		return VM_REAL_MACHINE_NULL;
+	}
+
+	if(virtual_address >= VM_MAX_VIRTUAL_ADDRESS) {
+		return VM_MAX_VIRTUAL_ADDDRESS_EXCEEDED;
+	}
+
+	if(page_table_index >= MEM_USER_PAGE_COUNT) {
+		return RM_USER_VM_PAGE_INDEX_EXCEEDED;
+	}
+
+	uint16_t v_page = (virtual_address / MEM_WORD_SIZE) / 16;
+	
+	// offset from the virtual page
+	uint16_t offset = virtual_address - v_page * MEM_WORD_SIZE * 16;
+	
+	// find the corresponfing real page index
+	uint16_t r_page = real_machine -> mem.memory[page_table_index * 16 + v_page] & 0x0000ffff;
+
+ 	return r_page * 16 + offset;
 }
 
