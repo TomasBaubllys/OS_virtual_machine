@@ -120,7 +120,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 				return -1;
 			}
 			
-			real_machine -> cpu.ra = x * 16 + y;
+			real_machine -> cpu.ra += x * 16 + y;
 			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
@@ -434,7 +434,26 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 				real_machine -> vm[virtual_machine_index].pc = x * 16 + y;
 			}
 
+
+			break;
 		}
+		// JAxy
+		// control to address x*16 + y if CF = 0 ZF = 0
+		case 0x4a41: {
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+			if(x == 0xff || y == 0xff) {
+				return -1;
+			}
+
+			if(((real_machine -> cpu.sf & 0x0003)) == 0){
+				real_machine -> vm[virtual_machine_index].pc = x * 16 + y;
+			}
+
+			break;
+
+		}
+
 
 
 		default:

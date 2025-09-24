@@ -1,4 +1,4 @@
-/*#include "../include/real_machine.h"
+#include "../include/real_machine.h"
 #include "../include/virtual_machine.h"
 #include <assert.h>
 
@@ -26,9 +26,11 @@ int test_main(int argc, char* argv[]) {
 	
 	Virtual_machine vm6;
 	assert(init_virtual_machine(&real_machine, &vm6) == 0);
-	fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 16);	
+	//fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 16);	
 
+	// MOff
 	uint32_t com1 = 0x4D4F6666;
+	// APff
 	uint32_t com2 = 0x41506666;
 	// LRrb
 	uint32_t com3 = 0x4C527262;
@@ -56,66 +58,75 @@ int test_main(int argc, char* argv[]) {
 	uint32_t com14 = 0x4E4F7261;
 	// MO2b
 	uint32_t com15 = 0x4D4F3262;
-	//TODO test CMxy and CRRB
-	// CM2B
+	// CM2b
 	uint32_t com16 = 0x434D3262;
 	// CRrb
 	uint32_t com17 = 0x43527262;
+	// JZ3a
+	uint32_t com18 = 0x4A5A3361;
+	// TEST JA
 
 
-	execute_command(&real_machine, com1);
-	execute_command(&real_machine, com2);
-	execute_command(&real_machine, com3);
+	add_virtual_machine(&real_machine, &vm1);
 
-	assert(real_machine.cpu.ra = 510);
-	assert(real_machine.cpu.rb = 510);
+	execute_command(&real_machine, 0, com1);
+	execute_command(&real_machine, 0, com2);
+	execute_command(&real_machine, 0, com3);
 
-	assert(execute_command(&real_machine, com4) == -1);
+	assert(real_machine.cpu.ra == 510);
+	assert(real_machine.cpu.rb == 510);
 
-	execute_command(&real_machine, com5);
-	execute_command(&real_machine, com6);
+	assert(execute_command(&real_machine, 0, com4) == -1);
 
-	assert(real_machine.cpu.ra = 238);
-	assert(real_machine.cpu.rb = 238);
+	execute_command(&real_machine, 0, com5);
+	execute_command(&real_machine, 0, com6);
 
-	execute_command(&real_machine, com7);
+	assert(real_machine.cpu.ra == 238);
+	assert(real_machine.cpu.rb == 238);
+
+	execute_command(&real_machine, 0, com7);
 	assert(real_machine.cpu.ra == 476);
 
-	execute_command(&real_machine, com8);
+	execute_command(&real_machine, 0, com8);
 	assert(real_machine.cpu.ra == 0);
 
-	execute_command(&real_machine, com9);
+	execute_command(&real_machine, 0, com9);
 	assert(real_machine.cpu.ra == 71);
 
-	execute_command(&real_machine, com10);
+	execute_command(&real_machine, 0, com10);
 	assert(real_machine.cpu.ra == 5041);
 
-	execute_command(&real_machine, com11);
+	execute_command(&real_machine, 0, com11);
 	assert(real_machine.cpu.ra == 5041 / 238);
 	assert(real_machine.cpu.rb == 5041 % 238);
 
-	execute_command(&real_machine, com12);
+	execute_command(&real_machine, 0, com12);
 	assert(real_machine.cpu.ra == (21 ^ 43));
 
-	execute_command(&real_machine, com13);
+	execute_command(&real_machine, 0, com13);
 	assert(real_machine.cpu.ra == (62 & 43));
 
-	execute_command(&real_machine, com14);
+	execute_command(&real_machine, 0, com14);
 	assert(real_machine.cpu.ra == ~42);
 
-	execute_command(&real_machine, com15);
-	execute_command(&real_machine, com16);
+	execute_command(&real_machine, 0, com15);
+	execute_command(&real_machine, 0, com16);
 	assert(((real_machine.cpu.sf & 0x0002) >> 1) == 1);
 	assert((real_machine.cpu.sf & 0x0001) == 0);
 
-	execute_command(&real_machine, com8);
-	execute_command(&real_machine, com17);
+	execute_command(&real_machine, 0, com8);
+	execute_command(&real_machine, 0, com17);
 	assert(((real_machine.cpu.sf & 0x0002) >> 1) == 0);
 	assert((real_machine.cpu.sf & 0x0001) == 0);
 
+
+	execute_command(&real_machine, 0, com18);
+	assert((real_machine.vm[0].pc != 0x003a));
+
 	
 	printf("%u\n", real_machine.cpu.ra);
-	printf("%u\n", real_machine.cpu.rb);
-		
+	printf("%u\n", real_machine.cpu.rb);	
+	printf("here\n");
+	
 	return 0;
-}*/
+}
