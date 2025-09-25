@@ -57,7 +57,7 @@ uint16_t translate_to_real_address(Real_machine *real_machine, uint16_t address,
 
 int destroy_real_machine(Real_machine* real_machine);
 
-int xchg(Real_machine* real_machine);
+int xchg(Real_machine* real_machine, uint8_t page_table_index);
 
 void pi_si_reset(Real_machine* real_machine);
 

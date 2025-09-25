@@ -281,7 +281,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			}
 			
 			// translate ra address to a real address
-			real_machine -> cpu.ra = translate_to_real_address(real_machine, real_machine -> cpu.ra, real_machine -> vm[virtual_machine_index].page_table_index);			
+			// real_machine -> cpu.ra = translate_to_real_address(real_machine, real_machine -> cpu.ra, real_machine -> vm[virtual_machine_index].page_table_index);			
 
 			real_machine -> ch_dev.dt = IO_STREAM;
 			real_machine -> ch_dev.st = USER_MEM;
@@ -885,7 +885,8 @@ int remove_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_i
 	return 0;
 }
 
-int xchg(Real_machine* real_machine) {
+// page_table_index is used for pstr to translate address
+int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 	// "Performancas nesvarbu svarbu, svarbu, kad veiktu" - M. Grubliauskis 22/09/2025
 	if(!real_machine) {
 		return -1;
@@ -1019,17 +1020,19 @@ int xchg(Real_machine* real_machine) {
 		uint32_t size = (real_machine -> ch_dev.cb) / MEM_WORD_SIZE;
 		uint8_t rem = (real_machine -> ch_dev.cb) % MEM_WORD_SIZE;
 		uint32_t addr = real_machine -> cpu.ra;
-
+		uint16_t r_addr = translate_to_real_address(real_machine, addr, page_table_index);	
+	
 		if(rem != 0) {
 			++size;
 		}
 
 		uint32_t byte_count = real_machine -> ch_dev.cb;
 		for(uint32_t i = 0; i < size; ++i) {
-			uint32_t word = read_word(&(real_machine -> mem), addr);
+			uint16_t r_addr = translate_to_real_address(real_machine, addr, page_table_index);	
+			uint32_t word = read_word(&(real_machine -> mem), r_addr);
 			addr += MEM_WORD_SIZE;
 			for(uint8_t b = 0; b < MEM_WORD_SIZE && byte_count > 0; ++b) {
-				uint8_t ch = (word >> (8 * (MEM_WORD_SIZE - b))) & 0xff;
+				uint8_t ch = (word >> (8 * (MEM_WORD_SIZE - 1 - b))) & 0xff;
 				putchar(ch);
 				--byte_count;
 			}
