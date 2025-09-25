@@ -28,3 +28,19 @@ uint8_t letter_to_lower(uint8_t ch) {
 
 	return UTIL_BAD_ARG;
 }
+
+
+uint32_t reverse32(uint32_t value) {
+    return ((value >> 24) & 0x000000FF) |
+           ((value >>  8) & 0x0000FF00) |
+           ((value <<  8) & 0x00FF0000) |
+           ((value << 24) & 0xFF000000);
+}
+
+// Reverse endianness of an array of uint32_t
+void reverse_endianness_array(uint32_t *arr, uint32_t length) {
+    for (uint32_t i = 0; i < length; i++) {
+        arr[i] = reverse32(arr[i]);
+    }
+}
+

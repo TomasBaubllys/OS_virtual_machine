@@ -2,6 +2,7 @@
 #define MENU_H_INCLUDED
 
 #include "real_machine.h"
+#include "virtual_machine.h"
 #include "file.h"
 #define MENU_ON 0
 #define ADD_VM 1  
@@ -33,7 +34,7 @@
 #define MSG_QUIT "Quit\n"
 #define MSG_SELECT_OPTION "Select option\n"
 #define MSG_VM_ADDED_SUCCESSFULLY "Virtual machine added successfuly\n"
-#define MSG_VM_COUNT "Cureent virtual machine count: \n"
+#define MSG_VM_COUNT "Current virtual machine count: \n"
 
 void dump_memory(Real_machine* real_machine);
 
@@ -41,20 +42,6 @@ int display_menu();
 
 uint8_t menu(Real_machine* real_machine);
 
-	// MENU
-	// load VM (max 3)
-		// show loaded VMs
-	// unload VM
-		// show loaded VMs
-	// show memory (dump)
-	// load a program
-		// - chose vm
-	// start VM (max 3)
-		// show started VMs
-		// - Run program
-			// - Select from loaded programs
-				// - Run program normal mode
-				// - Run program trace mode
-		// - Unstart VM 
+int select_virtual_machine(Real_machine* real_machine); 
 
 #endif // MENU_H_INCLUDED

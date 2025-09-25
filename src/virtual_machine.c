@@ -106,6 +106,9 @@ int load_program_virtual_machine(Real_machine* real_machine, uint8_t virtual_mac
 		// increment virtual address by MEM_WORD_SIZE
 		virtual_address += MEM_WORD_SIZE;
 	}
+	
+	// reset the pc counter to 0 (beggining o the code)
+	real_machine -> vm[virtual_machine_index].pc = 0;
 
 	return 0;
 }

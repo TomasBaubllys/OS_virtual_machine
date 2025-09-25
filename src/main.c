@@ -7,40 +7,8 @@ int main(int argc, char* argv[]) {
 	Real_machine real_machine;
     	assert(init_real_machine(&real_machine) == 0);
 
-	Virtual_machine vm;
-	init_virtual_machine(&real_machine, &vm);
-
-	assert(add_virtual_machine(&real_machine, &vm) == 0);
-	
-	// test read - print current files found
-	File_entry files[MAX_FILES];
-	uint32_t file_count = read_file_entries(&(real_machine.hd), files);
-	for(uint32_t i = 0; i < file_count; ++i) {
-		printf("name: %s, offset: %x, size: %x\n", files[i].file_name, files[i].offset, files[i].size);
-	}
-
-	uint32_t s = 0;
-	uint32_t* pgr = read_program(&(real_machine.hd), &files[2], &s);
-	
-	load_program_virtual_machine(&real_machine, 0, 0, pgr, s);
-	
 	uint8_t menu_status = MENU_ON;
 
-	/*// test program
-	uint32_t test_program[] = {0x4D4f3044,  // move 13 to ra 0x0
-				0x4c525243, // move ra to rc
-				0x4d4f3134, // move string address to ra
-				0x50535452, // call the interrupt
-				0x53544f50, // stop
-				0x48454c4c, // HELL
-				0x4f20574f, // O WO
-				0x524c4421, // RLD!
-				0x0A525252}; // \n
-
-	load_program_virtual_machine(&real_machine, 0, 0, test_program, 9);
-	*/
-	// fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 3);
-	
 	while(1) {
 		switch(menu_status) {
 			case MENU_ON:
@@ -87,8 +55,8 @@ int main(int argc, char* argv[]) {
 					break;
 				}
 
-				printf("%s", MSG_VM_ADDED_SUCCESSFULLY);
-				printf("%s %d", MSG_VM_COUNT, real_machine.vm_count);
+				printf(MSG_VM_ADDED_SUCCESSFULLY);
+				printf(MSG_VM_COUNT  "%d", real_machine.vm_count);
 				menu_status = MENU_ON;
 				break;
 			default:
