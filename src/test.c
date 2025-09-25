@@ -83,7 +83,8 @@ int test_main(int argc, char* argv[]) {
 	assert(real_machine.cpu.ra == 510);
 	assert(real_machine.cpu.rb == 510);
 
-	assert(execute_command(&real_machine, 0, com4) == -1);
+	execute_command(&real_machine, 0, com4);
+	assert(real_machine.cpu.pi == RM_PI_INVALID_ASSIGNMENT);
 
 	execute_command(&real_machine, 0, com5);
 	execute_command(&real_machine, 0, com6);

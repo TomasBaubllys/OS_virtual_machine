@@ -44,7 +44,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x == 0xff || y == 0xff) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;
 			}
 			
 			real_machine -> cpu.ra = x * 16 + y;
@@ -54,10 +55,12 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		// LRa 
 		// copy RA value to a value
 		case 0x4c52: {	
+			uint8_t valid = 1;
 			uint16_t reg = command & 0x0000ffff;
 			uint8_t reg_nr = get_register_num(reg);
 			if(reg_nr == CPU_UNKNOWN_REGISTER) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;
 			}
 
 			switch (reg_nr){
@@ -71,20 +74,26 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 					real_machine -> cpu.rc = real_machine -> cpu.ra;
 					break;
 				default:
-					// other registers not allowed
-					return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					valid = 0;
+					break;
 			}			
 			
-			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;	
+			if(valid){
+				real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;	
+			}
+
 			break;
 		}
 		// LLa
 		// copy a value to RB value
 		case 0x4c4c:{
+			uint8_t valid = 1;
 			uint16_t reg = command & 0x0000ffff;
 			uint8_t reg_nr = get_register_num(reg);
 			if(reg_nr == CPU_UNKNOWN_REGISTER){
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;
 			}
 
 			switch (reg_nr){
@@ -98,9 +107,13 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 					real_machine -> cpu.rb = real_machine -> cpu.rc;
 					break;
 				default:
-					return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					valid = 0;
+					break;	 	
+				}
+			if(valid){
+				real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			}
-			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// LWxy
@@ -131,6 +144,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			
 			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
 				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
 			}
 			
 			uint16_t vm_addr = x * 16 + y;
@@ -226,7 +240,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x4745: {			
 			uint16_t rest_com = command & 0x0000ffff;
 			if(rest_com != 0x4441) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_OPCODE;
+				break;
 			}
 			
 			real_machine -> ch_dev.dt = RA_REG;
@@ -240,7 +255,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x5055: {
 			uint16_t rest_com = command & 0x0000ffff;
 			if(rest_com != 0x5441) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_OPCODE;
+				break;
 			}
 		
 			real_machine -> ch_dev.dt = IO_STREAM;
@@ -279,9 +295,9 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x4150: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
-			if(x == 0xff || y == 0xff) {
-				return -1;
-			}
+			if(x == 0xff || y == 0xff) {		
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;			}
 			
 			real_machine -> cpu.ra += x * 16 + y;
 			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
@@ -290,10 +306,12 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		// ADa
 		// add a value to RA 
 		case 0x4144:{
+			uint8_t valid = 1;
 			uint16_t reg = command & 0x0000ffff;
 			uint8_t reg_nr = get_register_num(reg);
 			if(reg_nr == CPU_UNKNOWN_REGISTER) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;
 			}
 
 			switch (reg_nr){
@@ -307,20 +325,25 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 					real_machine -> cpu.ra += real_machine -> cpu.rc;
 					break;
 				default:
-					// other registers not allowed
-					return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					valid = 0;
+					break;
 			}			
 			
-			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			if(valid){
+				real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			}
 			break;
 		}
 		// SBa
 		// substract a value to RA 
 		case 0x5342:{
+			uint8_t valid = 1;
 			uint16_t reg = command & 0x0000ffff;
 			uint8_t reg_nr = get_register_num(reg);
 			if(reg_nr == CPU_UNKNOWN_REGISTER) {
-				return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					break;			
 			}
 
 			switch (reg_nr){
@@ -335,10 +358,14 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 					break;
 				default:
 					// other registers not allowed
-					return -1;
-			}			
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					valid = 0;
+					break;			
+				}			
 				
-			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			if(valid){
+				real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			}
 			break;
 		}
 		// MUa
@@ -346,10 +373,12 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		// carry flag
 		// sf 0000011
 		case 0x4D55:{
+			uint8_t valid = 1;
 			uint16_t reg = command & 0x0000ffff;
 			uint8_t reg_nr = get_register_num(reg);
 			if(reg_nr == CPU_UNKNOWN_REGISTER) {
-				return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					break;
 			}
 
 			switch (reg_nr){
@@ -364,43 +393,51 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 					break;
 				default:
 					// other registers not allowed
-					return -1;
-			}			
-			
-			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					valid = 0;
+					break;			
+				}			
+			if(valid){
+				real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			}
 			break;
 		}
 		// DVa
 		// dividexs RA value by a value 
 		case 0x4456:{
+			uint8_t valid = 1;
 			uint16_t reg = command & 0x0000ffff;
 			uint8_t reg_nr = get_register_num(reg);
 			if(reg_nr == CPU_UNKNOWN_REGISTER) {
-				return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					break;
 			}
 
 			switch (reg_nr){
 				case RA:
 					if(real_machine -> cpu.ra == 0){
 						real_machine -> cpu.pi = RM_PI_DIVISION_BY_ZERO;
-						return 0;
+						valid = 0;
+						break;
 					}
 					real_machine -> cpu.ra /= real_machine -> cpu.ra; 
 					
 					break;
 				case RB:
-					if(real_machine -> cpu.rb == RM_PI_DIVISION_BY_ZERO){
-						real_machine -> cpu.pi = 5;
-						return 0;
+					if(real_machine -> cpu.rb == 0){
+						real_machine -> cpu.pi = RM_PI_DIVISION_BY_ZERO;
+						valid = 0;
+						break;
 					}
 					uint32_t temp = real_machine -> cpu.ra;
 					real_machine -> cpu.ra /= real_machine -> cpu.rb;
 					real_machine -> cpu.rb  = temp % real_machine -> cpu.rb;
 					break;
 				case RC:
-					if(real_machine -> cpu.rc == RM_PI_DIVISION_BY_ZERO){
-						real_machine -> cpu.pi = 5;
-						return 0;
+					if(real_machine -> cpu.rc == 0){
+						real_machine -> cpu.pi = RM_PI_DIVISION_BY_ZERO;
+						valid = 0;
+						break;
 					}
 					uint32_t temp1 = real_machine -> cpu.ra;
 					real_machine -> cpu.ra /= real_machine -> cpu.rc;
@@ -408,9 +445,13 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 					break;
 				default:
 					// other registers not allowed
-					return -1;
-			}			
-			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					valid = 0;
+					break;			
+				}	
+			if(valid){
+				real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			}		
 			break;
 		}
 		// CMxy
@@ -419,7 +460,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x == 0xff || y == 0xff) {
-				return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					break;
 			}
 
 			// ZF = 1 CF = 0
@@ -448,7 +490,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t reg_nr = get_register_num(reg);
 
 			if(reg_nr != RB){
-				return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					break;
 			}
 
 
@@ -478,7 +521,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(real_machine -> cpu.rc > 0) {
 				if(x == 0xff || y == 0xff) {
-					return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					break;
 				}
 				
 				--(real_machine -> cpu.rc);
@@ -490,11 +534,13 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		// XRa
 		// a XOR RA
 		case 0x5852:{
+			uint8_t valid = 1;
 			uint16_t reg = command & 0x0000ffff;
 			uint8_t reg_nr = get_register_num(reg);
 
 			if(reg == CPU_UNKNOWN_REGISTER){
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;
 			}
 
 			switch (reg_nr){
@@ -508,20 +554,26 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 					real_machine -> cpu.ra ^= real_machine -> cpu.rc;
 					break;
 				default:
-					return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					valid = 0;
 					break;
 			}
-			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+
+			if(valid){
+				real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			}
 			break;
 		}
 		// ANa
 		// a AND RA
 		case 0x414e:{
+			uint8_t valid = 1;
 			uint16_t reg = command & 0x0000ffff;
 			uint8_t reg_nr = get_register_num(reg);
 			
 			if(reg == CPU_UNKNOWN_REGISTER){
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;
 			}
 
 			switch (reg_nr)
@@ -536,20 +588,27 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 					real_machine -> cpu.ra &= real_machine -> cpu.rb;
 					break;
 				default:
-					return -1;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					valid = 0;
 					break;
+			
 			}
-			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+
+			if(valid){
+				real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			}
 			break;
 		}
 		// NOa
 		// NOT a
 		case 0x4e4f:{
+			uint8_t valid = 1;
 			uint16_t reg = command & 0x0000ffff;
 			uint8_t reg_nr = get_register_num(reg);
 
 			if(reg == CPU_UNKNOWN_REGISTER){
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;
 			}
 
 			switch (reg_nr)
@@ -564,10 +623,14 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 					real_machine -> cpu.rc = ~real_machine -> cpu.rc;
 					break;
 				default:
-					return -1;
-					break;
+					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+					valid = 0;
+					break;					
 			}
-			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+
+			if(valid){
+				real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			}
 			break;
 
 		}
@@ -578,7 +641,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x == 0xff || y == 0xff) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;
 			}
 			
 			real_machine -> vm[virtual_machine_index].pc = x * 16 + y;
@@ -590,7 +654,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x == 0xff || y == 0xff) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;
 			}
 
 			if(((real_machine -> cpu.sf & 0x0002) >> 1) == 1){
@@ -606,7 +671,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x == 0xff || y == 0xff) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;	
 			}
 
 			if(((real_machine -> cpu.sf & 0x0003)) == 0){
@@ -622,7 +688,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x == 0xff || y == 0xff) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;
 			}
 
 			if(((real_machine -> cpu.sf & 0x0001)) == 1){
@@ -638,7 +705,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x == 0xff || y == 0xff) {
-				return -1;
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;	
 			}
 
 			
@@ -655,8 +723,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint16_t x = command & 0x0000ffff;
 
 			if(x != 0x4f50){
-				return -1;
-			}
+				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				break;			}
 			else{
 				real_machine -> cpu.si = RM_SI_STOP;
 			}
@@ -664,8 +732,10 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			break;
 		}
 		default:
-			return -1;
-	}
+			real_machine -> cpu.pi = RM_PI_INVALID_OPCODE;
+			break;
+		}
+
 	
 	return 0;
 }
