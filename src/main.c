@@ -1,5 +1,5 @@
-#include "../include/real_machine.h"
 #include "../include/virtual_machine.h"
+#include "../include/menu.h"
 #include <assert.h>
 
 int main(int argc, char* argv[]) {
@@ -10,6 +10,8 @@ int main(int argc, char* argv[]) {
 	init_virtual_machine(&real_machine, &vm);
 
 	assert(add_virtual_machine(&real_machine, &vm) == 0);
+	
+	uint8_t menu_status = MENU_ON;
 
 	// test program
 	uint32_t test_program[] = {0x4D4f3044,  // move 13 to ra 0x0
@@ -24,30 +26,41 @@ int main(int argc, char* argv[]) {
 
 	load_program_virtual_machine(&real_machine, 0, 0, test_program, 9);
 	
-	fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 3);
+	// fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 3);
 	
-	for(int i = 0; i < 20; ++i) {
-		copy_virtual_machine(&(real_machine), 0);
-		uint32_t command = read_word(&(real_machine.mem), real_machine.cpu.pc);
-		execute_command(&(real_machine), 0, command);
+	while(1) {
+		switch(menu_status) {
+			case MENU_ON:
+				menu_status = menu(&real_machine);
+				break;
+			case RUN_VM:
+				copy_virtual_machine(&(real_machine), 0);
+				uint32_t command = read_word(&(real_machine.mem), real_machine.cpu.pc);
+				execute_command(&(real_machine), 0, command);
 				
-		if(real_machine.cpu.pi + real_machine.cpu.si > 0) {
-			if(real_machine.cpu.si == RM_SI_STOP) {
-				exit(1);
-			}
-			if(real_machine.cpu.si > 0) {
-				if(xchg(&real_machine, real_machine.vm[0].page_table_index) != 0) {
-					// do something
-					// kill the vm
-					// if stop encoutered also kill the vm
-				}
+				if(real_machine.cpu.pi + real_machine.cpu.si > 0) {
+					if(real_machine.cpu.si == RM_SI_STOP) {
+						menu_status = MENU_ON;
+						break;
+					}
+					if(real_machine.cpu.si > 0) {
+						if(xchg(&real_machine, real_machine.vm[0].page_table_index) != 0) {
+						}
 			
-			}
+					}
 		
-		pi_si_reset(&real_machine);
+					pi_si_reset(&real_machine);
+				}
+		
+				write_virtual_machine(&real_machine, 0);	
+    				break;
+			case QUIT:
+				destroy_real_machine(&real_machine);
+				exit(0);
+			default:
+				exit(-1);
 		}
-		write_virtual_machine(&real_machine, 0);	
-    	}		
+	}			
         
 	return 0;
 }
