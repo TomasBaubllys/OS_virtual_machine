@@ -1,5 +1,6 @@
 #include "../include/virtual_machine.h"
 #include "../include/menu.h"
+#include "../include/file.h"
 #include <assert.h>
 
 int main(int argc, char* argv[]) {
@@ -10,6 +11,13 @@ int main(int argc, char* argv[]) {
 	init_virtual_machine(&real_machine, &vm);
 
 	assert(add_virtual_machine(&real_machine, &vm) == 0);
+	
+	// test read - print current files found
+	File_entry files[MAX_FILES];
+	uint32_t file_count = read_file_entries(&(real_machine.hd), files);
+	for(uint32_t i = 0; i < file_count; ++i) {
+		printf("name: %s, offset: %x, size: %x\n", files[i].file_name, files[i].offset, files[i].size);
+	}
 	
 	uint8_t menu_status = MENU_ON;
 

@@ -51,11 +51,11 @@ int init_hard_disk(Hard_disk* hard_disk) {
 	
 		free(zero);
 	}		
-	else if(size != HD_MAX_HARD_DISK_ADDRESS) {
+	/*else if(size != HD_MAX_HARD_DISK_ADDRESS) {
 		fprintf(stderr, HD_CORRUPTION_ERR);
 		fclose(hard_disk -> fptr);
 		return -1;
-	}
+	}*/
 
 	return 0;
 }

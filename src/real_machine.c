@@ -838,7 +838,8 @@ int destroy_real_machine(Real_machine* real_machine) {
 	if(!real_machine) {
 		return -1;
 	}	
-
+	
+	close_hard_disk(&(real_machine -> hd));
 	free(real_machine -> vm);
 	real_machine -> vm = NULL;
 
