@@ -1,7 +1,6 @@
 #ifndef MENU_H_INCLUDED
 #define MENU_H_INCLUDED
 
-<<<<<<< HEAD
 #include "real_machine.h"
 #define MENU_ON 0
 #define ADD_VM 1  

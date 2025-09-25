@@ -23,7 +23,7 @@ uint32_t read_file_entries(Hard_disk* hard_disk, File_entry* files) {
 			if(fread(raw_name, 1, FILE_NAME_SIZE, hard_disk -> fptr) != FILE_NAME_SIZE) {
 				break; // EOF
 			}
-	
+
 			// save the file name
 			memcpy(files[file_count].file_name, raw_name, FILE_NAME_SIZE);
 			files[file_count].file_name[FILE_NAME_SIZE] = '\0';
@@ -41,11 +41,15 @@ uint32_t read_file_entries(Hard_disk* hard_disk, File_entry* files) {
 					if(file_count >= MAX_FILES) {
 						return file_count;
 					}
+					break;
 				}
 				else {
 					fseek(hard_disk -> fptr, -(FILE_MARKER_SIZE - 1), SEEK_CUR);
 				}
 			}
+		}
+		else {
+			fseek(hard_disk -> fptr, -(FILE_MARKER_SIZE - 1), SEEK_CUR);
 		}
 	}
 	
