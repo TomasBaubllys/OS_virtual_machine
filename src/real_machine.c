@@ -136,6 +136,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			
 			real_machine -> ch_dev.of = r_addr;
 			real_machine -> cpu.si = RM_SI_LW;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// SWxy
@@ -156,6 +157,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 	
 			real_machine -> ch_dev.of = r_addr;
 			real_machine -> cpu.si = RM_SI_SW;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// BP
@@ -173,10 +175,13 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			real_machine -> ch_dev.dt = RA_REG;
 			real_machine -> ch_dev.st = SHARED_MEM;
 			real_machine -> cpu.si = RM_SI_BP;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// BG
 		case 0x4247: {
+						
+
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
@@ -190,6 +195,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			real_machine -> ch_dev.dt = SHARED_MEM;
 			real_machine -> ch_dev.st = RA_REG;
 			real_machine -> cpu.si = RM_SI_BP;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		
@@ -203,9 +209,9 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 				break;
 			}
 			
-			uint16_t v_addr = x * 16 + y;
+			real_machine -> ch_dev.of = x * 16 + y;
 			
-			real_machine -> ch_dev.of = translate_to_real_address(real_machine, v_addr, real_machine -> vm[virtual_machine_index].page_table_index);
+			// real_machine -> ch_dev.of = translate_to_real_address(real_machine, v_addr, real_machine -> vm[virtual_machine_index].page_table_index);
 			
 			real_machine -> ch_dev.of = x * 16 + y;
 			real_machine -> ch_dev.cb = real_machine -> cpu.rc;
@@ -213,6 +219,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			real_machine -> ch_dev.dt = USER_MEM;
 			real_machine -> ch_dev.st = DISK_MEM;
 			real_machine -> cpu.si = RM_SI_BP;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE; 
 			break;
 		}	
 	
@@ -226,13 +233,14 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 				break;
 			}
 			
-			uint16_t v_addr = x * 16 + y;
+			real_machine -> ch_dev.of = x * 16 + y;
 			
-			real_machine -> ch_dev.of = translate_to_real_address(real_machine, v_addr, real_machine -> vm[virtual_machine_index].page_table_index);
+			// real_machine -> ch_dev.of = translate_to_real_address(real_machine, v_addr, real_machine -> vm[virtual_machine_index].page_table_index);
 			real_machine -> ch_dev.dt = DISK_MEM;
 			real_machine -> ch_dev.st = USER_MEM;
 			real_machine -> ch_dev.cb = real_machine -> cpu.rc;
 			real_machine -> cpu.si = RM_SI_BP;
+			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 	
@@ -954,15 +962,17 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 		uint32_t count = real_machine -> ch_dev.cb / MEM_WORD_SIZE;
 		uint8_t rem = real_machine -> ch_dev.cb % MEM_WORD_SIZE;
 		uint32_t addr_hd = real_machine -> cpu.ra;
-		uint16_t addr_mem = real_machine -> ch_dev.of; 		
-
+		uint16_t v_addr = real_machine -> ch_dev.of; 		
+		uint16_t r_addr;	
+	
 		for(uint32_t i = 0; i < count; ++i) {
+			r_addr = translate_to_real_address(real_machine, v_addr, page_table_index);
 			uint32_t word = read_word_hard_disk(&(real_machine -> hd), addr_hd);
-			if(write_word(&(real_machine -> mem), addr_mem, word) != 0) {
+			if(write_word(&(real_machine -> mem), r_addr, word) != 0) {
 				return -1;
 			}
 			addr_hd += MEM_WORD_SIZE;
-			addr_mem += MEM_WORD_SIZE;
+			v_addr += MEM_WORD_SIZE;
 		}	
 	
 		if(rem != 0) {
@@ -973,7 +983,7 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 				++addr_hd;
 			}
 		
-			if(write_word(&(real_machine -> mem), addr_mem, word) != 0) {
+			if(write_word(&(real_machine -> mem), r_addr, word) != 0) {
 				return -1;
 			}
 		}
@@ -986,19 +996,21 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 		uint32_t count = real_machine -> ch_dev.cb / MEM_WORD_SIZE;
 		uint8_t rem = real_machine -> ch_dev.cb % MEM_WORD_SIZE;
 		uint32_t addr_hd = real_machine -> cpu.ra;
-		uint16_t addr_mem = real_machine -> ch_dev.of;	
+		uint16_t v_addr = real_machine -> ch_dev.of;	
+		uint16_t r_addr;
 	
 		for(uint32_t i = 0; i < count; ++i) {
-			uint32_t word = read_word(&(real_machine -> mem), addr_mem);
+			uint16_t r_addr = translate_to_real_address(real_machine, v_addr, page_table_index);
+			uint32_t word = read_word(&(real_machine -> mem), r_addr);
 			if(write_word_hard_disk(&(real_machine -> hd), addr_hd, word) != 0) {
 				return -1;
 			}
 			addr_hd += MEM_WORD_SIZE;
-			addr_mem += MEM_WORD_SIZE;
+			v_addr += MEM_WORD_SIZE;
 		}
 	
 		if(rem != 0) {
-			uint32_t word = read_word(&(real_machine -> mem), addr_mem);
+			uint32_t word = read_word(&(real_machine -> mem), r_addr);
 			for(uint8_t i = 0; i < rem; ++i) {
 				if(write_byte_hard_disk(&(real_machine -> hd), addr_hd, (word >> (MEM_WORD_SIZE - i)) & 0xff) != 0) {
 					return -1;
