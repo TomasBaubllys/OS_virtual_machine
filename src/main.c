@@ -18,10 +18,15 @@ int main(int argc, char* argv[]) {
 	for(uint32_t i = 0; i < file_count; ++i) {
 		printf("name: %s, offset: %x, size: %x\n", files[i].file_name, files[i].offset, files[i].size);
 	}
+
+	uint32_t s = 0;
+	uint32_t* pgr = read_program(&(real_machine.hd), &files[2], &s);
+	
+	load_program_virtual_machine(&real_machine, 0, 0, pgr, s);
 	
 	uint8_t menu_status = MENU_ON;
 
-	// test program
+	/*// test program
 	uint32_t test_program[] = {0x4D4f3044,  // move 13 to ra 0x0
 				0x4c525243, // move ra to rc
 				0x4d4f3134, // move string address to ra
@@ -33,7 +38,7 @@ int main(int argc, char* argv[]) {
 				0x0A525252}; // \n
 
 	load_program_virtual_machine(&real_machine, 0, 0, test_program, 9);
-	
+	*/
 	// fprint_memory(stdout, &(real_machine.mem), 0, MEM_MAX_ADDRESS - 1, 3);
 	
 	while(1) {

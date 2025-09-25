@@ -68,3 +68,31 @@ void print_files(Hard_disk* hard_disk){
 	return;
 }
 
+uint32_t* read_program(Hard_disk* hard_disk, File_entry* file_entry, uint32_t* return_size) {
+	if(!hard_disk || !file_entry || !return_size) {
+		return NULL;
+	}
+	
+	if(!(hard_disk -> fptr)) {
+		return NULL;
+	}
+
+	if((file_entry -> size % MEM_WORD_SIZE) != 0) {
+		return NULL;
+	}
+
+	fseek(hard_disk -> fptr, file_entry -> offset, SEEK_SET);
+	*return_size = (file_entry -> size) / MEM_WORD_SIZE;
+	
+	uint32_t* program = malloc(MEM_WORD_SIZE * (*return_size)); 
+	if(!program) {
+		return NULL;
+	}
+
+	if(fread(program, MEM_WORD_SIZE, *return_size, hard_disk -> fptr) != *return_size) {
+		free(program);
+		return NULL;
+	}
+
+	return program;
+}
