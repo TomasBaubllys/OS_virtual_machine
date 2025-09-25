@@ -25,7 +25,7 @@ int write_byte_hard_disk(Hard_disk* hard_disk, uint16_t address, uint8_t value);
 
 int write_word_hard_disk(Hard_disk* hard_disk, uint16_t address, uint32_t value);
 
-int write_stream_hard_disk(); // not impemented yet
+int write_stream_hard_disk(); // not implemented yet
 
 uint32_t read_word_hard_disk(Hard_disk* hard_disk, uint16_t address);
 

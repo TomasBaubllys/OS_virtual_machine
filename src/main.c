@@ -52,8 +52,10 @@ int main(int argc, char* argv[]) {
 						break;
 					}
 					if(real_machine.cpu.si > 0) {
+						real_machine.cpu.mr = 1;
 						if(xchg(&real_machine, real_machine.vm[0].page_table_index) != 0) {
 						}
+						real_machine.cpu.mr = 0;
 			
 					}
 		

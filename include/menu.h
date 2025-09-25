@@ -2,6 +2,7 @@
 #define MENU_H_INCLUDED
 
 #include "real_machine.h"
+#include "file.h"
 #define MENU_ON 0
 #define ADD_VM 1  
 #define LOAD_PROGRAM_TO_VM 2 
@@ -16,9 +17,9 @@
 
 #define MENU_MEM_DUMP_COL_COUNT 16
 
-#define MSG_MENU "MENU:\n"
-#define MSG_LOAD_VM "Load a virtual machine\n"
-#define MSG__UNLOAD_VM "Unload a virtual machine\n"
+#define MSG_MENU "\n VIRTUAL MACHINE MENU \n"
+#define MSG_ADD_VM "Add a virtual machine\n"
+#define MSG__REMOVE_VM "Remove virtual machine\n"
 #define MSG_SHOW_MEMORY "Show memory\n"
 #define MSG_LOAD_PROGRAM "Load a program\n"
 #define MSG_CHOOSE_VM "Please choose a virtual machine:\n"
@@ -29,6 +30,8 @@
 #define MSG_STOP_VMI "Stop virtual machine\n"
 #define MSG_RUN_PRGRM_NORMAL "Run program in normal mode\n"
 #define MSG_RUN_PRGRM_TRACE "Run program in trace mode\n"
+#define MSG_QUIT "Quit\n"
+#define MSG_SELECT_OPTION "Select option\n"
 
 void dump_memory(Real_machine* real_machine);
 

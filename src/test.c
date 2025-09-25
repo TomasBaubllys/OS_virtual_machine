@@ -149,6 +149,24 @@ int test_main(int argc, char* argv[]) {
 	assert(real_machine.cpu.si == RM_SI_STOP);
 
 	
+	// MENU
+	// load VM (max 3)
+		// show loaded VMs
+	// unload VM
+		// show loaded VMs
+	// show memory (dump)
+	// load a program
+		// - chose vm
+	// start VM (max 3)
+		// show started VMs
+		// - Run program
+			// - Select from loaded programs
+				// - Run program normal mode
+				// - Run program trace mode
+		// - Unstart VM 
+
+	
+	
 	printf("%u\n", real_machine.cpu.ra);
 	printf("%u\n", real_machine.cpu.rb);	
 	printf("here\n");

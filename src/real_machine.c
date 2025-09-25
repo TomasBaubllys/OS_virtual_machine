@@ -162,6 +162,12 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		}
 		// BP
 		case 0x4250: {
+			if(real_machine -> cpu.ss = 1){
+				break;
+			}
+			else{
+				real_machine -> cpu.ss = 1;
+			}
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
@@ -179,9 +185,13 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			break;
 		}
 		// BG
-		case 0x4247: {
-						
-
+		case 0x4247: {		
+			if(real_machine -> cpu.ss = 1){
+				break;
+			}
+			else{
+				real_machine -> cpu.ss = 1;
+			}
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
@@ -201,6 +211,10 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		
 		// HD
 		case 0x4844: {
+			if(real_machine -> cpu.mr != CPU_SUPERVISOR_MODE){
+				break;
+			}
+
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
@@ -225,6 +239,10 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 	
 		// HR
 		case 0x4852: {
+			if(real_machine -> cpu.mr != CPU_SUPERVISOR_MODE){
+				break;
+			}
+			
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
@@ -925,6 +943,7 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 		
 		real_machine -> cpu.ra = read_word(&(real_machine -> mem), real_machine -> ch_dev.of + MEM_BEG_SHARED_MEM);	
 
+		real_machine -> cpu.ss = 0;
 		return 0;
 	}
 	
@@ -938,7 +957,14 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 			return -1;
 		}
 
-		return write_word(&(real_machine -> mem), real_machine -> ch_dev.of + MEM_BEG_SHARED_MEM, real_machine -> cpu.ra);
+		if(write_word(&(real_machine -> mem), real_machine -> ch_dev.of + MEM_BEG_SHARED_MEM, real_machine -> cpu.ra) == 0){
+			real_machine -> cpu.ss = 0;
+			return 0;
+		}
+		else{
+			real_machine -> cpu.ss = 0;
+			return -1;
+		}
 
 	}
 	

@@ -19,4 +19,6 @@ typedef struct File_entry {
 // reads all the available files returns the amount of files found
 uint32_t read_file_entries(Hard_disk* hard_disk, File_entry* files);
 
+void print_files(Hard_disk* Hard_disk);
+
 #endif // FILE_H_INCLUDED

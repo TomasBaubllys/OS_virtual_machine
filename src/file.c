@@ -55,3 +55,16 @@ uint32_t read_file_entries(Hard_disk* hard_disk, File_entry* files) {
 	
 	return file_count;
 }
+
+void print_files(Hard_disk* hard_disk){
+	printf("here\n");
+	File_entry files[MAX_FILES];
+	uint32_t file_count = read_file_entries(hard_disk, files);
+	printf("%d\n", file_count);
+	for(uint32_t i = 0; i < file_count; ++i) {
+		printf("name: %s, offset: %x, size: %x\n", files[i].file_name, files[i].offset, files[i].size);
+	}
+
+	return;
+}
+

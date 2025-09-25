@@ -16,6 +16,8 @@ uint8_t menu(Real_machine* real_machine) {
 		case ADD_VM:
 			break;
 		case LOAD_PROGRAM_TO_VM:
+		
+			print_files(&(real_machine->hd));
 			break;
 		case RUN_VM:
 			return RUN_VM;
@@ -43,14 +45,14 @@ void dump_memory(Real_machine* real_machine) {
 int display_menu(void) {
     int choice = 0;
 
-    printf("\n==== Virtual Machine Menu ====\n");
-    printf("1) Add Virtual Machine\n");
-    printf("2) Load Program into VM\n");
-    printf("3) Run Virtual Machine\n");
-    printf("4) Dump Memory\n");
-    printf("5) Quit\n");
+    printf("%s", MSG_MENU);
+    printf("1) %s", MSG_ADD_VM);
+    printf("2) %s", MSG_LOAD_PROGRAM);;
+    printf("3) %s", MSG_START_VM);
+    printf("4) %s", MSG_SHOW_MEMORY);
+    printf("5) %s", MSG_QUIT);
     printf("==============================\n");
-    printf("Select option: ");
+    printf("%s", MSG_SELECT_OPTION);
 
     if (scanf("%d", &choice) != 1) {
         while (getchar() != '\n'); 
