@@ -43,8 +43,9 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x4d4f: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
-			if(x == 0xff || y == 0xff) {
-				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+	
+			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
 				break;
 			}
 			
@@ -295,9 +296,10 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x4150: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
-			if(x == 0xff || y == 0xff) {		
-				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
-				break;			}
+			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
+			}
 			
 			real_machine -> cpu.ra += x * 16 + y;
 			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
@@ -459,9 +461,9 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x434d:{
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
-			if(x == 0xff || y == 0xff) {
-					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
-					break;
+			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
 			}
 
 			// ZF = 1 CF = 0
@@ -520,8 +522,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(real_machine -> cpu.rc > 0) {
-				if(x == 0xff || y == 0xff) {
-					real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+				if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+					real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
 					break;
 				}
 				
@@ -640,8 +642,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x4a55: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
-			if(x == 0xff || y == 0xff) {
-				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
 				break;
 			}
 			
@@ -653,8 +655,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x4a5a:{
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
-			if(x == 0xff || y == 0xff) {
-				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
 				break;
 			}
 
@@ -670,9 +672,9 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x4a41: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
-			if(x == 0xff || y == 0xff) {
-				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
-				break;	
+			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
 			}
 
 			if(((real_machine -> cpu.sf & 0x0003)) == 0){
@@ -687,8 +689,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x4a42: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
-			if(x == 0xff || y == 0xff) {
-				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
+			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
 				break;
 			}
 
@@ -704,13 +706,11 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		case 0x4a4e: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
-			if(x == 0xff || y == 0xff) {
-				real_machine -> cpu.pi = RM_PI_INVALID_ASSIGNMENT;
-				break;	
+			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				break;
 			}
-
-			
-
+		
 			if(((real_machine -> cpu.sf & 0x0002)) == 0){
 				real_machine -> vm[virtual_machine_index].pc = x * 16 + y;
 			}
