@@ -19,7 +19,7 @@
 
 #define MSG_MENU "\n VIRTUAL MACHINE MENU \n"
 #define MSG_ADD_VM "Add a virtual machine\n"
-#define MSG__REMOVE_VM "Remove virtual machine\n"
+#define MSG_REMOVE_VM "Remove virtual machine\n"
 #define MSG_SHOW_MEMORY "Show memory\n"
 #define MSG_LOAD_PROGRAM "Load a program\n"
 #define MSG_CHOOSE_VM "Please choose a virtual machine:\n"
@@ -32,6 +32,8 @@
 #define MSG_RUN_PRGRM_TRACE "Run program in trace mode\n"
 #define MSG_QUIT "Quit\n"
 #define MSG_SELECT_OPTION "Select option\n"
+#define MSG_VM_ADDED_SUCCESSFULLY "Virtual machine added successfuly\n"
+#define MSG_VM_COUNT "Cureent virtual machine count: \n"
 
 void dump_memory(Real_machine* real_machine);
 

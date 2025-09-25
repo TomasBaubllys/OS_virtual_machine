@@ -72,6 +72,25 @@ int main(int argc, char* argv[]) {
 			case QUIT:
 				destroy_real_machine(&real_machine);
 				exit(0);
+			case ADD_VM:
+				Virtual_machine virtual_machine;
+
+				if(init_virtual_machine(&real_machine, &virtual_machine) == -1){
+					printf("%s", RM_MSG_VM_LIMIT_REACHED);
+					menu_status = MENU_ON;
+					break;
+				}
+
+				if(add_virtual_machine(&real_machine, &virtual_machine) == -1){
+					printf("%s", RM_MSG_VM_LIMIT_REACHED);
+					menu_status = MENU_ON;
+					break;
+				}
+
+				printf("%s", MSG_VM_ADDED_SUCCESSFULLY);
+				printf("%s %d", MSG_VM_COUNT, real_machine.vm_count);
+				menu_status = MENU_ON;
+				break;
 			default:
 				exit(-1);
 		}

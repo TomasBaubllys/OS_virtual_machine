@@ -14,10 +14,10 @@ uint8_t menu(Real_machine* real_machine) {
 
 	switch(choice) {
 		case ADD_VM:
+			return ADD_VM;
 			break;
 		case LOAD_PROGRAM_TO_VM:
-		
-			print_files(&(real_machine->hd));
+			File_entry file_choice = print_files(&(real_machine->hd));
 			break;
 		case RUN_VM:
 			return RUN_VM;
@@ -58,6 +58,9 @@ int display_menu(void) {
         while (getchar() != '\n'); 
         choice = 0;
     }
+
+
+
 
     return choice;
 }

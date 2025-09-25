@@ -27,6 +27,7 @@
 #define RM_PI_OVERFLOW 4
 #define RM_PI_DIVISION_BY_ZERO 5
 
+#define RM_MSG_VM_LIMIT_REACHED "Maximum VM limit exceeded/n"
 
 typedef struct Virtual_machine Virtual_machine;
 

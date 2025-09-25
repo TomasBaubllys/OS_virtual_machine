@@ -56,16 +56,28 @@ uint32_t read_file_entries(Hard_disk* hard_disk, File_entry* files) {
 	return file_count;
 }
 
-void print_files(Hard_disk* hard_disk){
-	printf("here\n");
+File_entry print_files(Hard_disk* hard_disk){
 	File_entry files[MAX_FILES];
 	uint32_t file_count = read_file_entries(hard_disk, files);
-	printf("%d\n", file_count);
-	for(uint32_t i = 0; i < file_count; ++i) {
-		printf("name: %s, offset: %x, size: %x\n", files[i].file_name, files[i].offset, files[i].size);
-	}
+	int choice  = 0;
 
-	return;
+
+	do{
+		printf("%s", MSG_DSPL_FILES);
+		for(uint32_t i = 0; i < file_count; ++i) {
+			printf("%d. name: %s, offset: %x, size: %x\n", i + 1, files[i].file_name, files[i].offset, files[i].size);
+		}
+
+		printf("%s", MSG_SELECT_FILE);
+
+		if (scanf("%d", &choice) != 1) {
+			while (getchar() != '\n'); 
+			choice = 0;
+		}
+	} while(choice < 1 || choice > file_count);
+
+	return files[choice - 1];
+
 }
 
 uint32_t* read_program(Hard_disk* hard_disk, File_entry* file_entry, uint32_t* return_size) {
