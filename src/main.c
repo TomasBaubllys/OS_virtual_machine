@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 					
 					if(stepping == 1) {
 						printf("Command: %x\n", command);
-						printf("PC: %x\nPI: %x\nSI: %x\nTR: %x\nTI: %x\nSF: %x\n MR: %x\nSS: %x\nRA: %x\nRB: %x\nRC: %x\n", 
+						printf("PC: %x\nPI: %x\nSI: %x\nTR: %x\nTI: %x\nSF: %x\nMR: %x\nSS: %x\nRA: %x\nRB: %x\nRC: %x\n", 
 							real_machine.cpu.pc, real_machine.cpu.si, real_machine.cpu.tr, real_machine.cpu.ti, real_machine.cpu.sf,
 							real_machine.cpu.mr, real_machine.cpu.ss, real_machine.cpu.ra, real_machine.cpu.rb, real_machine.cpu.rc);
 						printf("Press any key to continue...\n");
@@ -46,14 +46,16 @@ int main(int argc, char* argv[]) {
 						if(real_machine.cpu.si == RM_SI_STOP) {
 							pi_si_reset(&real_machine);
 							running = 0;
+							real_machine.cpu.mr = CPU_USER_MODE;
 							menu_status = MENU_ON;
 							break;
 						}
+
 						if(real_machine.cpu.si > 0) {
-							real_machine.cpu.mr = 1;
+							real_machine.cpu.mr = CPU_SUPERVISOR_MODE;
 							if(xchg(&real_machine, real_machine.vm[vm_index].page_table_index) != 0) {
 							}
-							real_machine.cpu.mr = 0;
+							real_machine.cpu.mr = CPU_USER_MODE;
 			
 						}
 		

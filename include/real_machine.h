@@ -18,7 +18,7 @@
 #define RM_SI_BP 6
 #define RM_SI_BG 7
 #define RM_SI_HD 8
-#define RM_SI_HR 9
+#define RM_SI_HP 9
 #define RM_SI_STOP 10
 
 #define RM_PI_INVALID_ADDRESS 1

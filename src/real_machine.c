@@ -211,10 +211,6 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		
 		// HD
 		case 0x4844: {
-			if(real_machine -> cpu.mr != CPU_SUPERVISOR_MODE){
-				break;
-			}
-
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
@@ -224,25 +220,17 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			}
 			
 			real_machine -> ch_dev.of = x * 16 + y;
-			
-			// real_machine -> ch_dev.of = translate_to_real_address(real_machine, v_addr, real_machine -> vm[virtual_machine_index].page_table_index);
-			
-			real_machine -> ch_dev.of = x * 16 + y;
 			real_machine -> ch_dev.cb = real_machine -> cpu.rc;
 
 			real_machine -> ch_dev.dt = USER_MEM;
 			real_machine -> ch_dev.st = DISK_MEM;
-			real_machine -> cpu.si = RM_SI_BP;
+			real_machine -> cpu.si = RM_SI_HD;
 			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE; 
 			break;
 		}	
 	
-		// HR
-		case 0x4852: {
-			if(real_machine -> cpu.mr != CPU_SUPERVISOR_MODE){
-				break;
-			}
-			
+		// HP
+		case 0x4850: {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			
@@ -253,11 +241,10 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			
 			real_machine -> ch_dev.of = x * 16 + y;
 			
-			// real_machine -> ch_dev.of = translate_to_real_address(real_machine, v_addr, real_machine -> vm[virtual_machine_index].page_table_index);
 			real_machine -> ch_dev.dt = DISK_MEM;
 			real_machine -> ch_dev.st = USER_MEM;
 			real_machine -> ch_dev.cb = real_machine -> cpu.rc;
-			real_machine -> cpu.si = RM_SI_BP;
+			real_machine -> cpu.si = RM_SI_HP;
 			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
@@ -997,7 +984,16 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 	
 		for(uint32_t i = 0; i < count; ++i) {
 			r_addr = translate_to_real_address(real_machine, v_addr, page_table_index);
-			uint32_t word = read_word_hard_disk(&(real_machine -> hd), addr_hd);
+			uint32_t word = read_word_hard_disk(&(real_machine -> hd), addr_hd);		
+			// reverse endianess
+			int temp = 1;
+			if(*(char*)&temp == 1) {
+			word = ((word >> 24) & 0x000000FF) | 
+      				((word >>  8) & 0x0000FF00) |
+       				((word <<  8) & 0x00FF0000) |
+       				((word << 24) & 0xFF000000);
+			}
+
 			if(write_word(&(real_machine -> mem), r_addr, word) != 0) {
 				return -1;
 			}
@@ -1009,7 +1005,7 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 			uint32_t word = 0;
 			
 			for(uint8_t i = 0; i < rem; ++i) {
-				word |= (read_byte_hard_disk(&(real_machine -> hd), addr_hd) << (8 * i));
+				word |= (read_byte_hard_disk(&(real_machine -> hd), addr_hd) << (8 * (MEM_WORD_SIZE - 1 - i)));
 				++addr_hd;
 			}
 		
@@ -1021,8 +1017,8 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 		return 0;
 	}
 	
-	// HDxy OF must contain the xy value
-	if(real_machine -> ch_dev.dt == USER_MEM && real_machine -> ch_dev.st == DISK_MEM) {
+	// HPxy OF must contain the xy value
+	if(real_machine -> ch_dev.dt == DISK_MEM && real_machine -> ch_dev.st == USER_MEM) {
 		uint32_t count = real_machine -> ch_dev.cb / MEM_WORD_SIZE;
 		uint8_t rem = real_machine -> ch_dev.cb % MEM_WORD_SIZE;
 		uint32_t addr_hd = real_machine -> cpu.ra;
@@ -1032,6 +1028,15 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 		for(uint32_t i = 0; i < count; ++i) {
 			uint16_t r_addr = translate_to_real_address(real_machine, v_addr, page_table_index);
 			uint32_t word = read_word(&(real_machine -> mem), r_addr);
+			
+			int temp = 1;
+			if(*(char*)&temp == 1) {
+			word = ((word >> 24) & 0x000000FF) | 
+      				((word >>  8) & 0x0000FF00) |
+       				((word <<  8) & 0x00FF0000) |
+       				((word << 24) & 0xFF000000);
+			}
+			
 			if(write_word_hard_disk(&(real_machine -> hd), addr_hd, word) != 0) {
 				return -1;
 			}
@@ -1101,7 +1106,7 @@ uint8_t check(Real_machine* real_machine) {
 	}
 
 	if(real_machine -> cpu.ti > 10 || real_machine -> cpu.ti == 0) {
-		real_machine -> cpu.ti = 0;
+		real_machine -> cpu.ti = CPU_DEFAULT_TIMER_VALUE;
 	} 
 
 	return 0;
