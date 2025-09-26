@@ -27,21 +27,25 @@ uint8_t menu(Real_machine* real_machine) {
 			uint32_t size = 0;
 			uint32_t* program = read_program(&(real_machine -> hd), &file_choice, &size);
 			if(!program) {
-				// print a message
+				
+				printf(MSG_FAILED_TO_READ_PROGRAM);
 				return MENU_ON;
 		
 			}
 			
 			// reverse the endianess :((
-			reverse_endianness_array(program, size);	
-			
+			int temp = 1;
+			if(*(char*)&temp == 1) {
+				reverse_endianness_array(program, size);	
+			}
+
 			if(load_program_virtual_machine(real_machine, virtual_machine_index, VM_DEFAULT_PC_VAL, program, size) != 0) {
-				// print a message failed to load code
+				printf(MSG_FAILED_TO_LOAD_PROGRAM);
 				free(program);
 				return MENU_ON;
 			}
 			
-			// print succes msg
+			printf(MSG_PROGRAM_LOAD_SUCCESS);
 			free(program);				
 			return MENU_ON;					
 			break;

@@ -46,9 +46,11 @@ int main(int argc, char* argv[]) {
 						}
 		
 						pi_si_reset(&real_machine);
+						real_machine.cpu.ti -= 3;
 					}
-		
-					write_virtual_machine(&real_machine, vm_index);	
+					--real_machine.cpu.ti;
+					write_virtual_machine(&real_machine, vm_index);
+					check(&real_machine);						
     					break;
 				}
 			case QUIT:

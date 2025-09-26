@@ -62,4 +62,6 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index);
 
 void pi_si_reset(Real_machine* real_machine);
 
+uint8_t check(Real_machine* real_machine);
+
 #endif // REAL_MACHINE_H_INCLUDED

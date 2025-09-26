@@ -1094,3 +1094,15 @@ void pi_si_reset(Real_machine* real_machine) {
 	real_machine -> cpu.si = 0;
 	real_machine -> cpu.pi = 0;
 }
+
+uint8_t check(Real_machine* real_machine) {
+	if(!real_machine) {
+		return 1;
+	}
+
+	if(real_machine -> cpu.ti > 10 || real_machine -> cpu.ti == 0) {
+		real_machine -> cpu.ti = 0;
+	} 
+
+	return 0;
+}

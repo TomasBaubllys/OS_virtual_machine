@@ -18,7 +18,11 @@
 
 #define MENU_MEM_DUMP_COL_COUNT 16
 
-#define MSG_MENU "\n VIRTUAL MACHINE MENU \n"
+// #define MSG_MENU "\n VIRTUAL MACHINE MENU \n"
+#define MSG_MENU "\n\033[31m V\033[33m I\033[32m R\033[36m T\033[34m U\033[35m A\033[31m L\033[33m  \
+\033[32m M\033[36m A\033[34m C\033[35m H\033[31m I\033[33m N\033[32m E\033[36m  \
+\033[34m M\033[35m E\033[31m N\033[33m U\033[0m \n"
+
 #define MSG_ADD_VM "Add a virtual machine\n"
 #define MSG_REMOVE_VM "Remove virtual machine\n"
 #define MSG_SHOW_MEMORY "Show memory\n"
@@ -33,8 +37,11 @@
 #define MSG_RUN_PRGRM_TRACE "Run program in trace mode\n"
 #define MSG_QUIT "Quit\n"
 #define MSG_SELECT_OPTION "Select option\n"
-#define MSG_VM_ADDED_SUCCESSFULLY "Virtual machine added successfuly\n"
+#define MSG_VM_ADDED_SUCCESSFULLY "Virtual machine added successfully\n"
 #define MSG_VM_COUNT "Current virtual machine count: \n"
+#define MSG_FAILED_TO_LOAD_PROGRAM "Failed to load the file to the virtual machine\n"
+#define MSG_FAILED_TO_READ_PROGRAM "Failed to read the file from the hard disk\n"
+#define MSG_PROGRAM_LOAD_SUCCESS "\033[0;32mProgram successfully loaded\033[0m\n"
 
 void dump_memory(Real_machine* real_machine);
 
