@@ -26,7 +26,7 @@ This project implements a simplified model of a **real** and **virtual machine**
   - I/O commands  
 
 ### Execution Model
-- Ability to **load and run task files** with a defined structure (`#LOS ... #BYE`)  
+- Ability to **load and run task files** with a defined structure (`#LOS [filename(8 bytes)]... #BYE`)  
 
 ## How to Run
 - to run the program you can use one of the following commands:
