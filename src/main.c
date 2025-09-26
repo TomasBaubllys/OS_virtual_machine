@@ -57,9 +57,10 @@ int main(int argc, char* argv[]) {
 					execute_command(&(real_machine), vm_index, command);
 					
 					if(stepping == 1) {
-						printf("Command: %x\n", command);
+						uint32_t next_comm_addr = translate_to_real_address(&real_machine, real_machine.vm[vm_index].pc, real_machine.vm[vm_index].page_table_index);
+						printf("Next command: %x\n", read_word(&(real_machine.mem), next_comm_addr));
 						printf("PC: %x\nPI: %x\nSI: %x\nTR: %x\nTI: %x\nSF: %x\nMR: %x\nSS: %x\nRA: %x\nRB: %x\nRC: %x\n", 
-							real_machine.cpu.pc, real_machine.cpu.si, real_machine.cpu.tr, real_machine.cpu.ti, real_machine.cpu.sf,
+							real_machine.cpu.pc, real_machine.cpu.pi, real_machine.cpu.si, real_machine.cpu.tr, real_machine.cpu.ti, real_machine.cpu.sf,
 							real_machine.cpu.mr, real_machine.cpu.ss, real_machine.cpu.ra, real_machine.cpu.rb, real_machine.cpu.rc);
 						printf(MSG_ANY_KEY);
 						getchar();

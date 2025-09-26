@@ -13,7 +13,7 @@
 #define QUIT 6
 
 
-#define MAX_CHOICE 5
+#define MAX_CHOICE 6
 
 #define MENU_NULL_REAL_MACHINE_ERR "Real machine is null, exiting..."
 #define MENU_NULL_REAL_MACHINE_EXIT_CODE -1
