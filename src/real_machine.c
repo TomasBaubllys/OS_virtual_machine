@@ -1008,6 +1008,7 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 				int temp = 1;
 				if(*(char*)&temp == 1) {
 					word |= (read_byte_hard_disk(&(real_machine -> hd), addr_hd) << (8 * (MEM_WORD_SIZE - 1 - i)));
+				}
 				else {
 					word |= (read_byte_hard_disk(&(real_machine -> hd), addr_hd) << (8 * i));
 				}
