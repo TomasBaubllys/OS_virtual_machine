@@ -9,7 +9,9 @@ int main(int argc, char* argv[]) {
 	uint8_t menu_status = MENU_ON;
 	uint8_t running = 0;
 	int vm_index = 0;
-
+	
+	uint8_t stepping = 0;
+	
 	while(1) {
 		switch(menu_status) {
 			case MENU_ON:
@@ -29,7 +31,17 @@ int main(int argc, char* argv[]) {
 					copy_virtual_machine(&(real_machine), vm_index);
 					uint32_t command = read_word(&(real_machine.mem), real_machine.cpu.pc);
 					execute_command(&(real_machine), vm_index, command);
-				
+					
+					if(stepping == 1) {
+						printf("Command: %x\n", command);
+						printf("PC: %x\nPI: %x\nSI: %x\nTR: %x\nTI: %x\nSF: %x\n MR: %x\nSS: %x\nRA: %x\nRB: %x\nRC: %x\n", 
+							real_machine.cpu.pc, real_machine.cpu.si, real_machine.cpu.tr, real_machine.cpu.ti, real_machine.cpu.sf,
+							real_machine.cpu.mr, real_machine.cpu.ss, real_machine.cpu.ra, real_machine.cpu.rb, real_machine.cpu.rc);
+						printf("Press any key to continue...\n");
+						getchar();
+					}
+					
+					--real_machine.cpu.ti;
 					if(real_machine.cpu.pi + real_machine.cpu.si > 0) {
 						if(real_machine.cpu.si == RM_SI_STOP) {
 							pi_si_reset(&real_machine);
@@ -48,7 +60,7 @@ int main(int argc, char* argv[]) {
 						pi_si_reset(&real_machine);
 						real_machine.cpu.ti -= 3;
 					}
-					--real_machine.cpu.ti;
+					
 					write_virtual_machine(&real_machine, vm_index);
 					check(&real_machine);						
     					break;
