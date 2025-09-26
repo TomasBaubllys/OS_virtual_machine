@@ -36,4 +36,4 @@ This project implements a simplified model of a **real** and **virtual machine**
   2. ```bash
       bash run.sh
 ## Documentation
-[Documentation in lithuanian](Documentation/lithuanian.pdf)
+[Documentation in lithuanian](Documentation_lithuanian.pdf)
