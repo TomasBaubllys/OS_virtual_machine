@@ -162,7 +162,7 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 		}
 		// BP
 		case 0x4250: {
-			if(real_machine -> cpu.ss = 1){
+			if(real_machine -> cpu.ss == 1){
 				break;
 			}
 			else{
@@ -178,15 +178,15 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			
 			real_machine -> ch_dev.of = x * 16 + y;
 
-			real_machine -> ch_dev.dt = RA_REG;
-			real_machine -> ch_dev.st = SHARED_MEM;
+			real_machine -> ch_dev.st = RA_REG;
+			real_machine -> ch_dev.dt = SHARED_MEM;
 			real_machine -> cpu.si = RM_SI_BP;
 			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
 		}
 		// BG
 		case 0x4247: {		
-			if(real_machine -> cpu.ss = 1){
+			if(real_machine -> cpu.ss == 1){
 				break;
 			}
 			else{
@@ -202,8 +202,8 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 			
 			real_machine -> ch_dev.of = x * 16 + y;
 
-			real_machine -> ch_dev.dt = SHARED_MEM;
-			real_machine -> ch_dev.st = RA_REG;
+			real_machine -> ch_dev.st = SHARED_MEM;
+			real_machine -> ch_dev.dt = RA_REG;
 			real_machine -> cpu.si = RM_SI_BP;
 			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			break;
@@ -555,6 +555,9 @@ int execute_command(Real_machine* real_machine, uint8_t virtual_machine_index, u
 				
 				--(real_machine -> cpu.rc);
 				(real_machine -> vm[virtual_machine_index].pc) = x * 16 + y; 
+			}
+			else {
+				real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
 			}
 			break;
 		}
