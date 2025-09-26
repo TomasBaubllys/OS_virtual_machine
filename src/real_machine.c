@@ -1005,7 +1005,12 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 			uint32_t word = 0;
 			
 			for(uint8_t i = 0; i < rem; ++i) {
-				word |= (read_byte_hard_disk(&(real_machine -> hd), addr_hd) << (8 * (MEM_WORD_SIZE - 1 - i)));
+				int temp = 1;
+				if(*(char*)&temp == 1) {
+					word |= (read_byte_hard_disk(&(real_machine -> hd), addr_hd) << (8 * (MEM_WORD_SIZE - 1 - i)));
+				else {
+					word |= (read_byte_hard_disk(&(real_machine -> hd), addr_hd) << (8 * i));
+				}
 				++addr_hd;
 			}
 		
@@ -1047,8 +1052,15 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 		if(rem != 0) {
 			uint32_t word = read_word(&(real_machine -> mem), r_addr);
 			for(uint8_t i = 0; i < rem; ++i) {
-				if(write_byte_hard_disk(&(real_machine -> hd), addr_hd, (word >> (MEM_WORD_SIZE - i)) & 0xff) != 0) {
-					return -1;
+				int temp = 1;
+				if(*(char*)&temp == 1) {	
+					if(write_byte_hard_disk(&(real_machine -> hd), addr_hd, (word >> (8 * i)) & 0xff) != 0) {
+					}
+				}
+				else {
+					if(write_byte_hard_disk(&(real_machine -> hd), addr_hd, (word >> (8 * (MEM_WORD_SIZE - 1 - i))) & 0xff) != 0) {
+						return -1;
+					}
 				}
 			}
 		}
