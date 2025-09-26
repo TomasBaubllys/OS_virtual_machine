@@ -6,10 +6,12 @@
 #include "file.h"
 #define MENU_ON 0
 #define ADD_VM 1  
-#define LOAD_PROGRAM_TO_VM 2 
-#define RUN_VM 3 
+#define LOAD_PROGRAM 2
+#define RUN_VM 3
 #define DUMP_MEM 4
-#define QUIT 5
+#define DELETE_VM 5
+#define QUIT 6
+
 
 #define MAX_CHOICE 5
 
@@ -29,19 +31,24 @@
 #define MSG_LOAD_PROGRAM "Load a program\n"
 #define MSG_CHOOSE_VM "Please choose a virtual machine:\n"
 #define MSG_START_VM "Start a virtual machine\n"
-#define MSG_SELECT_LOADED_VM "Please select a virtual machine\n"
+#define MSG_SELECT_LOADED_VM "Please select a virtual machine: \n"
 #define MSG_RUN_PROGRAM "Run program\n"
-#define MSG_SELECT_LOADED_RPGRAMS "Please select a loaded program to run\n"
+#define MSG_SELECT_LOADED_RPGRAMS "Please select a loaded program to run:\n"
 #define MSG_STOP_VMI "Stop virtual machine\n"
 #define MSG_RUN_PRGRM_NORMAL "Run program in normal mode\n"
 #define MSG_RUN_PRGRM_TRACE "Run program in trace mode\n"
 #define MSG_QUIT "Quit\n"
-#define MSG_SELECT_OPTION "Select option\n"
+#define MSG_SELECT_OPTION "Please select an option: \n"
 #define MSG_VM_ADDED_SUCCESSFULLY "Virtual machine added successfully\n"
-#define MSG_VM_COUNT "Current virtual machine count: \n"
+#define MSG_VM_COUNT "Current virtual machine count: "
 #define MSG_FAILED_TO_LOAD_PROGRAM "Failed to load the file to the virtual machine\n"
 #define MSG_FAILED_TO_READ_PROGRAM "Failed to read the file from the hard disk\n"
 #define MSG_PROGRAM_LOAD_SUCCESS "\033[0;32mProgram successfully loaded\033[0m\n"
+#define MSG_NO_VMS_ADDED "No added virtual machines! Please add a VM. \n"
+#define MSG_CHOOSE_RUN_MODE "Choose a mode: \n 1) Normal\n 2) Stepping\n"
+#define MSG_ANY_KEY "Press enter to continue...\n"
+#define MSG_SELECT_A_NUMBER_VM "Please select a number from 1 to %d \n"
+#define MSG_DELETE_VM "Delete virtual machine\n"
 
 void dump_memory(Real_machine* real_machine);
 

@@ -10,7 +10,7 @@
 #define FILE_MARKER_SIZE 4
 #define MAX_FILES HD_MAX_HARD_DISK_ADDRESS / (FILE_NAME_SIZE + FILE_MARKER_SIZE * 2)
 #define MSG_DSPL_FILES "Files: \n"
-#define MSG_SELECT_FILE "Select a file to load \n"
+#define MSG_SELECT_FILE "Select a file to load: \n"
 
 typedef struct File_entry {
 	char file_name[FILE_NAME_SIZE + 1];
