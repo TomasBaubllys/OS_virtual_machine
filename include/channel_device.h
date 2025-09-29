@@ -29,5 +29,7 @@ int init_channel_device(Channel_device* channel_dev);
 
 int set_registers_channel_device(Channel_device* channel_device, uint16_t sb, uint16_t db, uint8_t st, uint32_t cb, uint16_t of, uint8_t dt);
 
+void reset_channel_device(Channel_device* channel_device);
+
 
 #endif // CHANNEL_DEVICE_H_INCLUDED

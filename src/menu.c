@@ -60,6 +60,11 @@ uint8_t menu(Real_machine* real_machine) {
 			printf("\n");
 			return MENU_ON;
 		case DELETE_VM:
+			if(real_machine -> vm_count <= 0){
+				printf(RM_MSG_NO_VMS);
+				return MENU_ON;
+			}
+
 			uint8_t virtual_machine_index = select_virtual_machine(real_machine);
 			if(remove_virtual_machine(real_machine, virtual_machine_index) == -1){
 				printf(RM_MSG_FAILED_REMOVE_VM);

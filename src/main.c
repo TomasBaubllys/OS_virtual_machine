@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 			case RUN_VM:
 				if(running == 0) {
 					if(real_machine.vm_count == 0){
-						printf("%s", MSG_NO_VMS_ADDED);
+						printf(MSG_NO_VMS_ADDED);
 						menu_status = MENU_ON;
 						break;
 					}
@@ -49,8 +49,6 @@ int main(int argc, char* argv[]) {
 					break;
 				}		
 				else {
-					
-
 					copy_virtual_machine(&(real_machine), vm_index);
 					uint32_t command = read_word(&(real_machine.mem), real_machine.cpu.pc);
 					execute_command(&(real_machine), vm_index, command);
@@ -79,6 +77,7 @@ int main(int argc, char* argv[]) {
 							real_machine.cpu.mr = CPU_SUPERVISOR_MODE;
 							if(xchg(&real_machine, real_machine.vm[vm_index].page_table_index) != 0) {
 							}
+							reset_channel_device(&(real_machine.ch_dev));
 							real_machine.cpu.mr = CPU_USER_MODE;
 			
 						}
