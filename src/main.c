@@ -1,3 +1,7 @@
+/* Virtual - Real machine (OS2)
+ * Authors: Tomas Baublys and Goda Gutparakyte
+ * */
+
 #include "../include/virtual_machine.h"
 #include "../include/menu.h"
 #include <assert.h>
