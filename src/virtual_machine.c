@@ -202,97 +202,99 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 
 			if(x > 0xf || y > 0xf || x * 16 + y > MEM_MAX_SHARED_ADDRESS) {
-				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				virtual_machine -> cpu -> pi = CPU_PI_INVALID_ADDRESS;
 				break;
 			}
 
-			real_machine -> ch_dev.of = x * 16 + y;
-
-			real_machine -> ch_dev.st = RA_REG;
-			real_machine -> ch_dev.dt = SHARED_MEM;
-			real_machine -> cpu.si = RM_SI_BP;
-			real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
+			// real_machine -> ch_dev.of = x * 16 + y;
+			virtual_machine -> vm_arg = x * 16 + y;
+			// real_machine -> ch_dev.st = RA_REG;
+			// real_machine -> ch_dev.dt = SHARED_MEM;
+			virtual_machine -> cpu -> si = CPU_SI_BP;
+			virtual_machine -> vm_pc += MEM_WORD_SIZE;
 			break;
 		}
-						// BG
-						case 0x4247: {
-							if(real_machine -> cpu.ss == 1){
-								break;
-							}
-							else{
-								real_machine -> cpu.ss = 1;
-							}
-							uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
-							uint8_t y = char_hex_to_decimal(command & 0x000000ff);
+		// BG
+		case 0x4247: {
+			if(virtual_machine -> cpu -> ss == 1){
+				break;
+			}
+			else{
+				virtual_machine -> cpu -> ss = 1;
+			}
 
-							if(x > 0xf || y > 0xf || x * 16 + y > MEM_MAX_SHARED_ADDRESS) {
-								real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
-								break;
-							}
+			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
+			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 
-							real_machine -> ch_dev.of = x * 16 + y;
+			if(x > 0xf || y > 0xf || x * 16 + y > MEM_MAX_SHARED_ADDRESS) {
+				virtual_machine -> cpu -> pi = CPU_PI_INVALID_ADDRESS;
+				break;
+			}
 
-							real_machine -> ch_dev.st = SHARED_MEM;
-							real_machine -> ch_dev.dt = RA_REG;
-							real_machine -> cpu.si = RM_SI_BP;
-							real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
-							break;
-						}
+			// real_machine -> ch_dev.of = x * 16 + y;
+			virtual_machine -> vm_arg = x * 16 + y;
 
-						// I/O commands
-						// GEDA
-						case 0x4745: {
-							uint16_t rest_com = command & 0x0000ffff;
-							if(rest_com != 0x4441) {
-								real_machine -> cpu.pi = RM_PI_INVALID_OPCODE;
-								break;
-							}
+			// real_machine -> ch_dev.st = SHARED_MEM;
+			// real_machine -> ch_dev.dt = RA_REG;
+			virtual_machine -> cpu -> si = CPU_SI_BP;
+			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			break;
+		}
 
-							real_machine -> ch_dev.dt = RA_REG;
-							real_machine -> ch_dev.st = IO_STREAM;
-							real_machine -> cpu.si = RM_SI_GEDA;
-							real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
-							break;
-						}
+		// I/O commands
+		// GEDA
+		case 0x4745: {
+			uint16_t rest_com = command & 0x0000ffff;
+			if(rest_com != 0x4441) {
+				virtual_machine -> cpu -> pi = CPU_PI_INVALID_OPCODE;
+				break;
+			}
 
-						// PUTA
-						case 0x5055: {
-							uint16_t rest_com = command & 0x0000ffff;
-							if(rest_com != 0x5441) {
-								real_machine -> cpu.pi = RM_PI_INVALID_OPCODE;
-								break;
-							}
+			// real_machine -> ch_dev.dt = RA_REG;
+			// real_machine -> ch_dev.st = IO_STREAM;
+			virtual_machine -> cpu -> si = CPU_SI_GEDA;
+			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			break;
+		}
 
-							real_machine -> ch_dev.dt = IO_STREAM;
-							real_machine -> ch_dev.st = RA_REG;
-							real_machine -> cpu.si = RM_SI_PUTA;
-							real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
-							break;
-						}
+		// PUTA
+		case 0x5055: {
+			uint16_t rest_com = command & 0x0000ffff;
+			if(rest_com != 0x5441) {
+				virtual_machine -> cpu -> pi = CPU_PI_INVALID_OPCODE;
+				break;
+			}
 
-						// PSTR
-						case 0x5053: {
-							uint16_t rest_com = command & 0x0000ffff;
-							if(rest_com != 0x5452) {
-								real_machine -> cpu.pi = RM_PI_INVALID_OPCODE;
-								break;
-							}
+			// real_machine -> ch_dev.dt = IO_STREAM;
+			// real_machine -> ch_dev.st = RA_REG;
+			virtual_machine -> cpu -> si = CPU_SI_PUTA;
+			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			break;
+		}
 
-							if(real_machine -> cpu.ra >= MEM_MAX_USER_VM_ADDRESS) {
-								real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
-								break;
-							}
+		// PSTR
+		case 0x5053: {
+			uint16_t rest_com = command & 0x0000ffff;
+			if(rest_com != 0x5452) {
+				virtual_machine -> cpu -> pi = CPU_PI_INVALID_OPCODE;
+				break;
+			}
 
-							// translate ra address to a real address
-							// real_machine -> cpu.ra = translate_to_real_address(real_machine, real_machine -> cpu.ra, real_machine -> vm[virtual_machine_index].page_table_index);
+			if(virtual_machine -> cpu -> ra >= MEM_MAX_USER_VM_ADDRESS) {
+				virtual_machine -> cpu -> pi = CPU_PI_INVALID_ADDRESS;
+				break;
+			}
 
-							real_machine -> ch_dev.dt = IO_STREAM;
-							real_machine -> ch_dev.st = USER_MEM;
-							real_machine -> ch_dev.cb = real_machine -> cpu.rc;
-							real_machine -> cpu.si = RM_SI_PSTR;
-							real_machine -> vm[virtual_machine_index].pc += MEM_WORD_SIZE;
-							break;
-						}
+			// translate ra address to a real address
+			// real_machine -> cpu.ra = translate_to_real_address(real_machine, real_machine -> cpu.ra, real_machine -> vm[virtual_machine_index].page_table_index);
+
+			// real_machine -> ch_dev.dt = IO_STREAM;
+			// real_machine -> ch_dev.st = USER_MEM;
+			// real_machine -> ch_dev.cb = real_machine -> cpu.rc;
+			virtual_machine -> cpu -> si = CPU_SI_PSTR;
+			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			break;
+		}
 
 		// aritmetic commands
 		// APxy
@@ -693,12 +695,10 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 		default:
 			virtual_machine -> cpu -> pi = CPU_PI_INVALID_OPCODE;
 			break;
-}
+	}
 
 
 	return 0;
-
-	// set pi - si accordingly
 }
 
 int load_program_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index, uint16_t virtual_address, uint32_t* program, uint16_t program_len) {
