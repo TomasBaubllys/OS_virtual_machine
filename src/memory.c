@@ -33,14 +33,14 @@ uint16_t translate_to_real_address(Memory* memory, uint16_t virtual_address) {
 		return MEM_NULL_ADDR;
 	}
  
-	uint16_t v_page = (virtual_address / MEM_WORD_SIZE) / 16;
+	uint16_t v_page = (virtual_address / MEM_WORD_SIZE) / MEM_PAGE_SIZE;
   
 	// offset from the virtual page
-    uint16_t offset = virtual_address - (v_page * MEM_WORD_SIZE * 16);
+    uint16_t offset = virtual_address - (v_page * MEM_WORD_SIZE * MEM_PAGE_SIZE);
 
 	// find the corresponding real page index
-    uint16_t r_page = memory.memory[memory -> cpu -> ptr * 16 + v_page] & 0x0000ffff;
-	return (r_page * 16 * 4) + offset;
+    uint16_t r_page = memory -> memory[memory -> cpu -> ptr * MEM_PAGE_SIZE + v_page] & 0x0000ffff;
+	return (r_page * MEM_PAGE_SIZE * MEM_WORD_SIZE) + offset;
 }
 
 uint32_t read_word(Memory* mem, const uint16_t address) {

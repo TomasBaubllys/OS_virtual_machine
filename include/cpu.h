@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "../include/util.h"
+#include "../include/channel_device.h"
 
 #define CPU_DEFAULT_TIMER_VALUE 10
 #define CPU_USER_MODE 0
@@ -29,6 +30,10 @@
 #define CPU_SI_BG 7
 #define CPU_SI_STOP 8
 
+#define INTERUPT_STOP -1
+#define SEMAFOR_BUSY 1
+#define SEMAFOR_FREE 0
+
 typedef struct CPU {
 	uint16_t pc;			// program counter
 	uint16_t pi;			// program interupt register
@@ -44,8 +49,13 @@ typedef struct CPU {
 	uint32_t rb;			// general purpose register
 	uint32_t rc;			// general purpose register, also used for loops
 	uint16_t ptr;
+
+	Channel_device* channel_device;
+	Memory* memory;
 } CPU;
 
-int init_cpu(CPU* cpu);
+int init_cpu(CPU* cpu, Channel_device* channel_device);
+
+int interupt(CPU* cpu);
 
 #endif // CPU_H_INCLUDED

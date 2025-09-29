@@ -15,7 +15,6 @@ typedef struct Virtual_machine {
 	uint16_t vm_pc;
 	CPU* cpu;
 	Memory* memory;
-	uint16_t vm_arg;
 } Virtual_machine;
 
 int init_virtual_machine(Virtual_machine* virtual_machine, CPU* cpu, Memory* memory);

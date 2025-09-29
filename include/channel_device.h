@@ -16,21 +16,21 @@ typedef struct Channel_device {
 	uint8_t dt;				// number of the object to copy to
 
 	uint32_t sa;			// symbol register
+
+	Memory* memory;			// bruh
 } Channel_device;
 
 enum Object_numbers {
 	USER_MEM = 1,
-	DISK_MEM,
 	IO_STREAM,
 	SHARED_MEM,
 	RA_REG
 };
 
-int init_channel_device(Channel_device* channel_dev);
-
-int set_registers_channel_device(Channel_device* channel_device, uint16_t sb, uint16_t db, uint8_t st, uint32_t cb, uint16_t of, uint8_t dt);
+int init_channel_device(Channel_device* channel_dev, Memory* memorys);
 
 void reset_channel_device(Channel_device* channel_device);
 
+int xchg(Channel_device* channel_device);
 
 #endif // CHANNEL_DEVICE_H_INCLUDED

@@ -5,7 +5,7 @@ int init_virtual_machine(Virtual_machine* virtual_machine, CPU* cpu, Memory* mem
 		return -1;
 	}
 
-	virtual_machine -> pc = 0;
+	virtual_machine -> vm_pc = 0;
 	virtual_machine -> cpu = cpu;
 	virtual_machine -> memory = memory;
 
@@ -24,7 +24,7 @@ int init_virtual_machine(Virtual_machine* virtual_machine, CPU* cpu, Memory* mem
 		if(page_index == MEM_NO_FREE_PAGE_ERR) {
 			// if ran out of pages return everything and return -1;
 			for(uint8_t j = 0; j < i; ++j) {
-				uint32_t pizza_slice = memory.memory[page_table_index * 16 + j];
+				uint32_t pizza_slice = memory -> memory[page_table_index * 16 + j];
 				uint16_t real_page_addr = pizza_slice & 0x00ff;
 				return_page(memory, real_page_addr);
 			}	
@@ -49,7 +49,7 @@ int destroy_virtual_machine(Virtual_machine* virtual_machine) {
 
 	for(uint8_t i = 0; i < VM_VIRTUAL_MACHINE_BLOCK_COUNT; ++i) {
 	// printf("%d\n", virtual_machine -> rm -> mem.memory[(virtual_machine -> page_table_index) * 16 + i]);
-		if(return_page(virtual_machine -> memory, (virtual_machine -> memory.memory[(virtual_machine -> cpu.ptr) * 16 + i]) & 0x00ff ) != 0) {
+		if(return_page(virtual_machine -> memory, (virtual_machine -> memory -> memory[(virtual_machine -> cpu -> ptr) * 16 + i]) & 0x00ff ) != 0) {
 			return -1;
 		} 
 	}
@@ -90,7 +90,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 
 			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
-				virtual_machine -> cpu -> pi = RM_PI_INVALID_ADDRESS;
+				virtual_machine -> cpu -> pi = CPU_PI_INVALID_ADDRESS;
 				break;
 			}
 
@@ -160,12 +160,9 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				virtual_machine -> cpu -> pi = CPU_PI_INVALID_ADDRESS;
 				break;
 			}
-
-			uint16_t vm_addr = x * 16 + y;
-
-			uint16_t r_addr = translate_to_real_address(virtual_machine -> memory, vm_addr);
-
-			virtual_machine -> vm_arg = r_addr;
+			
+			virtual_machine -> cpu -> ra &= 0x0000ffff;
+			virtual_machine -> cpu -> ra |= (x * 16 + y) << 16; // save the address in the upper 2 bytes of ra
 			virtual_machine -> cpu -> si = CPU_SI_LW;
 
 			virtual_machine -> vm_pc += MEM_WORD_SIZE;
@@ -181,22 +178,19 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				break;
 			}
 
-			uint16_t vm_addr = x * 16 + y;
-
-			uint16_t r_addr = translate_to_real_address(virtual_machine -> memory, vm_addr);
-
-			virtual_machine -> vm_arg = r_addr;
+			virtual_machine -> cpu -> rb &= 0x0000ffff;
+			virtual_machine -> cpu -> rb |= (x * 16 + y) << 16; // save the address in the upper 2 bytes of rb
 			virtual_machine -> cpu -> si = CPU_SI_SW;
 			virtual_machine -> vm_pc += MEM_WORD_SIZE;
 			break;
 		}
 		// BPxy
 		case 0x4250: {
-			if(virtual_machine -> cpu -> ss == 1){
+			if(virtual_machine -> cpu -> ss == SEMAFOR_BUSY){
 				break;
 			}
 			else{
-				virtual_machine -> cpu -> ss = 1;
+				virtual_machine -> cpu -> ss = SEMAFOR_BUSY;
 			}
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
@@ -206,10 +200,8 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				break;
 			}
 
-			// real_machine -> ch_dev.of = x * 16 + y;
-			virtual_machine -> vm_arg = x * 16 + y;
-			// real_machine -> ch_dev.st = RA_REG;
-			// real_machine -> ch_dev.dt = SHARED_MEM;
+			virtual_machine -> cpu -> rb &= 0x0000ffff;
+			virtual_machine -> cpu -> rb |= (x * 16 + y) << 16;
 			virtual_machine -> cpu -> si = CPU_SI_BP;
 			virtual_machine -> vm_pc += MEM_WORD_SIZE;
 			break;
@@ -231,11 +223,9 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				break;
 			}
 
-			// real_machine -> ch_dev.of = x * 16 + y;
-			virtual_machine -> vm_arg = x * 16 + y;
+			virtual_machine -> cpu -> ra &= 0x0000ffff;
+			virtual_machine -> cpu -> ra |= (x * 16 + y) << 16;
 
-			// real_machine -> ch_dev.st = SHARED_MEM;
-			// real_machine -> ch_dev.dt = RA_REG;
 			virtual_machine -> cpu -> si = CPU_SI_BP;
 			virtual_machine -> vm_pc += MEM_WORD_SIZE;
 			break;
@@ -250,8 +240,6 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				break;
 			}
 
-			// real_machine -> ch_dev.dt = RA_REG;
-			// real_machine -> ch_dev.st = IO_STREAM;
 			virtual_machine -> cpu -> si = CPU_SI_GEDA;
 			virtual_machine -> vm_pc += MEM_WORD_SIZE;
 			break;
@@ -265,8 +253,6 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				break;
 			}
 
-			// real_machine -> ch_dev.dt = IO_STREAM;
-			// real_machine -> ch_dev.st = RA_REG;
 			virtual_machine -> cpu -> si = CPU_SI_PUTA;
 			virtual_machine -> vm_pc += MEM_WORD_SIZE;
 			break;
@@ -285,12 +271,6 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				break;
 			}
 
-			// translate ra address to a real address
-			// real_machine -> cpu.ra = translate_to_real_address(real_machine, real_machine -> cpu.ra, real_machine -> vm[virtual_machine_index].page_table_index);
-
-			// real_machine -> ch_dev.dt = IO_STREAM;
-			// real_machine -> ch_dev.st = USER_MEM;
-			// real_machine -> ch_dev.cb = real_machine -> cpu.rc;
 			virtual_machine -> cpu -> si = CPU_SI_PSTR;
 			virtual_machine -> vm_pc += MEM_WORD_SIZE;
 			break;
@@ -541,7 +521,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 					virtual_machine -> cpu -> ra ^= virtual_machine -> cpu -> rb;
 					break;
 				case RC_CODE:
-					virtual_machine -> cpu -> ra ^= real_machine -> cpu -> rc;
+					virtual_machine -> cpu -> ra ^= virtual_machine -> cpu -> rc;
 					break;
 				default:
 					virtual_machine -> cpu -> pi = CPU_PI_INVALID_ASSIGNMENT;
@@ -620,7 +600,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			uint8_t x = char_hex_to_decimal((command & 0x0000ff00) >> 8);
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 			if(x > 0xf || y > 0xf || x * 16 + y >= MEM_MAX_USER_VM_ADDRESS) {
-				virtual_machine -> cpu -> pi = RM_PI_INVALID_ADDRESS;
+				virtual_machine -> cpu -> pi = CPU_PI_INVALID_ADDRESS;
 				break;
 			}
 
@@ -746,9 +726,9 @@ void reset_virtual_machine_registers(Virtual_machine* virtual_machine) {
 		return;
 	}
 
-	virtual_machine -> ra = 0;
-	virtual_machine -> rb = 0;
-	virtual_machine -> rc = 0;
-	virtual_machine -> pc = 0;
-	virtual_machine -> sf = 0;
+	virtual_machine -> cpu -> ra = 0;
+	virtual_machine -> cpu -> rb = 0;
+	virtual_machine -> cpu -> rc = 0;
+	virtual_machine -> cpu -> pc = 0;
+	virtual_machine -> cpu -> sf = 0;
 }
