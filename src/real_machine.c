@@ -873,7 +873,7 @@ uint16_t translate_to_real_address(Real_machine *real_machine, uint16_t virtual_
 	// offset from the virtual page
 	uint16_t offset = virtual_address - (v_page * MEM_WORD_SIZE * 16);
 	
-	// find the corresponfing real page index
+	// find the corresponding real page index
 	uint16_t r_page = real_machine -> mem.memory[page_table_index * 16 + v_page] & 0x0000ffff;
 	
  	return (r_page * 16 * 4) + offset;
@@ -979,6 +979,10 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 		uint32_t count = real_machine -> ch_dev.cb / MEM_WORD_SIZE;
 		uint8_t rem = real_machine -> ch_dev.cb % MEM_WORD_SIZE;
 		uint32_t addr_hd = real_machine -> cpu.ra;
+		if(addr_hd >= HD_MAX_HARD_DISK_ADDRESS){
+			real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+			return -1;
+		}
 		uint16_t v_addr = real_machine -> ch_dev.of; 		
 		uint16_t r_addr;	
 	
@@ -1028,6 +1032,10 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 		uint32_t count = real_machine -> ch_dev.cb / MEM_WORD_SIZE;
 		uint8_t rem = real_machine -> ch_dev.cb % MEM_WORD_SIZE;
 		uint32_t addr_hd = real_machine -> cpu.ra;
+		if(addr_hd >= HD_MAX_HARD_DISK_ADDRESS){
+			real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+			return -1;
+		}
 		uint16_t v_addr = real_machine -> ch_dev.of;	
 		uint16_t r_addr;
 	
@@ -1072,16 +1080,16 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 	// PSTR prints a char array from the addrress saved in RA, RC, (CB) says how many bytes x
 	// doesnt work if the pages are not linear need to translate inside this function
 	if(real_machine -> ch_dev.dt == IO_STREAM && real_machine -> ch_dev.st == USER_MEM) {
-		// check if it all fits in user memory
-		if(real_machine -> cpu.ra + real_machine -> ch_dev.cb >= MEM_MAX_USER_ADDRESS) {
-			return -1;
-		} 
-		
 		uint32_t size = (real_machine -> ch_dev.cb) / MEM_WORD_SIZE;
 		uint8_t rem = (real_machine -> ch_dev.cb) % MEM_WORD_SIZE;
 		uint32_t addr = real_machine -> cpu.ra;
-		uint16_t r_addr = translate_to_real_address(real_machine, addr, page_table_index);	
-	
+		//uint16_t r_addr = translate_to_real_address(real_machine, addr, page_table_index);	
+		/*if(r_addr >= MEM_MAX_USER_ADDRESS) {
+			real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+			return -1;
+		} 
+		*/
+	 
 		if(rem != 0) {
 			++size;
 		}
@@ -1089,6 +1097,11 @@ int xchg(Real_machine* real_machine, uint8_t page_table_index) {
 		uint32_t byte_count = real_machine -> ch_dev.cb;
 		for(uint32_t i = 0; i < size; ++i) {
 			uint16_t r_addr = translate_to_real_address(real_machine, addr, page_table_index);	
+			if(r_addr >= MEM_MAX_USER_ADDRESS) {
+				real_machine -> cpu.pi = RM_PI_INVALID_ADDRESS;
+				return -1;
+			} 
+	
 			uint32_t word = read_word(&(real_machine -> mem), r_addr);
 			addr += MEM_WORD_SIZE;
 			for(uint8_t b = 0; b < MEM_WORD_SIZE && byte_count > 0; ++b) {

@@ -27,8 +27,8 @@
 #define RM_PI_OVERFLOW 4
 #define RM_PI_DIVISION_BY_ZERO 5
 
-#define RM_MSG_VM_LIMIT_REACHED "Maximum VM limit exceeded/n"
-#define RM_MSG_FAILED_REMOVE_VM "Failed to remove virtual machine/n"
+#define RM_MSG_VM_LIMIT_REACHED "Maximum VM limit exceeded\n"
+#define RM_MSG_FAILED_REMOVE_VM "Failed to remove virtual machine\n"
 #define RM_MSG_SUCCESS_REMOVE_VM "Virtual machine successfully removed!\n"
 
 
