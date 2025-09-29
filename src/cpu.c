@@ -23,7 +23,9 @@ int init_cpu(CPU* cpu, Channel_device* channel_device) {
 
 int interupt(CPU* cpu) {
 	if(cpu -> pi > 0) {
-
+		// check if logging is on
+		// if so log the err
+		return INTERUPT_STOP;
 
 	}
 
