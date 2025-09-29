@@ -21,14 +21,18 @@
 #define MEM_MAX_SHARED_ADDRESS 0x80
 #define MEM_MAX_ADDRESS_LENGTH 3
 #define MEM_BAD_ADDRESS_ERR "Maximum address exceeded\n" 
+#define MEM_BEG_SUPERVISOR_ADDR 0xd40
 
 #define MEM_NO_FREE_PAGE_ERR 0xff
 #define MEM_INVALID_PAGE_NUM_ERR 0xfe
 #define MEM_INTERNAL_PAGING_ERR_MISMATCH_SIZES 0xfd
 
+#define MEM_NULL_ADDR 0xffff
+
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
+#include "../include/cpu.h"
 
 typedef struct Memory {
 	uint32_t memory[MEM_TOTAL_MEMORY];
@@ -36,9 +40,12 @@ typedef struct Memory {
     uint8_t free_pages[MEM_PAGE_COUNT];
     uint8_t used_page_count;
     uint8_t used_pages[MEM_PAGE_COUNT];
+    CPU* cpu;
 } Memory;
 
-int init_memory(Memory* mem);
+int init_memory(Memory* mem, CPU* cpu);
+
+uint16_t translate_to_real_address(Memory* memory, uint16_t virtual_address);
 
 uint32_t read_word(Memory* mem, const uint16_t address); 			
 

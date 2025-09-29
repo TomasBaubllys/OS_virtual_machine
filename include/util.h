@@ -19,4 +19,7 @@ uint32_t reverse32(uint32_t value);
 // Reverse endianness of an array of uint32_t
 void reverse_endianness_array(uint32_t *arr, uint32_t length);
 
+// converts to characters to lower case
+uint16_t uint16_t_to_lower(uint16_t reg_char);
+
 #endif // UTIL_H_INCLUDED

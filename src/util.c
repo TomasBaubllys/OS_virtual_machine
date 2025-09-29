@@ -44,3 +44,10 @@ void reverse_endianness_array(uint32_t *arr, uint32_t length) {
     }
 }
 
+uint16_t uint16_t_to_lower(uint16_t reg_char) {
+	uint8_t u_letter = letter_to_lower(reg_char >> 8);
+	uint8_t l_letter = letter_to_lower(reg_char & 0x00ff);
+
+	return (u_letter << 8) | l_letter;
+}
+

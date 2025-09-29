@@ -854,31 +854,6 @@ int destroy_real_machine(Real_machine* real_machine) {
 	return 0;
 }
 
-
-uint16_t translate_to_real_address(Real_machine *real_machine, uint16_t virtual_address, uint8_t page_table_index) {
-	if(!real_machine) {
-		return VM_REAL_MACHINE_NULL;
-	}
-
-	if(virtual_address >= VM_MAX_VIRTUAL_ADDRESS) {
-		return VM_MAX_VIRTUAL_ADDDRESS_EXCEEDED;
-	}
-
-	if(page_table_index >= MEM_USER_PAGE_COUNT) {
-		return RM_USER_VM_PAGE_INDEX_EXCEEDED;
-	}
-
-	uint16_t v_page = (virtual_address / MEM_WORD_SIZE) / 16;
-	
-	// offset from the virtual page
-	uint16_t offset = virtual_address - (v_page * MEM_WORD_SIZE * 16);
-	
-	// find the corresponding real page index
-	uint16_t r_page = real_machine -> mem.memory[page_table_index * 16 + v_page] & 0x0000ffff;
-	
- 	return (r_page * 16 * 4) + offset;
-}
-
 int remove_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index) {
 	if(!real_machine) {
 		return -1;

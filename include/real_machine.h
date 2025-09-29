@@ -10,23 +10,6 @@
 #define RM_VM_MAX_COUNT 3
 #define RM_USER_VM_PAGE_INDEX_EXCEEDED 0xfffd
 
-#define RM_SI_GEDA 1
-#define RM_SI_PUTA 2
-#define RM_SI_PSTR 3
-#define RM_SI_LW 4
-#define RM_SI_SW 5
-#define RM_SI_BP 6
-#define RM_SI_BG 7
-#define RM_SI_HD 8
-#define RM_SI_HP 9
-#define RM_SI_STOP 10
-
-#define RM_PI_INVALID_ADDRESS 1
-#define RM_PI_INVALID_OPCODE 2
-#define RM_PI_INVALID_ASSIGNMENT 3
-#define RM_PI_OVERFLOW 4
-#define RM_PI_DIVISION_BY_ZERO 5
-
 #define RM_MSG_VM_LIMIT_REACHED "Maximum VM limit exceeded\n"
 #define RM_MSG_FAILED_REMOVE_VM "Failed to remove virtual machine\n"
 #define RM_MSG_NO_VMS "No added VMs!\n"
@@ -57,8 +40,6 @@ int copy_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_ind
 
 // writes current real machine status to virtual machine
 int write_virtual_machine(Real_machine* real_mahine, uint8_t virtual_machine_index);
-
-uint16_t translate_to_real_address(Real_machine *real_machine, uint16_t address, uint8_t page_table_index);
 
 int destroy_real_machine(Real_machine* real_machine);
 

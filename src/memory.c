@@ -1,9 +1,11 @@
 #include "../include/memory.h"
 
-int init_memory(Memory* mem) {
-	if(!mem) {
+int init_memory(Memory* mem, CPU* cpu) {
+	if(!mem || !cpu) {
 		return -1;
 	}	
+
+	mem -> cpu = cpu;
 
 	memset(mem -> memory, 0, sizeof(mem -> memory));	
     	memset(mem -> used_pages, 0, sizeof(mem -> used_pages));
@@ -16,6 +18,29 @@ int init_memory(Memory* mem) {
     	mem -> free_page_count = MEM_USER_PAGE_COUNT;
 
 	return 0;
+}
+
+uint16_t translate_to_real_address(Memory* memory, uint16_t virtual_address) {
+	if(!memory) {
+		return MEM_NULL_ADDR;
+	}
+
+	if(virtual_address >= MEM_MAX_USER_VM_ADDRESS) {
+		return MEM_NULL_ADDR;
+	}
+
+	if(memory -> cpu -> ptr >= MEM_USER_PAGE_COUNT) {
+		return MEM_NULL_ADDR;
+	}
+ 
+	uint16_t v_page = (virtual_address / MEM_WORD_SIZE) / 16;
+  
+	// offset from the virtual page
+    uint16_t offset = virtual_address - (v_page * MEM_WORD_SIZE * 16);
+
+	// find the corresponding real page index
+    uint16_t r_page = memory.memory[memory -> cpu -> ptr * 16 + v_page] & 0x0000ffff;
+	return (r_page * 16 * 4) + offset;
 }
 
 uint32_t read_word(Memory* mem, const uint16_t address) {

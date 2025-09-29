@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
 					
 					--real_machine.cpu.ti;
 					if(real_machine.cpu.pi + real_machine.cpu.si > 0) {
-						if(real_machine.cpu.si == RM_SI_STOP) {
+						if(real_machine.cpu.pi > 0 || real_machine.cpu.si == RM_SI_STOP) {
 							pi_si_reset(&real_machine);
 							running = 0;
 							real_machine.cpu.mr = CPU_USER_MODE;
