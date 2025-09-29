@@ -48,18 +48,23 @@ int interupt(CPU* cpu) {
 				break;
 
 			case CPU_SI_PSTR:
-				// check if it all fits inside a single page
-				uint16_t r_addr = translate_to_real_address(cpu -> memory, cpu -> ra);
-				uint16_t r_page = (r_addr / MEM_WORD_SIZE) / MEM_PAGE_SIZE;
-				uint16_t offset = r_addr - (r_page * MEM_WORD_SIZE * MEM_PAGE_SIZE);  
-				uint16_t byte_count = MEM_PAGE_SIZE * MEM_WORD_SIZE - offset;
-				
-				if(byte_count > cpu -> rc) {
-					byte_count = cpu -> rc;
+				if(cpu -> rc == 0) {
+					break;
 				}
 
 				// if not get the page count and loop through all of it
-				while(cpu -> rc != 0){
+				do {
+
+					// check if it all fits inside a single page
+					uint16_t r_addr = translate_to_real_address(cpu -> memory, cpu -> ra);
+					uint16_t r_page = (r_addr / MEM_WORD_SIZE) / MEM_PAGE_SIZE;
+					uint16_t offset = r_addr - (r_page * MEM_WORD_SIZE * MEM_PAGE_SIZE);  
+					uint16_t byte_count = MEM_PAGE_SIZE * MEM_WORD_SIZE - offset;
+				
+					if(byte_count > cpu -> rc) {
+						byte_count = cpu -> rc;
+					}
+
 
 					// set the ch_dev register
 					cpu -> channel_device -> st = USER_MEM;
@@ -76,16 +81,8 @@ int interupt(CPU* cpu) {
 
 					// retranslate a new address
 					cpu -> rc -= byte_count;
-					r_addr = translate_to_real_address(cpu -> memory, cpu -> ra);
-					r_page = (r_addr / MEM_WORD_SIZE) / MEM_PAGE_SIZE;
-					offset = r_addr - (r_page * MEM_WORD_SIZE * MEM_PAGE_SIZE);  
-					byte_count = MEM_PAGE_SIZE * MEM_WORD_SIZE - offset;
-
-					if(byte_count > cpu -> rc) {
-						byte_count = cpu -> rc;
-					}
 	
-				}
+				} while(cpu -> rc != 0);
 
 				break;
 
