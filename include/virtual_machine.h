@@ -28,4 +28,6 @@ int load_program_virtual_machine(Real_machine* real_machine, uint8_t virtual_mac
 
 int destroy_virtual_machine(Real_machine *real_machine, Virtual_machine* virtual_machine);
 
+void reset_virtual_machine_registers(Virtual_machine* virtual_machine);
+
 #endif // VIRTUAL_MACHINE_H_INCLUDED

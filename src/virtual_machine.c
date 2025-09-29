@@ -107,8 +107,19 @@ int load_program_virtual_machine(Real_machine* real_machine, uint8_t virtual_mac
 		virtual_address += MEM_WORD_SIZE;
 	}
 	
-	// reset the pc counter to 0 (beggining o the code)
-	real_machine -> vm[virtual_machine_index].pc = 0;
+	reset_virtual_machine_registers((real_machine -> vm) + virtual_machine_index);
 
 	return 0;
+}
+
+void reset_virtual_machine_registers(Virtual_machine* virtual_machine) {
+	if(!virtual_machine) {
+		return;
+	}
+
+	virtual_machine -> ra = 0;
+	virtual_machine -> rb = 0;
+	virtual_machine -> rc = 0;
+	virtual_machine -> pc = 0;
+	virtual_machine -> sf = 0;
 }

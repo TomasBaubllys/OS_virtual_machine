@@ -1,6 +1,5 @@
 #include "../include/virtual_machine.h"
 #include "../include/menu.h"
-#include "../include/file.h"
 #include <assert.h>
 
 int main(int argc, char* argv[]) {
