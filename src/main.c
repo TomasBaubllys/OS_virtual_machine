@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 	while(1) {
 		virtual_machine_execute(&virtual_machine);
 
-		if(real_machine.cpu.pi + real_machine.cpu.si > 0) {
+		if(real_machine.cpu.pi + real_machine.cpu.si > 0 || real_machine.cpu.ti == 0) {
 			interupt(&real_machine.cpu);
 		}	
 		

@@ -54,7 +54,7 @@ typedef struct CPU {
 	Memory* memory;
 } CPU;
 
-int init_cpu(CPU* cpu, Channel_device* channel_device);
+int init_cpu(CPU* cpu, Memory* memory, Channel_device* channel_device);
 
 int interupt(CPU* cpu);
 

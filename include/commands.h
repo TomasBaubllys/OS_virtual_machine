@@ -1,6 +1,0 @@
-#ifndef COMMANDS_H_INCLUDED
-#define COMMANDS_H_INCLUDED
-
-
-
-#endif // COMMANDS_H_INCLUDED

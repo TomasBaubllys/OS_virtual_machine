@@ -14,17 +14,19 @@ typedef struct Channel_device {
 	uint32_t sa;			// symbol register
 
 	Memory* memory;			// bruh
-	Hard_disk* Hard_disk	// bruh
+	Hard_disk* hard_disk	// bruh
 } Channel_device;
 
 enum Object_numbers {
 	USER_MEM = 1,
 	IO_STREAM,
 	SHARED_MEM,
-	RA_REG
+	RA_REG,
+	SUPER_MEM,
+	HD_DISK
 };
 
-int init_channel_device(Channel_device* channel_dev, Memory* memorys);
+int init_channel_device(Channel_device* channel_dev, Memory* memorys, Hard_disk* Hard_disk);
 
 void reset_channel_device(Channel_device* channel_device);
 

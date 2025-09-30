@@ -1,6 +1,6 @@
 #include "../include/channel_device.h"
 
-int init_channel_device(Channel_device* channel_device, Memory* memory) {
+int init_channel_device(Channel_device* channel_device, Memory* memory, Hard_disk* hard_disk) {
 	if(!channel_device || memory) {
 		return -1;
 	}
@@ -13,6 +13,7 @@ int init_channel_device(Channel_device* channel_device, Memory* memory) {
 	channel_device -> dt = 0;
 	channel_device -> sa = 0;
 	channel_device -> memory = memory;
+	channel_device -> hard_disk = hard_disk;
 
 	return 0;
 }
@@ -104,9 +105,36 @@ int xchg(Channel_device* channel_device) {
 					break;
 			}
 			break;
+		case SUPER_MEM:
+			switch (channel_device -> dt) {
+				// KEEP IN MY PAGES ARE NOT LINEAR THIS FUNCTION MUST BE CALLED A COUPLE OF TIMES IF COPYING MULTIPLE PAGES
+				case USER_MEM:											// supervisor mem -> user mem (used for loading programs)
+					for(uint32_t i = 0; i < channel_device -> cb; ++i) {
+						uint32_t word = read_word(channel_device -> memory, channel_device -> sb + i * MEM_WORD_SIZE);
+						write_word(channel_device -> memory, channel_device -> db + channel_device -> of + i * MEM_WORD_SIZE); 
+					}
+					break;
+			
+				default:
+					break;
+			}	
+		case HD_DISK:													// used for copying file contents from hd to supermem
+			switch (channel_device -> dt) {
+				// KEEP IN MY PAGES ARE NOT LINEAR THIS FUNCTION MUST BE CALLED A COUPLE OF TIMES IF COPYING MULTIPLE PAGES
+				case SUPER_MEM:
+					for(uint32_t i = 0; i < channel_device -> cb; ++i) {
+						uint32_t word = read_word_hard_disk(channel_device -> hard_disk, channel_device -> sb + channel_device -> of + i * MEM_WORD_SIZE);
+						write_word(channel_device -> memory, channel_device -> db + i * MEM_WORD_SIZE, word);
+					}
+					break;
+				
+				default:
+					break;
+			}
+			break;
 		default:
 			break;
 	}
-	
+
 	return -1;
 }

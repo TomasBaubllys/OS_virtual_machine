@@ -676,6 +676,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			break;
 	}
 
+	--(virtual_machine -> cpu -> ti);
 
 	return 0;
 }

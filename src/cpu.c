@@ -1,7 +1,7 @@
 #include "../include/cpu.h"
 
-int init_cpu(CPU* cpu, Channel_device* channel_device) {
-	if(!cpu || !channel_device) {
+int init_cpu(CPU* cpu, Memory* memory, Channel_device* channel_device) {
+	if(!cpu || !channel_device || !memory) {
 		return -1;
 	}
 	
@@ -17,11 +17,20 @@ int init_cpu(CPU* cpu, Channel_device* channel_device) {
 	cpu -> rb = 0;
 	cpu -> rc = 0;	
 	cpu -> channel_device = channel_device;
-
+	cpu -> memory = memory;
 	return 0;
 }
 
 int interupt(CPU* cpu) {
+	if(!cpu) {
+		return 0;
+	}
+
+	if(cpu -> ti == 0) {
+		check(cpu);
+		return;
+	}
+
 	if(cpu -> pi > 0) {
 		// check if logging is on
 		// if so log the err
@@ -153,6 +162,7 @@ int interupt(CPU* cpu) {
 		}
 
 		cpu -> mr = CPU_USER_MODE;
+		cpu -> ti -= 3;
 	}
 
 	cpu -> si = 0;
@@ -166,9 +176,6 @@ uint8_t check(CPU* cpu) {
 		return 0;
 	}
 
-	if(cpu -> ti > 10 || cpu -> ti == 0) {
-		cpu -> ti = CPU_DEFAULT_TIMER_VALUE;
-	}
-	
+	cpu -> ti = CPU_DEFAULT_TIMER_VALUE;
 	return 0;
 }
