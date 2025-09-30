@@ -185,8 +185,6 @@ uint32_t read_file_entries(Hard_disk* hard_disk, File_entry** files) {
 		return 0;
 	}
 
-	printf("%d", file_count);
-
 	*files = malloc(sizeof(File_entry) * file_count);	
 
 	if(!*files) {
