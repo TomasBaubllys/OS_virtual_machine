@@ -201,6 +201,8 @@ uint32_t read_file_entries(Hard_disk* hard_disk, File_entry** files) {
 			*files = NULL;
 			return 0;
 		}
+		(*files)[i].file_name[FILE_NAME_SIZE] = '\0';
+
 		if(fread(&((*files)[i].offset), sizeof(uint32_t), 1, hard_disk -> fptr) != 1) {
 			fprintf(stderr, HD_CORUPTION_ERR);
 			fclose(hard_disk -> fptr);
