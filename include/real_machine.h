@@ -36,6 +36,6 @@ int destroy_real_machine(Real_machine* real_machine);
 
 void real_machine_run();
 
-int real_machine_validate_supervisor();
+int real_machine_validate_supervisor(Real_machine* real_machine, File_entry* file_entry);
 
 #endif // REAL_MACHINE_H_INCLUDED

@@ -10,6 +10,12 @@ int main(int argc, char* argv[]) {
 	Real_machine real_machine;
     assert(init_real_machine(&real_machine) == 0);
 	uint8_t menu_status = MENU_ON;
+	
+	int status = MENU_ON;
+	while(status != QUIT){
+		status = menu(&real_machine);
+	}
+	// menu(&real_machine)
 	uint8_t running = 0;
 	int vm_index = 0;
 	

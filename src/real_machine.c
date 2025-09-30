@@ -53,6 +53,6 @@ int remove_virtual_machine(Real_machine* real_machine) {
 	return 0;
 }
 
-void real_machine_run() {
+void real_machine_run(Real_machine* real_machine, File_entry* real_entry) {
 
 }

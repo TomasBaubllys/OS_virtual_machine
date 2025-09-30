@@ -5,12 +5,14 @@
 #include "virtual_machine.h"
 #include "file.h"
 #define MENU_ON 0
-#define ADD_VM 1  
-#define LOAD_PROGRAM 2
-#define RUN_VM 3
+//#define ADD_VM 1  
+//#define LOAD_PROGRAM 2
+#define RUN_VM 1
+#define STEPPING 2
+#define LOGGING 3
 #define DUMP_MEM 4
-#define DELETE_VM 5
-#define QUIT 6
+//#define DELETE_VM 5
+#define QUIT 5
 
 
 #define MAX_CHOICE 6
@@ -49,6 +51,13 @@
 #define MSG_ANY_KEY "Press enter to continue...\n"
 #define MSG_SELECT_A_NUMBER_VM "Please select a number from 1 to %d \n"
 #define MSG_DELETE_VM "Delete virtual machine\n"
+#define MSG_STEPPING "Stepping \n"
+#define MSG_LOGGING "Logging \n"
+#define MSG_STEPPING_CHOICE "Choose a mode:\n 1. Stepping ON\n 2. Stepping OFF\n"
+#define MSG_LOGGING_CHOICE "Choose a mode:\n 1. Logging ON\n 2. Logging OFF\n"
+#define MSG_STEPPING_LOGGING_INVALID_CHOICE "Invalid choice, please select 1 or 2 \n"
+
+
 
 void dump_memory(Real_machine* real_machine);
 
