@@ -223,3 +223,34 @@ uint32_t read_file_entries(Hard_disk* hard_disk, File_entry** files) {
 
 	return file_count;
 }
+
+File_entry print_files(Hard_disk* hard_disk) {
+	File_entry* fearr;
+
+	uint32_t file_count = read_file_entries(hard_disk, &fearr);
+
+	if(file_count == 0) {
+		File_entry f_entry;
+		f_entry.size = 0;
+		return f_entry;
+	}
+
+	uint32_t choice;
+
+	do {
+		choice = 0xffffffff;
+		for(uint32_t i = 0; i < file_count; ++i) {
+			printf("%d) NAME: %s, OFFSET: %x, SIZE: %x\n", i + 1, fearr[i].file_name, fearr[i].offset, fearr[i].size);
+		}
+		printf("Please select a file: ");
+		scanf("%u", &choice);
+		--choice; 
+
+	} while(choice > file_count);
+
+	File_entry f_entry = fearr[choice];
+
+	free(fearr);
+
+	return f_entry;
+}

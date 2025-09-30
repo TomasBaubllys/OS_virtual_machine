@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "hard_disk.h"
+#include "memory.h"
 
 typedef struct Channel_device {
 	uint16_t sb;			// number of the block to copy from

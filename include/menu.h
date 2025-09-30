@@ -35,7 +35,7 @@
 #define MSG_START_VM "Start a virtual machine\n"
 #define MSG_SELECT_LOADED_VM "Please select a virtual machine: \n"
 #define MSG_RUN_PROGRAM "Run program\n"
-#define MSG_SELECT_LOADED_RPGRAMS "Please select a loaded program to run:\n"
+#define MSG_SELECT_PROGRAMS "Please select a program to run:\n"
 #define MSG_STOP_VMI "Stop virtual machine\n"
 #define MSG_RUN_PRGRM_NORMAL "Run program in normal mode\n"
 #define MSG_RUN_PRGRM_TRACE "Run program in trace mode\n"
@@ -63,7 +63,7 @@ void dump_memory(Real_machine* real_machine);
 
 int display_menu();
 
-uint8_t menu(Real_machine* real_machine);
+void menu(Real_machine* real_machine);
 
 int select_virtual_machine(Real_machine* real_machine); 
 

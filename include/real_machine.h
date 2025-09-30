@@ -30,11 +30,9 @@ int init_real_machine(Real_machine* real_machine);
 
 int add_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_machine);
 
-int remove_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index);
-
 int destroy_real_machine(Real_machine* real_machine);
 
-void real_machine_run();
+void real_machine_run(Real_machine* real_machine, File_entry* file_entry);
 
 int real_machine_validate_supervisor(Real_machine* real_machine, File_entry* file_entry);
 
