@@ -111,7 +111,7 @@ int xchg(Channel_device* channel_device) {
 				case USER_MEM:											// supervisor mem -> user mem (used for loading programs)
 					for(uint32_t i = 0; i < channel_device -> cb; ++i) {
 						uint32_t word = read_word(channel_device -> memory, channel_device -> sb + i * MEM_WORD_SIZE);
-						write_word(channel_device -> memory, channel_device -> db + channel_device -> of + i * MEM_WORD_SIZE); 
+						write_word(channel_device -> memory, channel_device -> db + channel_device -> of + i * MEM_WORD_SIZE, word); 
 					}
 					break;
 			
