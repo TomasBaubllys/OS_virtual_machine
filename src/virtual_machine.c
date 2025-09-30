@@ -283,8 +283,9 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 
 			// if overflow encountered continue? or not but set the pi
 			if(virtual_machine -> cpu -> ra > 0xffffffff - x * 16 + y) {
-				virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
-				break;
+				virtual_machine -> cpu -> sf |= 0x0004;
+				//virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
+				//break;
 			}
 
 			virtual_machine -> cpu -> ra += x * 16 + y;
@@ -314,7 +315,8 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			if(old_ra > virtual_machine -> cpu -> ra) {
-				virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
+				virtual_machine -> cpu -> sf |= 0x0004;
+				//virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
 			}
 
 			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
@@ -344,7 +346,8 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			if(old_ra < virtual_machine -> cpu -> ra) {
-				virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
+				virtual_machine -> cpu -> sf |= 0x0004;
+				//virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
 			}
 
 			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
@@ -376,7 +379,8 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			if(old_ra > virtual_machine -> cpu -> ra) {
-				virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
+				virtual_machine -> cpu -> sf |= 0x0004;
+				//virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
 			}
 
 			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
