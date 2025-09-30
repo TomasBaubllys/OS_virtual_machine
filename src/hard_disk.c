@@ -36,11 +36,11 @@ int init_hard_disk(Hard_disk* hard_disk) {
 	long size = ftell(hard_disk -> fptr);
 	rewind(hard_disk -> fptr);	
 	
-	if(size > HD_MAX_HARD_DISK_ADDRESS) {
+	/*if(size > HD_MAX_HARD_DISK_ADDRESS) {
 		fprintf(stderr, HD_CORUPTION_ERR);
 		fclose(hard_disk -> fptr);
 		return -1;
-	}
+	}*/
 	
 	fclose(hard_disk -> fptr);
 	return 0;
@@ -88,7 +88,7 @@ uint32_t read_word_hard_disk(Hard_disk* hard_disk, uint16_t address) {
 		return 0;
 	}
 
-	if(address >= HD_MAX_HARD_DISK_ADDRESS - MEM_WORD_SIZE) {
+	if(address >= HD_MAX_HARD_DISK_ADDRESS - 4) {
 		return 0;
 	}
 
@@ -185,6 +185,8 @@ uint32_t read_file_entries(Hard_disk* hard_disk, File_entry** files) {
 		return 0;
 	}
 
+	printf("%d", file_count);
+
 	*files = malloc(sizeof(File_entry) * file_count);	
 
 	if(!*files) {
@@ -194,7 +196,7 @@ uint32_t read_file_entries(Hard_disk* hard_disk, File_entry** files) {
 	}
 
 	for(uint32_t i = 0; i < file_count; ++i) {
-		if(fread((*files)[i].file_name, sizeof((*files)[i].file_name), 1, hard_disk -> fptr) != 1) {
+		if(fread((*files)[i].file_name, sizeof((*files)[i].file_name - 1), 1, hard_disk -> fptr) != 1) {
 			fprintf(stderr, HD_CORUPTION_ERR);
 			fclose(hard_disk -> fptr);
 			free(*files);

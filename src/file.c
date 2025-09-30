@@ -1,7 +1,7 @@
 #include "../include/file.h"
 
 
-uint32_t read_file_entries(Hard_disk* hard_disk, File_entry* files) {
+/*uint32_t read_file_entries(Hard_disk* hard_disk, File_entry* files) {
 	if(!hard_disk || !files) {
 		return 0;
 	}
@@ -108,3 +108,4 @@ uint32_t* read_program(Hard_disk* hard_disk, File_entry* file_entry, uint32_t* r
 
 	return program;
 }
+*/

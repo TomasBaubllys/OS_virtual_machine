@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "memory.h"
 #include "file.h"
 
 // [0x0000; 0x0003] - number of files
@@ -39,7 +38,7 @@ uint8_t read_byte_hard_disk(Hard_disk* hard_disk, uint16_t address);
 
 uint8_t* read_stream_hard_disk(Hard_disk* hard_disk, uint16_t address, uint16_t bytes_to_read);
 
-uint32_t read_file_entries(Hard_disk* hard_disk, File_entry* files);
+uint32_t read_file_entries(Hard_disk* hard_disk, File_entry** files);
 
 // converts the harddisk to little or big endian
 void convert_endianess(Hard_disk* hard_disk);

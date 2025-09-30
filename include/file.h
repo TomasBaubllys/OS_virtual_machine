@@ -1,8 +1,8 @@
 #ifndef FILE_H_INCLUDED
 #define FILE_H_INCLUDED
 
-#include "hard_disk.h"
-#include "string.h"
+#include <string.h>
+#include <stdint.h>
 
 #define FILE_NAME_SIZE 8
 #define FILE_START_MARKER "#LOS"
@@ -21,9 +21,9 @@ typedef struct File_entry {
 // reads all the available files returns the amount of files found
 // uint32_t read_file_entries(Hard_disk* hard_disk, File_entry* files);
 
-File_entry print_files(Hard_disk* Hard_disk);
+// File_entry print_files(Hard_disk* Hard_disk);
 
 // please dont forget to free the value after using it
-uint32_t* read_program(Hard_disk* hard_disk, File_entry* file_entry, uint32_t* return_size);
+// uint32_t* read_program(Hard_disk* hard_disk, File_entry* file_entry, uint32_t* return_size);
 
 #endif // FILE_H_INCLUDED
