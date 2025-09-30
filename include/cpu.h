@@ -40,10 +40,10 @@ typedef struct CPU {
 	uint16_t si;			// supervisor interupt register
 	uint16_t tr;			// page table register
 
-	uint8_t ti;			// timer register
-	uint8_t sf;			// flag register
-	uint8_t mr;			// mode register
-	uint8_t ss;			// semafor register
+	uint8_t ti;				// timer register
+	uint8_t sf;				// flag register
+	uint8_t mr;				// mode register
+	uint8_t ss;				// semafor register
 
 	uint32_t ra;			// general purpose register
 	uint32_t rb;			// general purpose register
@@ -57,5 +57,7 @@ typedef struct CPU {
 int init_cpu(CPU* cpu, Channel_device* channel_device);
 
 int interupt(CPU* cpu);
+
+uint8_t check(CPU* cpu);
 
 #endif // CPU_H_INCLUDED

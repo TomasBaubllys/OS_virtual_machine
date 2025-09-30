@@ -5,7 +5,6 @@ int init_virtual_machine(Virtual_machine* virtual_machine, CPU* cpu, Memory* mem
 		return -1;
 	}
 
-	virtual_machine -> vm_pc = 0;
 	virtual_machine -> cpu = cpu;
 	virtual_machine -> memory = memory;
 
@@ -68,15 +67,15 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 	}
 
 	// translate the address to a real one
-	virtual_machine -> cpu -> pc = translate_to_real_address(virtual_machine -> memory, virtual_machine -> vm_pc);
-	if(virtual_machine -> cpu -> pc == MEM_NULL_ADDR) {
+	uint16_t com_addr = translate_to_real_address(virtual_machine -> memory, virtual_machine -> cpu -> pc);
+	if(com_addr == MEM_NULL_ADDR) {
 		virtual_machine -> cpu -> pi = CPU_PI_INVALID_ADDRESS;
 		return;
 	}
 
 
 	// read the command
-	uint32_t command = read_word(virtual_machine -> memory, virtual_machine -> cpu -> pc);
+	uint32_t command = read_word(virtual_machine -> memory, com_addr);
 
 	// execute the command
 	uint16_t com_code = command >> 16;
@@ -95,7 +94,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			virtual_machine -> cpu -> ra = x * 16 + y;
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 		// LRa
@@ -122,7 +121,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 					break;
 			}
 
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 
 			break;
 		}
@@ -147,7 +146,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 					break;
 			}
 
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 		// LWxy handle page missalignment
@@ -165,7 +164,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			virtual_machine -> cpu -> ra |= (x * 16 + y) << 16; // save the address in the upper 2 bytes of ra
 			virtual_machine -> cpu -> si = CPU_SI_LW;
 
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 		// SWxy handle page missalignmet
@@ -181,7 +180,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			virtual_machine -> cpu -> rb &= 0x0000ffff;
 			virtual_machine -> cpu -> rb |= (x * 16 + y) << 16; // save the address in the upper 2 bytes of rb
 			virtual_machine -> cpu -> si = CPU_SI_SW;
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 		// BPxy
@@ -203,7 +202,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			virtual_machine -> cpu -> rb &= 0x0000ffff;
 			virtual_machine -> cpu -> rb |= (x * 16 + y) << 16;
 			virtual_machine -> cpu -> si = CPU_SI_BP;
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 		// BG
@@ -227,7 +226,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			virtual_machine -> cpu -> ra |= (x * 16 + y) << 16;
 
 			virtual_machine -> cpu -> si = CPU_SI_BP;
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 
@@ -241,7 +240,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			virtual_machine -> cpu -> si = CPU_SI_GEDA;
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 
@@ -254,7 +253,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			virtual_machine -> cpu -> si = CPU_SI_PUTA;
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 
@@ -272,7 +271,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			virtual_machine -> cpu -> si = CPU_SI_PSTR;
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 
@@ -289,7 +288,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			virtual_machine -> cpu -> ra += x * 16 + y;
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 		// ADa
@@ -318,7 +317,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
 			}
 
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 		break;
 		}
 		// SBa
@@ -348,7 +347,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
 			}
 
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 		// MUa
@@ -380,7 +379,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
 			}
 
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 
@@ -419,11 +418,11 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 					break;
 				default:
 					// other registers not allowed
-					real_machine -> cpu -> pi = CPU_PI_INVALID_ASSIGNMENT;
+					virtual_machine -> cpu -> pi = CPU_PI_INVALID_ASSIGNMENT;
 					break;
 			}
 
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 
@@ -453,7 +452,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				virtual_machine -> cpu -> sf &= 0xfffe;
 			}
 
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 		// CRRB
@@ -484,7 +483,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				virtual_machine -> cpu -> sf &= 0xfffe;
 			}
 
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
 		// cycle commands
@@ -499,10 +498,10 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				}
 
 				--(virtual_machine -> cpu -> rc);
-				virtual_machine -> vm_pc = x * 16 + y;
+				virtual_machine -> cpu -> pc = x * 16 + y;
 			}
 			else {
-				virtual_machine -> vm_pc += MEM_WORD_SIZE;
+				virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			}
 			break;
 		}
@@ -528,7 +527,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 					break;
 			}
 
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 
 			break;
 		}
@@ -553,7 +552,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 					break;
 
 			}
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 
 			break;
 		}
@@ -577,7 +576,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 					virtual_machine -> cpu -> pi = CPU_PI_INVALID_ASSIGNMENT;
 					break;
 			}
-			virtual_machine -> vm_pc += MEM_WORD_SIZE;
+			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 
 			break;
 		}
@@ -591,7 +590,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 				break;
 			}
 
-			virtual_machine -> vm_pc = x * 16 + y;
+			virtual_machine -> cpu -> pc = x * 16 + y;
 			break;
 		}
 		// JZxy
@@ -605,7 +604,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			if(((virtual_machine -> cpu -> sf & 0x0002) >> 1) == 1){
-				virtual_machine -> vm_pc = x * 16 + y;
+				virtual_machine -> cpu -> pc = x * 16 + y;
 			}
 
 			break;
@@ -621,7 +620,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			if(((virtual_machine -> cpu -> sf & 0x0003)) == 0){
-				virtual_machine -> vm_pc = x * 16 + y;
+				virtual_machine -> cpu -> pc = x * 16 + y;
 			}
 
 			break;
@@ -637,7 +636,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			if(((virtual_machine -> cpu -> sf & 0x0001)) == 1){
-				virtual_machine -> vm_pc = x * 16 + y;
+				virtual_machine -> cpu -> pc = x * 16 + y;
 			}
 
 			break;
@@ -654,7 +653,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			if(((virtual_machine -> cpu -> sf & 0x0002)) == 0){
-				virtual_machine -> vm_pc = x * 16 + y;
+				virtual_machine -> cpu -> pc = x * 16 + y;
 			}
 
 			break;
@@ -681,7 +680,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 	return 0;
 }
 
-int load_program_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index, uint16_t virtual_address, uint32_t* program, uint16_t program_len) {
+/*int load_program_virtual_machine(Virtual_machine* virtual_machine, uint32_t* program, uint16_t program_len) {
 	if(!real_machine) {
 		return -1;
 	}
@@ -719,16 +718,5 @@ int load_program_virtual_machine(Real_machine* real_machine, uint8_t virtual_mac
 	reset_virtual_machine_registers((real_machine -> vm) + virtual_machine_index);
 
 	return 0;
-}
+}*/
 
-void reset_virtual_machine_registers(Virtual_machine* virtual_machine) {
-	if(!virtual_machine) {
-		return;
-	}
-
-	virtual_machine -> cpu -> ra = 0;
-	virtual_machine -> cpu -> rb = 0;
-	virtual_machine -> cpu -> rc = 0;
-	virtual_machine -> cpu -> pc = 0;
-	virtual_machine -> cpu -> sf = 0;
-}

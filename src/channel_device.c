@@ -107,44 +107,6 @@ int xchg(Channel_device* channel_device) {
 		default:
 			break;
 	}
-
-	// BPxy xy must be between 0 - 1F and contained in OF
-	/*if(real_machine -> ch_dev.dt == RA_REG && real_machine -> ch_dev.st == SHARED_MEM) {
-		if(real_machine -> cpu.mr != 1) {
-			return -1;
-		}
-
-
-		if(real_machine -> ch_dev.of >=  MEM_MAX_SHARED_ADDRESS) {
-			return -1;
-		}
-
-		real_machine -> cpu.ra = read_word(&(real_machine -> mem), real_machine -> ch_dev.of + MEM_BEG_SHARED_MEM);
-
-		real_machine -> cpu.ss = 0;
-		return 0;
-	}*/
-
-	// BGxy xy must be between 0 - 1F and contained in OF
-	/*if(real_machine -> ch_dev.dt == SHARED_MEM && real_machine -> ch_dev.st == RA_REG) {
-		if(real_machine -> cpu.mr != 1) {
-			return -1;
-		}
-
-		if(real_machine -> ch_dev.of >=  MEM_MAX_SHARED_ADDRESS) {
-			return -1;
-		}
-
-		if(write_word(&(real_machine -> mem), real_machine -> ch_dev.of + MEM_BEG_SHARED_MEM, real_machine -> cpu.ra) == 0){
-			real_machine -> cpu.ss = 0;
-			return 0;
-		}
-		else{
-			real_machine -> cpu.ss = 0;
-			return -1;
-		}
-
-	}*/
-
+	
 	return -1;
 }

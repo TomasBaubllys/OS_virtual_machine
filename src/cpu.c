@@ -113,6 +113,12 @@ int interupt(CPU* cpu) {
 				break;
 			
 			case CPU_SI_BP:
+				// check if doesnt  exceeed max shared memory address
+				if(cpu -> rb >> 16 > MEM_MAX_SHARED_ADDRESS) {
+					cpu -> pi = CPU_PI_INVALID_ADDRESS;
+					break;
+				}
+
 				cpu -> channel_device -> sa = cpu -> ra;
 				cpu -> channel_device -> of = cpu -> rb >> 16;
 				cpu -> channel_device -> dt = SHARED_MEM;
@@ -125,6 +131,11 @@ int interupt(CPU* cpu) {
 				break;
 
 			case CPU_SI_BG:
+				if(cpu -> ra >> 16 > MEM_MAX_SHARED_ADDRESS) {
+					cpu -> pi = CPU_PI_INVALID_ADDRESS;
+					break;
+				}
+
 				cpu -> channel_device -> of = cpu -> ra >> 16;
 				cpu -> channel_device -> st = SHARED_MEM;
 				cpu -> channel_device -> dt = RA_REG;
@@ -146,6 +157,18 @@ int interupt(CPU* cpu) {
 
 	cpu -> si = 0;
 	cpu -> pi = 0;
+	
+	return 0;
+}
+
+uint8_t check(CPU* cpu) {
+	if(!cpu) {
+		return 0;
+	}
+
+	if(cpu -> ti > 10 || cpu -> ti == 0) {
+		cpu -> ti = CPU_DEFAULT_TIMER_VALUE;
+	}
 	
 	return 0;
 }

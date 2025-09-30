@@ -23,8 +23,7 @@ typedef struct Real_machine {
 	Memory mem;
 	Hard_disk hd;
 	Channel_device ch_dev; 
-	Virtual_machine* vm;
-	uint8_t vm_count;
+	Virtual_machine vm;
 } Real_machine;
 
 int init_real_machine(Real_machine* real_machine); 
@@ -35,8 +34,8 @@ int remove_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_i
 
 int destroy_real_machine(Real_machine* real_machine);
 
-void pi_si_reset(Real_machine* real_machine);
+void real_machine_run();
 
-uint8_t check(Real_machine* real_machine);
+int real_machine_validate_supervisor();
 
 #endif // REAL_MACHINE_H_INCLUDED

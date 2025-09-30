@@ -81,24 +81,6 @@ int remove_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_i
 	return 0;
 }
 
+void real_machine_run() {
 
-void pi_si_reset(Real_machine* real_machine) {
-	if(!real_machine) {
-		return;
-	}
-
-	real_machine -> cpu.si = 0;
-	real_machine -> cpu.pi = 0;
-}
-
-uint8_t check(Real_machine* real_machine) {
-	if(!real_machine) {
-		return 1;
-	}
-
-	if(real_machine -> cpu.ti > 10 || real_machine -> cpu.ti == 0) {
-		real_machine -> cpu.ti = CPU_DEFAULT_TIMER_VALUE;
-	} 
-
-	return 0;
 }
