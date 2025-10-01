@@ -60,35 +60,40 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 	}
 
 	// copy the program to super_visor_memory
-	uint32_t copy_count = file_entry -> size / MEM_WORDS_SUPERVISOR_COUNT;
-	uint32_t copy_count_rem = file_entry -> size % MEM_WORDS_SUPERVISOR_COUNT;
+	// copy the first time
+	uint32_t bytes_to_copy = file_entry -> size;
+
+	real_machine -> ch_dev.dt = SUPER_MEM;
+	real_machine -> ch_dev.db = MEM_BEG_SUPERVISOR_ADDR;
+	real_machine -> ch_dev.cb = (bytes_to_copy > MEM_WORDS_SUPERVISOR_COUNT? MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy);
+	real_machine -> ch_dev.st = HD_DISK;
+	real_machine -> ch_dev.sb = ((file_entry -> offset / MEM_WORD_SIZE) / MEM_PAGE_SIZE);	// calculate the hard disk page
+	real_machine -> ch_dev.of = file_entry -> offset % (MEM_WORD_SIZE * MEM_PAGE_SIZE);
+	xchg(&real_machine -> ch_dev);
+	bytes_to_copy -= real_machine -> ch_dev.cb;
+	real_machine_validate_supervisor(real_machine);
 	
-	for(int i = 0; i < copy_count; ++i) {
-		// copy to supervisor memory
+	// validate if the program starts with #LOS 
+	// if so copy to user_mem
+
+	// copy everything in between
+	while(bytes_to_copy > MEM_WORDS_SUPERVISOR_COUNT) {
 		real_machine -> ch_dev.dt = SUPER_MEM;
 		real_machine -> ch_dev.db = MEM_BEG_SUPERVISOR_ADDR;
-		real_machine -> ch_dev.cb = MEM_WORDS_SUPERVISOR_COUNT;
+		real_machine -> ch_dev.cb = (bytes_to_copy > MEM_WORDS_SUPERVISOR_COUNT? MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy);
 		real_machine -> ch_dev.st = HD_DISK;
-		real_machine -> ch_dev.sb = ((file_entry -> offset / MEM_WORD_SIZE) / MEM_PAGE_SIZE) + i;	// calculate the hard disk page
-		real_machine -> ch_dev.of = file_entry -> offset % (MEM_WORD_SIZE * MEM_PAGE_SIZE);
-		xchg(&real_machine -> ch_dev);
-
-		// check if the program starts with #LOS
-		if(i == 0) {
-
-		}
-
-		// check if the program ends with #BYE
-		if(i == copy_count - 1 && copy_count_rem == 0) {
-
-		}
+		real_machine -> ch_dev.sb = ((file_entry -> offset / MEM_WORD_SIZE) / MEM_PAGE_SIZE);	// calculate the hard disk page
+		real_machine -> ch_dev.of = file_entry -> offset % (MEM_WORD_SIZE * MEM_PAGE_SIZE);	
+		xchc(&real_machine -> ch_dev);
+		bytes_to_copy -= real_machine -> ch_dev.cb;
 	}
 
-	// check if the program ends with #BYE
-	if(copy_count_rem != 0) {
+	// copy the last bytes if theres something left to copy
+	if(bytes_to_copy > 0) {
 
 	}
-	
+	real_machine_validate_supervisor(real_machine);
+
 	// validate the program
 	
 	// if the program is valid copy from super_mem to user_mem

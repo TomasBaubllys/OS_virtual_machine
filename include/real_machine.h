@@ -34,6 +34,7 @@ int destroy_real_machine(Real_machine* real_machine);
 
 void real_machine_run(Real_machine* real_machine, File_entry* file_entry);
 
-int real_machine_validate_supervisor(Real_machine* real_machine, File_entry* file_entry);
+// validates if a code snippet in the supervisor memory looks valid
+int real_machine_validate_supervisor(Real_machine* real_machine);
 
 #endif // REAL_MACHINE_H_INCLUDED
