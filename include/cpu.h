@@ -2,14 +2,14 @@
 #define CPU_H_INCLUDED
 
 #include <stdint.h>
-#include "../include/util.h"
-#include "../include/channel_device.h"
+#include "util.h"
+#include "channel_device.h"
 
 #define CPU_DEFAULT_TIMER_VALUE 10
 #define CPU_USER_MODE 0
 #define CPU_SUPERVISOR_MODE 1
 
-#define CPU_DEFAULT_PC_VALUE 0x0004
+#define CPU_DEFAULT_PC_VALUE 0x0000
 
 #define CPU_UNKNOWN_REGISTER 0xff
 

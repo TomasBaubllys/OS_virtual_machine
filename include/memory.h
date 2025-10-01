@@ -23,6 +23,7 @@
 #define MEM_BAD_ADDRESS_ERR "Maximum address exceeded\n" 
 #define MEM_BEG_SUPERVISOR_ADDR 0xd40
 #define MEM_WORDS_SUPERVISOR_COUNT 64
+#define MEM_SUPERVISOR_PAGE_COUNT 4
 
 #define MEM_NO_FREE_PAGE_ERR 0xff
 #define MEM_INVALID_PAGE_NUM_ERR 0xfe
@@ -33,7 +34,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-#include "../include/cpu.h"
+// #include "cpu.h"
+
+typedef struct CPU CPU;
 
 typedef struct Memory {
 	uint32_t memory[MEM_TOTAL_MEMORY];

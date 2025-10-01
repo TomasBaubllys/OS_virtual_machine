@@ -28,7 +28,7 @@ int interupt(CPU* cpu) {
 
 	if(cpu -> ti == 0) {
 		check(cpu);
-		return;
+		return 0;
 	}
 
 	if(cpu -> pi > 0) {
@@ -42,21 +42,21 @@ int interupt(CPU* cpu) {
 		cpu -> mr = CPU_SUPERVISOR_MODE;
 
 		switch(cpu -> si){
-			case CPU_SI_GEDA:
+			case CPU_SI_GEDA: {
 				cpu -> channel_device -> dt = RA_REG; 
 				cpu -> channel_device -> st = IO_STREAM;
 				xchg(cpu -> channel_device);
 				cpu -> ra = cpu -> channel_device -> sa;
 				break;
-
-			case CPU_SI_PUTA:
+			}
+			case CPU_SI_PUTA: {
 				cpu -> channel_device -> dt = IO_STREAM; 
 				cpu -> channel_device -> st = RA_REG;
 				cpu -> channel_device -> sa = cpu -> ra;
 				xchg(cpu -> channel_device);
 				break;
-
-			case CPU_SI_PSTR:
+			}
+			case CPU_SI_PSTR: {
 				if(cpu -> rc == 0) {
 					break;
 				}
@@ -92,10 +92,10 @@ int interupt(CPU* cpu) {
 					cpu -> rc -= byte_count;
 	
 				} while(cpu -> rc != 0);
-
+			
 				break;
-
-			case CPU_SI_LW:
+			}
+			case CPU_SI_LW: {
 				uint16_t r_addr = translate_to_real_address(cpu -> memory, (cpu -> ra) >> 16);
 				uint16_t r_page = (r_addr / MEM_WORD_SIZE) / MEM_PAGE_SIZE;
 				cpu -> channel_device -> of = r_addr - r_page * MEM_PAGE_SIZE * MEM_WORD_SIZE;
@@ -107,8 +107,8 @@ int interupt(CPU* cpu) {
 
 				cpu -> ra = cpu -> channel_device -> sa;
 				break;
-
-			case CPU_SI_SW:
+			}
+			case CPU_SI_SW: {
 				uint16_t r_addr = translate_to_real_address(cpu -> memory, (cpu -> rb) >> 16);
 				uint16_t r_page = (r_addr / MEM_WORD_SIZE) / MEM_PAGE_SIZE;
 				cpu -> channel_device -> of = r_addr - r_page * MEM_PAGE_SIZE * MEM_WORD_SIZE;
@@ -120,8 +120,8 @@ int interupt(CPU* cpu) {
 				// reset the upper bytes of rb
 				cpu -> rb &= 0x0000ffff;
 				break;
-			
-			case CPU_SI_BP:
+			}
+			case CPU_SI_BP: {
 				// check if doesnt  exceeed max shared memory address
 				if(cpu -> rb >> 16 > MEM_MAX_SHARED_ADDRESS) {
 					cpu -> pi = CPU_PI_INVALID_ADDRESS;
@@ -138,8 +138,8 @@ int interupt(CPU* cpu) {
 				cpu -> rb &= 0x0000ffff;
 				cpu -> ss = SEMAFOR_FREE;
 				break;
-
-			case CPU_SI_BG:
+			}
+			case CPU_SI_BG: {
 				if(cpu -> ra >> 16 > MEM_MAX_SHARED_ADDRESS) {
 					cpu -> pi = CPU_PI_INVALID_ADDRESS;
 					break;
@@ -154,7 +154,7 @@ int interupt(CPU* cpu) {
 
 				cpu -> ss = SEMAFOR_FREE;
 				break;
-
+			}
 			case CPU_SI_STOP:
 				return INTERUPT_STOP;
 			default:

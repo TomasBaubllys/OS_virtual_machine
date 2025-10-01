@@ -1,4 +1,5 @@
 #include "../include/memory.h"
+#include "../include/cpu.h"
 
 int init_memory(Memory* mem, CPU* cpu) {
 	if(!mem || !cpu) {

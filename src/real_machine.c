@@ -30,7 +30,7 @@ int add_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_mac
 		return -1;
 	} 
 
-	real_machine -> vm = *virtual_machine;
+	real_machine -> vm = virtual_machine;
 
 	return 0;
 }
@@ -50,7 +50,7 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		return;
 	}
 
-	if(file_entry >= MEM_MAX_USER_ADDRESS) {
+	if(file_entry -> size >= MEM_MAX_USER_ADDRESS) {
 		return;
 	}
 
@@ -61,37 +61,55 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 
 	// copy the program to super_visor_memory
 	// copy the first time
-	uint32_t bytes_to_copy = file_entry -> size;
+	uint32_t bytes_to_copy_super_mem = file_entry -> size;
+	// do not copy #LOS and #BYE to user mem
+	uint32_t bytes_to_copy_user_mem = bytes_to_copy_super_mem - (MEM_WORD_SIZE * 2);
+	uint32_t user_mem_dest_page = 0;
 
 	real_machine -> ch_dev.dt = SUPER_MEM;
 	real_machine -> ch_dev.db = MEM_BEG_SUPERVISOR_ADDR;
-	real_machine -> ch_dev.cb = (bytes_to_copy > MEM_WORDS_SUPERVISOR_COUNT? MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy);
+	real_machine -> ch_dev.cb = (bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT? MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy_super_mem);
 	real_machine -> ch_dev.st = HD_DISK;
 	real_machine -> ch_dev.sb = ((file_entry -> offset / MEM_WORD_SIZE) / MEM_PAGE_SIZE);	// calculate the hard disk page
 	real_machine -> ch_dev.of = file_entry -> offset % (MEM_WORD_SIZE * MEM_PAGE_SIZE);
 	xchg(&real_machine -> ch_dev);
-	bytes_to_copy -= real_machine -> ch_dev.cb;
+	bytes_to_copy_super_mem -= real_machine -> ch_dev.cb;
 	
 	// validate if the program starts with #LOS 
 	// if so copy to user_mem
 	real_machine_validate_supervisor(real_machine);
+	
+	for(uint32_t i = 0; i < MEM_SUPERVISOR_PAGE_COUNT; ++i) {
+		uint16_t r_page = translate_to_real_address(&real_machine -> mem, user_mem_dest_page);
+		real_machine -> ch_dev.dt = USER_MEM;
+		real_machine -> ch_dev.db = r_page;
+		real_machine -> ch_dev.cb = bytes_to_copy_super_mem > MEM_PAGE_SIZE? MEM_PAGE_SIZE : bytes_to_copy_user_mem;
+		real_machine -> ch_dev.st = SHARED_MEM;
+		real_machine -> ch_dev.sb = i * MEM_PAGE_SIZE;
+		real_machine -> ch_dev.of = 0;
+		xchg(&real_machine -> ch_dev);
+
+		bytes_to_copy_user_mem -= real_machine -> ch_dev.cb;
+		++user_mem_dest_page;		
+	}
+
 
 	// copy everything in between
-	while(bytes_to_copy > MEM_WORDS_SUPERVISOR_COUNT) {
+	while(bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT) {
 		real_machine -> ch_dev.dt = SUPER_MEM;
 		real_machine -> ch_dev.db = MEM_BEG_SUPERVISOR_ADDR;
-		real_machine -> ch_dev.cb = (bytes_to_copy > MEM_WORDS_SUPERVISOR_COUNT? MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy);
+		real_machine -> ch_dev.cb = (bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT? MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy_super_mem);
 		real_machine -> ch_dev.st = HD_DISK;
 		real_machine -> ch_dev.sb = ((file_entry -> offset / MEM_WORD_SIZE) / MEM_PAGE_SIZE);	// calculate the hard disk page
 		real_machine -> ch_dev.of = file_entry -> offset % (MEM_WORD_SIZE * MEM_PAGE_SIZE);	
-		xchc(&real_machine -> ch_dev);
-		bytes_to_copy -= real_machine -> ch_dev.cb;
+		xchg(&real_machine -> ch_dev);
+		bytes_to_copy_super_mem -= real_machine -> ch_dev.cb;
 
 		// copy to user mem
 	}
 
 	// copy the last bytes if theres something left to copy
-	if(bytes_to_copy > 0) {
+	if(bytes_to_copy_super_mem > 0) {
 
 	}
 	real_machine_validate_supervisor(real_machine);
@@ -108,10 +126,11 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		if(real_machine -> cpu.pi + real_machine -> cpu.si > 0 || real_machine -> cpu.ti == 0) {
 			interupt(&real_machine -> cpu);
 		}	
-		
-		check(&real_machine);
-		
 	}
 
 	destroy_virtual_machine(&virtual_machine);
+}
+
+int real_machine_validate_supervisor(Real_machine* real_machine) {
+	return 0;
 }

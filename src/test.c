@@ -1,7 +1,7 @@
 #include "../include/hard_disk.h"
 #include <assert.h>
 
-int main(int argc, char* argv[]) {
+int main_TEST(int argc, char* argv[]) {
 	Hard_disk hd;
 	init_hard_disk(&hd);
 

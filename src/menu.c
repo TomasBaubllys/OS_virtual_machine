@@ -20,17 +20,17 @@ void menu(Real_machine* real_machine) {
 				break;
 
 			case STEPPING:
-				int coice;
+				int choice1;
 				while(1){
 					printf(MSG_STEPPING_CHOICE);
-					choice = 0;
+					choice1 = 0;
 					
-					if(scanf("%d", &choice) != 1) {
+					if(scanf("%d", &choice1) != 1) {
 						while(getchar() != '\n');
 						continue;
 					}
 
-					if(choice == 1 || choice == 2){
+					if(choice1 == 1 || choice1 == 2){
 						break;
 					}
 					else{
@@ -39,11 +39,11 @@ void menu(Real_machine* real_machine) {
 
 				}
 
-				if(choice == 1){
+				if(choice1 == 1){
 					real_machine -> cpu.sf |= 0x0008;
 				}
+				break;
 
-				return MENU_ON;
 
 			case LOGGING:
 				int coice;
@@ -69,7 +69,7 @@ void menu(Real_machine* real_machine) {
 					real_machine -> cpu.sf |= 0x0010;
 				}
 
-				return MENU_ON;
+				break;
 
 			case DUMP_MEM:
 				dump_memory(real_machine);

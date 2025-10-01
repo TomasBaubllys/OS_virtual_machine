@@ -681,8 +681,6 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 	}
 
 	--(virtual_machine -> cpu -> ti);
-
-	return 0;
 }
 
 /*int load_program_virtual_machine(Virtual_machine* virtual_machine, uint32_t* program, uint16_t program_len) {

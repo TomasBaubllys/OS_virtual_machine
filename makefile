@@ -8,7 +8,7 @@ OBJ_DIR = obj
 
 # Files
 TARGET = main
-SRC = $(wildcard $(SRC_DIR)/*.c)
+SRC = $(filter-out $(SRC_DIR)/test.c $(SRC_DIR)/endian_reverser.c, $(wildcard $(SRC_DIR)/*.c))
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
 # Default rule
@@ -31,4 +31,3 @@ clean:
 	rm -rf $(OBJ_DIR) $(TARGET)
 
 .PHONY: all clean
- 

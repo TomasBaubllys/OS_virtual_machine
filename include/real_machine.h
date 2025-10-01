@@ -15,7 +15,6 @@
 #define RM_MSG_NO_VMS "No added VMs!\n"
 #define RM_MSG_SUCCESS_REMOVE_VM "Virtual machine successfully removed!\n"
 
-
 typedef struct Virtual_machine Virtual_machine;
 
 typedef struct Real_machine {
@@ -23,7 +22,7 @@ typedef struct Real_machine {
 	Memory mem;
 	Hard_disk hd;
 	Channel_device ch_dev; 
-	Virtual_machine vm;
+	Virtual_machine* vm;
 } Real_machine;
 
 int init_real_machine(Real_machine* real_machine); 
