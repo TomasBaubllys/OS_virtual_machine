@@ -95,7 +95,8 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			virtual_machine -> cpu -> rb,
 			virtual_machine -> cpu -> rc
 		);
-		printf("NEXT COMMAND: %x\n", command);
+		printf("NEXT COMMAND: ");
+		print_uint32_as_str(command);
 		printf("Press ENTER to continue...\n");
 		getchar();
 	}

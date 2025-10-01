@@ -51,3 +51,13 @@ uint16_t uint16_t_to_lower(uint16_t reg_char) {
 	return (u_letter << 8) | l_letter;
 }
 
+void print_uint32_as_str(uint32_t value) {
+    char str[5];  // 4 chars + null terminator
+    str[0] = (value >> 24) & 0xFF;  // most significant byte
+    str[1] = (value >> 16) & 0xFF;
+    str[2] = (value >> 8)  & 0xFF;
+    str[3] = value & 0xFF;          // least significant byte
+    str[4] = '\0';                  // null terminator
+
+    printf("%s\n", str);
+}

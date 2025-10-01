@@ -2,6 +2,7 @@
 #define UTIL_H_INCLUDED
 
 #include <stdint.h>
+#include <stdio.h>
 
 #define UTIL_BAD_ARG 0xff
 
@@ -21,5 +22,7 @@ void reverse_endianness_array(uint32_t *arr, uint32_t length);
 
 // converts to characters to lower case
 uint16_t uint16_t_to_lower(uint16_t reg_char);
+
+void print_uint32_as_str(uint32_t value);
 
 #endif // UTIL_H_INCLUDED

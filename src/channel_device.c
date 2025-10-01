@@ -100,7 +100,7 @@ int xchg(Channel_device* channel_device) {
 					printf("%x", channel_device -> sa);
 					return 0;
 				case USER_MEM:											// ra -> user memory sw
-					return write_word(channel_device -> memory, channel_device -> db + channel_device -> of, channel_device -> sa);
+					return write_word(channel_device -> memory, channel_device -> db * MEM_WORD_SIZE * MEM_PAGE_SIZE + channel_device -> of, channel_device -> sa);
 				default:
 					break;
 			}
