@@ -9,6 +9,9 @@
 #define VM_MAX_VIRTUAL_ADDDRESS_EXCEEDED 0xffff
 #define VM_REAL_MACHINE_NULL 0xfffe
 
+#define VM_STEPPING_MODE_NEXT_COM "NEXT COMMAND: "
+#define VM_STEPPING_PRESS_KEY "Press ENTER to continue...\n"
+
 #define VM_EXEC_FAILED_NULL_ERR "Virtual machine is null execution cancelled\n"
 
 typedef struct Virtual_machine {
@@ -17,9 +20,6 @@ typedef struct Virtual_machine {
 } Virtual_machine;
 
 int init_virtual_machine(Virtual_machine* virtual_machine, CPU* cpu, Memory* memory);
-
-// loads a program begging from a virtual address virtual_address
-// int load_program_virtual_machine(Real_machine* real_machine, uint8_t virtual_machine_index, uint16_t virtual_address, uint32_t* program, uint16_t program_len);
 
 int destroy_virtual_machine(Virtual_machine* virtual_machine);
 

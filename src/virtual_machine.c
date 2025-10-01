@@ -45,9 +45,7 @@ int destroy_virtual_machine(Virtual_machine* virtual_machine) {
 		return -1;
 	}
 
-
 	for(uint8_t i = 0; i < VM_VIRTUAL_MACHINE_BLOCK_COUNT; ++i) {
-	// printf("%d\n", virtual_machine -> rm -> mem.memory[(virtual_machine -> page_table_index) * 16 + i]);
 		if(return_page(virtual_machine -> memory, (virtual_machine -> memory -> memory[(virtual_machine -> cpu -> ptr) * 16 + i]) & 0x00ff ) != 0) {
 			return -1;
 		} 
@@ -95,9 +93,9 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			virtual_machine -> cpu -> rb,
 			virtual_machine -> cpu -> rc
 		);
-		printf("NEXT COMMAND: ");
+		printf(VM_STEPPING_MODE_NEXT_COM);
 		print_uint32_as_str(command);
-		printf("Press ENTER to continue...\n");
+		printf(VM_STEPPING_PRESS_KEY);
 		getchar();
 	}
 
@@ -706,44 +704,3 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 	--(virtual_machine -> cpu -> ti);
 	return;
 }
-
-/*int load_program_virtual_machine(Virtual_machine* virtual_machine, uint32_t* program, uint16_t program_len) {
-	if(!real_machine) {
-		return -1;
-	}
-
-	if(!program) {
-		return -1;
-	}
-
-	if(virtual_machine_index >= RM_VM_MAX_COUNT) {
-		return -1;
-	}
-
-	if(virtual_address >= VM_MAX_VIRTUAL_ADDRESS) {
-		return -1;
-	}	
-
-	if(virtual_address + program_len * 4 >= VM_MAX_VIRTUAL_ADDRESS) {
-		return -1;
-	}
-
-	uint16_t page_table_index = real_machine -> vm[virtual_machine_index].page_table_index;
-
-	// write the program to memory
-	for(uint16_t i = 0; i < program_len; ++i) {
-		// translate virtual_address to a real one
-		uint16_t real_address = translate_to_real_address(real_machine, virtual_address, page_table_index);	
-
-		// write to that real address	
-		write_word(&(real_machine -> mem), real_address, program[i]); 
-	
-		// increment virtual address by MEM_WORD_SIZE
-		virtual_address += MEM_WORD_SIZE;
-	}
-	
-	reset_virtual_machine_registers((real_machine -> vm) + virtual_machine_index);
-
-	return 0;
-}*/
-

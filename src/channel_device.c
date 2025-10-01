@@ -107,7 +107,6 @@ int xchg(Channel_device* channel_device) {
 			break;
 		case SUPER_MEM:
 			switch (channel_device -> dt) {
-				// KEEP IN MY PAGES ARE NOT LINEAR THIS FUNCTION MUST BE CALLED A COUPLE OF TIMES IF COPYING MULTIPLE PAGES
 				case USER_MEM:											// supervisor mem -> user mem (used for loading programs)
 					for(uint32_t i = 0; i < channel_device -> cb; i += 4) {
 						uint32_t word = read_word(channel_device -> memory, channel_device -> sb * MEM_WORD_SIZE * MEM_PAGE_SIZE + i + channel_device -> sa);
@@ -121,7 +120,6 @@ int xchg(Channel_device* channel_device) {
 			break;	
 		case HD_DISK:													// used for copying file contents from hd to supermem
 			switch (channel_device -> dt) {
-				// KEEP IN MY PAGES ARE NOT LINEAR THIS FUNCTION MUST BE CALLED A COUPLE OF TIMES IF COPYING MULTIPLE PAGES
 				case SUPER_MEM:
 					for(uint32_t i = 0; i < channel_device -> cb; i += 4) {
 						uint32_t word = read_word_hard_disk(channel_device -> hard_disk, channel_device -> sb * MEM_PAGE_SIZE * MEM_WORD_SIZE + channel_device -> of + i);
