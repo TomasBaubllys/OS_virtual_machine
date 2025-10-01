@@ -61,3 +61,17 @@ void print_uint32_as_str(uint32_t value) {
 
     printf("%s\n", str);
 }
+
+// proccesed in bytes of 4
+void print_file_name(char* fname, uint16_t size) {
+	if(size % 4 != 0 || size == 0) {
+		return;
+	}
+
+	for(uint16_t i = 0; i < size; i += 4) {
+		putchar(fname[i + 3]);
+		putchar(fname[i + 2]);
+		putchar(fname[i + 1]);
+		putchar(fname[i]);
+	}
+}

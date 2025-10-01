@@ -25,4 +25,6 @@ uint16_t uint16_t_to_lower(uint16_t reg_char);
 
 void print_uint32_as_str(uint32_t value);
 
+void print_file_name(char* fname, uint16_t size);
+
 #endif // UTIL_H_INCLUDED

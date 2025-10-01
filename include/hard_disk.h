@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "file.h"
+#include "util.h"
 
 // [0x0000; 0x0003] - number of files
 // [0x0004; 0x1000] - file entry array

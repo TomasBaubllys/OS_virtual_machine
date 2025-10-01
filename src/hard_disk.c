@@ -185,7 +185,10 @@ File_entry print_files(Hard_disk* hard_disk) {
 	do {
 		choice = 0xffffffff;
 		for(uint32_t i = 0; i < file_count; ++i) {
-			printf("%d) NAME: %s, OFFSET: %x, SIZE: %x\n", i + 1, fearr[i].file_name, fearr[i].offset, fearr[i].size);
+			printf("%d) ", i + 1);
+			printf("NAME: ");
+			print_file_name(fearr[i].file_name, 8);
+			printf(" OFFSET: %x, SIZE: %x\n", fearr[i].offset, fearr[i].size);
 		}
 		printf("Please select a file: ");
 		scanf("%u", &choice);
