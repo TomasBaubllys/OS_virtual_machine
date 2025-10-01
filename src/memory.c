@@ -9,14 +9,14 @@ int init_memory(Memory* mem, CPU* cpu) {
 	mem -> cpu = cpu;
 
 	memset(mem -> memory, 0, sizeof(mem -> memory));	
-    	memset(mem -> used_pages, 0, sizeof(mem -> used_pages));
-    
-    	for(uint8_t i = 0; i < MEM_PAGE_COUNT; ++i) {
-        	mem -> free_pages[i] = i;
-    	}
+	memset(mem -> used_pages, 0, sizeof(mem -> used_pages));
 
-    	mem -> used_page_count = 0;
-    	mem -> free_page_count = MEM_USER_PAGE_COUNT;
+	for(uint8_t i = 0; i < MEM_PAGE_COUNT; ++i) {
+		mem -> free_pages[i] = i;
+	}
+
+	mem -> used_page_count = 0;
+	mem -> free_page_count = MEM_USER_PAGE_COUNT;
 
 	return 0;
 }

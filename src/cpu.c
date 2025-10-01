@@ -156,6 +156,8 @@ int interupt(CPU* cpu) {
 				break;
 			}
 			case CPU_SI_STOP:
+				cpu -> si = 0;
+				cpu -> pi = 0;
 				return INTERUPT_STOP;
 			default:
 				break;

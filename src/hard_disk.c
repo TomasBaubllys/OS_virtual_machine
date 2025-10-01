@@ -46,45 +46,16 @@ int init_hard_disk(Hard_disk* hard_disk) {
 	return 0;
 }
 
-int write_byte_hard_disk(Hard_disk* hard_disk, uint16_t address, uint8_t value) {
-	if(read_write_arg_check_hard_disk(hard_disk, address) != 0) {
-		return -1;
-	}
-
-	if(fseek(hard_disk -> fptr, address, SEEK_SET) != 0) {
-		perror("fseek");
-		return -1;
-	}
-
-	if(fwrite(&value, sizeof(value), 1, hard_disk -> fptr) != 1) {
-		perror("fwrite");
-	}
-	
-	rewind(hard_disk -> fptr);
-	return 0;
-}
-
-int write_word_hard_disk(Hard_disk* hard_disk, uint16_t address, uint32_t value) {
-	// check if word will fit
-	if(read_write_arg_check_hard_disk(hard_disk, address) != 0) {
-		return -1;
-	}
-	
-	if(fseek(hard_disk -> fptr, address, SEEK_SET) != 0) { 
-		perror("fseek");
-		return -1;
-	}
-
-	if(fwrite(&value, sizeof(value), 1, hard_disk -> fptr) != 1) {
-		perror("fwrite");
-	}
-	
-	rewind(hard_disk -> fptr);
-	return 0;
-}
-
 uint32_t read_word_hard_disk(Hard_disk* hard_disk, uint16_t address) {
-	if(read_write_arg_check_hard_disk(hard_disk, address) != 0) {
+	if(!hard_disk) {
+		return 0;
+	}
+
+	// file must already exist
+	hard_disk -> fptr = fopen(HD_HARD_DISK_FILE_NAME, "rb+");
+
+	if(!hard_disk -> fptr) {
+		fprintf(stderr, HD_OPEN_ERR);
 		return 0;
 	}
 
@@ -104,33 +75,7 @@ uint32_t read_word_hard_disk(Hard_disk* hard_disk, uint16_t address) {
 		return 0;
 	}
 
-	rewind(hard_disk -> fptr);
-	return value;
-}
-
-uint8_t read_byte_hard_disk(Hard_disk* hard_disk, uint16_t address) {
-	if(read_write_arg_check_hard_disk(hard_disk, address) != 0) {
-		return 0;
-	}
-
-	if(address >= HD_MAX_HARD_DISK_ADDRESS - 1) {
-		return 0;
-	}
-	
-	if(fseek(hard_disk -> fptr, address, SEEK_SET) != 0) {
-		perror("fseek");
-		return 0;
-	}
-
-	uint8_t value = 0;
-		
-	if(fread(&value, sizeof(value), 1, hard_disk -> fptr) != 1) {
-		perror("fread");
-		return 0;
-	}
-	
-	rewind(hard_disk -> fptr);
-
+	fclose(hard_disk -> fptr);
 	return value;
 }
 

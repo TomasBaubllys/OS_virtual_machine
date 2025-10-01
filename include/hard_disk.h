@@ -26,15 +26,7 @@ int read_write_arg_check_hard_disk(Hard_disk* hard_disk, uint16_t address);
 
 int init_hard_disk(Hard_disk* hard_disk);
 
-int write_byte_hard_disk(Hard_disk* hard_disk, uint16_t address, uint8_t value);
-
-int write_word_hard_disk(Hard_disk* hard_disk, uint16_t address, uint32_t value);
-
-int write_stream_hard_disk(); // not implemented yet
-
 uint32_t read_word_hard_disk(Hard_disk* hard_disk, uint16_t address);
-
-uint8_t read_byte_hard_disk(Hard_disk* hard_disk, uint16_t address);
 
 uint8_t* read_stream_hard_disk(Hard_disk* hard_disk, uint16_t address, uint16_t bytes_to_read);
 

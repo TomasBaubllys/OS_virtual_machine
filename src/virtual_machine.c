@@ -76,10 +76,32 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 
 	// read the command
 	uint32_t command = read_word(virtual_machine -> memory, com_addr);
+	
+	if(virtual_machine -> cpu -> sf == 8) {
+		printf(
+			"PC: %04x, PI: %04x, SI: %04x, TR: %04x, PTR: %04x\n"
+			"TI: %02x, SF: %02x, MR: %02x, SS: %02x\n"
+			"RA: %08x, RB: %08x, RC: %08x\n",
+			virtual_machine -> cpu -> pc,
+			virtual_machine -> cpu -> pi,
+			virtual_machine -> cpu -> si,
+			virtual_machine -> cpu -> tr,
+			virtual_machine -> cpu -> ptr,
+			virtual_machine -> cpu -> ti,
+			virtual_machine -> cpu -> sf,
+			virtual_machine -> cpu -> mr,
+			virtual_machine -> cpu -> ss,
+			virtual_machine -> cpu -> ra,
+			virtual_machine -> cpu -> rb,
+			virtual_machine -> cpu -> rc
+		);
+		printf("NEXT COMMAND: %x\n", command);
+		printf("Press ENTER to continue...\n");
+		getchar();
+	}
 
 	// execute the command
 	uint16_t com_code = command >> 16;
-
 
 	switch(com_code) {
 		// memory commands
