@@ -248,7 +248,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			virtual_machine -> cpu -> ra &= 0x0000ffff;
 			virtual_machine -> cpu -> ra |= (x * 16 + y) << 16;
 
-			virtual_machine -> cpu -> si = CPU_SI_BP;
+			virtual_machine -> cpu -> si = CPU_SI_BG;
 			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
 			break;
 		}
@@ -343,7 +343,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			}
 
 			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
-		break;
+			break;
 		}
 		// SBa
 		// substract a value to RA
@@ -704,6 +704,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 	}
 
 	--(virtual_machine -> cpu -> ti);
+	return;
 }
 
 /*int load_program_virtual_machine(Virtual_machine* virtual_machine, uint32_t* program, uint16_t program_len) {

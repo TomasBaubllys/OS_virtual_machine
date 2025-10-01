@@ -28,7 +28,6 @@ int interupt(CPU* cpu) {
 
 	if(cpu -> ti == 0) {
 		check(cpu);
-		return 0;
 	}
 
 	if(cpu -> pi > 0) {
@@ -115,6 +114,7 @@ int interupt(CPU* cpu) {
 				cpu -> channel_device -> db = r_page;
 				cpu -> channel_device -> dt = USER_MEM;
 				cpu -> channel_device -> st = RA_REG;
+				cpu -> channel_device -> sa = cpu -> ra;
 
 				xchg(cpu -> channel_device);
 				// reset the upper bytes of rb

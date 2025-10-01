@@ -99,7 +99,7 @@ int xchg(Channel_device* channel_device) {
 				case IO_STREAM:											// ra -> stdio PUTA
 					printf("%x", channel_device -> sa);
 					return 0;
-				case USER_MEM:											// ra -> user memory sw
+				case USER_MEM:									// ra -> user memory sw
 					return write_word(channel_device -> memory, channel_device -> db * MEM_WORD_SIZE * MEM_PAGE_SIZE + channel_device -> of, channel_device -> sa);
 				default:
 					break;
