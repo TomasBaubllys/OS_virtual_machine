@@ -71,10 +71,10 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 	real_machine -> ch_dev.of = file_entry -> offset % (MEM_WORD_SIZE * MEM_PAGE_SIZE);
 	xchg(&real_machine -> ch_dev);
 	bytes_to_copy -= real_machine -> ch_dev.cb;
-	real_machine_validate_supervisor(real_machine);
 	
 	// validate if the program starts with #LOS 
 	// if so copy to user_mem
+	real_machine_validate_supervisor(real_machine);
 
 	// copy everything in between
 	while(bytes_to_copy > MEM_WORDS_SUPERVISOR_COUNT) {
@@ -86,6 +86,8 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		real_machine -> ch_dev.of = file_entry -> offset % (MEM_WORD_SIZE * MEM_PAGE_SIZE);	
 		xchc(&real_machine -> ch_dev);
 		bytes_to_copy -= real_machine -> ch_dev.cb;
+
+		// copy to user mem
 	}
 
 	// copy the last bytes if theres something left to copy
@@ -97,8 +99,8 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 	// validate the program
 	
 	// if the program is valid copy from super_mem to user_mem
-
-	real_machine -> cpu.pc = 0;
+	// start from 4 since the first word of the program is #LOS
+	real_machine -> cpu.pc = CPU_DEFAULT_PC_VALUE;
 
 	while(1) {
 		virtual_machine_execute(&virtual_machine);

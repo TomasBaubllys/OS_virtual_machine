@@ -9,6 +9,8 @@
 #define CPU_USER_MODE 0
 #define CPU_SUPERVISOR_MODE 1
 
+#define CPU_DEFAULT_PC_VALUE 0x0004
+
 #define CPU_UNKNOWN_REGISTER 0xff
 
 #define RA_CODE 0x7261
