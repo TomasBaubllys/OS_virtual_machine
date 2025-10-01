@@ -51,7 +51,7 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		return;
 	}
 
-	if(file_entry -> size >= MEM_MAX_USER_VM_ADDRESS) {
+	if(file_entry -> size >= MEM_PAGE_SIZE * MEM_WORD_SIZE * MEM_SUPERVISOR_PAGE_COUNT) {
 		fprintf(stderr, FILE_TOO_BIG_ERR_MSG);
 		return;
 	}
@@ -61,8 +61,30 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		return;
 	}
 
-	// copy the program to super_visor_memory
-	// copy the first time
+	load_program(real_machine, file_entry);
+
+	real_machine_validate_supervisor(real_machine);
+
+	real_machine -> cpu.pc = CPU_DEFAULT_PC_VALUE;
+
+	while(1) {
+		virtual_machine_execute(&virtual_machine);
+
+		if(real_machine -> cpu.pi + real_machine -> cpu.si > 0 || real_machine -> cpu.ti == 0) {
+			if(interupt(&real_machine -> cpu) == INTERUPT_STOP) {
+				break;
+			}
+		}	
+	}
+
+	destroy_virtual_machine(&virtual_machine);
+}
+
+int real_machine_validate_supervisor(Real_machine* real_machine) {
+	return 0;
+}
+
+int load_program(Real_machine* real_machine, File_entry* file_entry) {
 	uint32_t bytes_to_copy_super_mem = file_entry -> size;
 	// do not copy #LOS and #BYE to user mem
 	uint32_t bytes_to_copy_user_mem = bytes_to_copy_super_mem - (MEM_WORD_SIZE * 2);
@@ -70,22 +92,19 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 
 	real_machine -> ch_dev.dt = SUPER_MEM;
 	real_machine -> ch_dev.db = MEM_SUPERVISOR_PAGE_BEGIN;
-	real_machine -> ch_dev.cb = (bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT? MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy_super_mem);
+	real_machine -> ch_dev.cb = (bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT * MEM_WORD_SIZE? MEM_WORD_SIZE* MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy_super_mem);
 	real_machine -> ch_dev.st = HD_DISK;
 	real_machine -> ch_dev.sb = ((file_entry -> offset / MEM_WORD_SIZE) / MEM_PAGE_SIZE);	// calculate the hard disk page
 	real_machine -> ch_dev.of = file_entry -> offset % (MEM_WORD_SIZE * MEM_PAGE_SIZE);
 	xchg(&real_machine -> ch_dev);
 	bytes_to_copy_super_mem -= real_machine -> ch_dev.cb;
 	
-	// validate if the program starts with #LOS 
-	// if so copy to user_mem
-	real_machine_validate_supervisor(real_machine);
-	
-	for(uint32_t i = 0; i < MEM_SUPERVISOR_PAGE_COUNT; ++i) {;
-		uint16_t r_page = translate_to_real_address(&real_machine -> mem, user_mem_dest_page + MEM_PAGE_SIZE * i) / (MEM_WORD_SIZE * MEM_PAGE_SIZE);
+	for(uint32_t i = 0; i < MEM_SUPERVISOR_PAGE_COUNT; ++i) {
+		uint16_t r_page = translate_to_real_address(&real_machine -> mem, user_mem_dest_page * MEM_PAGE_SIZE *  MEM_WORD_SIZE) / (MEM_WORD_SIZE * MEM_PAGE_SIZE);
 		real_machine -> ch_dev.dt = USER_MEM;
 		real_machine -> ch_dev.db = r_page;
 		real_machine -> ch_dev.cb = bytes_to_copy_user_mem > MEM_PAGE_SIZE * MEM_WORD_SIZE? MEM_PAGE_SIZE * MEM_WORD_SIZE : bytes_to_copy_user_mem;
+		// printf("%x\n", real_machine -> ch_dev.cb);
 		real_machine -> ch_dev.st = SUPER_MEM;
 		real_machine -> ch_dev.sb = MEM_SUPERVISOR_PAGE_BEGIN + i;
 		real_machine -> ch_dev.of = 0;
@@ -100,9 +119,12 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		}
 	}
 
+	reset_channel_device(&real_machine -> ch_dev);
+	/*
 	// validate if the FILE starts with #LOS
 	// copy everything in between
 	while(bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT) {
+
 		real_machine -> ch_dev.dt = SUPER_MEM;
 		real_machine -> ch_dev.db = MEM_SUPERVISOR_PAGE_BEGIN;
 		real_machine -> ch_dev.cb = (bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT? MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy_super_mem);
@@ -171,23 +193,7 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 			bytes_to_copy_user_mem -= real_machine -> ch_dev.cb;
 			++user_mem_dest_page;		
 		}	
-	}
+	}*/
 
-	real_machine -> cpu.pc = CPU_DEFAULT_PC_VALUE;
-
-	while(1) {
-		virtual_machine_execute(&virtual_machine);
-
-		if(real_machine -> cpu.pi + real_machine -> cpu.si > 0 || real_machine -> cpu.ti == 0) {
-			if(interupt(&real_machine -> cpu) == INTERUPT_STOP) {
-				break;
-			}
-		}	
-	}
-
-	destroy_virtual_machine(&virtual_machine);
-}
-
-int real_machine_validate_supervisor(Real_machine* real_machine) {
 	return 0;
 }
