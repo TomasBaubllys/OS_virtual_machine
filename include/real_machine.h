@@ -26,19 +26,25 @@ typedef struct Real_machine {
 	Virtual_machine* vm;
 } Real_machine;
 
+// initializes real machine
 int init_real_machine(Real_machine* real_machine); 
 
+// adds a virtual machine to a real machine
 int add_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_machine);
 
+// destroys real machine
 int destroy_real_machine(Real_machine* real_machine);
 
+// loads a program and gives virtual machine to execute it
 void real_machine_run(Real_machine* real_machine, File_entry* file_entry);
 
 // validates if a code snippet in the supervisor memory looks valid
 int real_machine_validate_supervisor(Real_machine* real_machine, uint32_t expected_program_length);
 
+// loads program from hard disk to supervisor memory
 int load_program_supervisor(Real_machine* real_machine, File_entry* file_entry);
 
+// loads program from supervisor memory to user memory
 int load_program_user(Real_machine* real_machine, uint32_t program_length);
 
 #endif // REAL_MACHINE_H_INCLUDED

@@ -45,8 +45,8 @@
 
 typedef struct CPU {
 	uint16_t pc;			// program counter
-	uint16_t pi;			// program interupt register
-	uint16_t si;			// supervisor interupt register
+	uint16_t pi;			// program interrupt register
+	uint16_t si;			// supervisor interrupt register
 	uint16_t tr;			// page table register
 
 	uint8_t ti;				// timer register
@@ -63,12 +63,16 @@ typedef struct CPU {
 	Memory* memory;
 } CPU;
 
+// initializes cpu
 int init_cpu(CPU* cpu, Memory* memory, Channel_device* channel_device);
 
-int interupt(CPU* cpu);
+// checks interrupts (PI and SI)
+int interrupt(CPU* cpu);
 
+// checks timer (TI) 
 uint8_t check(CPU* cpu);
 
+// sets all registers to 0
 int reset_cpu(CPU* cpu);
 
 #endif // CPU_H_INCLUDED

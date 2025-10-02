@@ -15,7 +15,7 @@
 #define QUIT 5
 
 
-#define MAX_CHOICE 6
+#define MAX_CHOICE 5
 
 #define MENU_NULL_REAL_MACHINE_ERR "Real machine is null, exiting..."
 #define MENU_NULL_REAL_MACHINE_EXIT_CODE -1
@@ -35,7 +35,7 @@
 #define MSG_START_VM "Start a virtual machine\n"
 #define MSG_SELECT_LOADED_VM "Please select a virtual machine: \n"
 #define MSG_RUN_PROGRAM "Run program\n"
-#define MSG_SELECT_PROGRAMS "Please select a program to run:\n"
+#define MSG_SELECT_LOADED_RPGRAMS "Please select a loaded program to run:\n"
 #define MSG_STOP_VMI "Stop virtual machine\n"
 #define MSG_RUN_PRGRM_NORMAL "Run program in normal mode\n"
 #define MSG_RUN_PRGRM_TRACE "Run program in trace mode\n"
@@ -57,14 +57,13 @@
 #define MSG_LOGGING_CHOICE "Choose a mode:\n 1. Logging ON\n 2. Logging OFF\n"
 #define MSG_STEPPING_LOGGING_INVALID_CHOICE "Invalid choice, please select 1 or 2 \n"
 
-
-
+// prints contents of memory
 void dump_memory(Real_machine* real_machine);
 
+// displays the main menu options
 int display_menu();
 
+// main menu loop
 void menu(Real_machine* real_machine);
-
-int select_virtual_machine(Real_machine* real_machine); 
 
 #endif // MENU_H_INCLUDED

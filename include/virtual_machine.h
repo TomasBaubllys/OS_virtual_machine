@@ -19,10 +19,13 @@ typedef struct Virtual_machine {
 	Memory* memory;
 } Virtual_machine;
 
+// initializes virtual machine
 int init_virtual_machine(Virtual_machine* virtual_machine, CPU* cpu, Memory* memory);
 
+// destroys virtual machine
 int destroy_virtual_machine(Virtual_machine* virtual_machine);
 
+// executes a command at virtual pc
 void virtual_machine_execute(Virtual_machine* virtual_machine);
 
 #endif // VIRTUAL_MACHINE_H_INCLUDED

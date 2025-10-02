@@ -27,10 +27,13 @@ enum Object_numbers {
 	HD_DISK
 };
 
+// initializes channel device
 int init_channel_device(Channel_device* channel_dev, Memory* memory, Hard_disk* Hard_disk);
 
+// sets all registers to 0
 void reset_channel_device(Channel_device* channel_device);
 
+// calls channel device
 int xchg(Channel_device* channel_device);
 
 #endif // CHANNEL_DEVICE_H_INCLUDED

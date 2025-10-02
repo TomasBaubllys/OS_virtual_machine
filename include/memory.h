@@ -52,12 +52,16 @@ typedef struct Memory {
     CPU* cpu;
 } Memory;
 
+// initializes memory
 int init_memory(Memory* mem, CPU* cpu);
 
+// translates virtual address to real address
 uint16_t translate_to_real_address(Memory* memory, uint16_t virtual_address);
 
+// reads a word from memory at a specific address
 uint32_t read_word(Memory* mem, const uint16_t address); 			
 
+// writes a word to memory (specific address)
 int write_word(Memory* mem, const uint16_t address, const uint32_t word); 
 
 // returns the number of a free page, marks it as being used
