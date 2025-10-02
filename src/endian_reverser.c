@@ -8,7 +8,7 @@ int main() {
         return 1;
     }
 
-    FILE *out = fopen("output_reversed.bin", "wb");
+    FILE *out = fopen("__IMAGINE_DRAGONS_REV.bin", "wb");
     if (!out) {
         perror("Output file");
         fclose(in);
