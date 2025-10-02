@@ -25,22 +25,50 @@ int init_real_machine(Real_machine* real_machine) {
 	return 0;
 };
 
-int add_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_machine) {
-	if(!real_machine || !virtual_machine) {
+int add_virtual_machine(Real_machine* real_machine) {
+	if(!real_machine) {
 		return -1;
 	} 
 
-	real_machine -> vm = virtual_machine;
+	Virtual_machine* vm = calloc(1, sizeof(Virtual_machine));
+	if(!vm) {
+		return -1;
+	}
+
+	if(init_virtual_machine(vm, &real_machine -> cpu, &real_machine -> mem) != 0) {
+		free(vm);
+		return -1;
+	}
+
+	real_machine -> vm = vm;
 
 	return 0;
 }
 
+void remove_virtual_machine(Real_machine* real_machine) {
+	if(!real_machine) {
+		return;
+	}
+	
+	if(!real_machine -> vm) {
+		return;
+	}
 
-// not implemented yet
+	destroy_virtual_machine(real_machine -> vm);
+	free(real_machine -> vm);
+	real_machine -> vm = NULL;
+}
+
 int destroy_real_machine(Real_machine* real_machine) {
 	if(!real_machine) {
 		return -1;
 	}	
+
+	if(real_machine -> vm) {
+		destroy_virtual_machine(real_machine -> vm);
+		free(real_machine -> vm);
+		real_machine -> vm = NULL;
+	}
 
 	return 0;
 }
@@ -55,19 +83,16 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		return;
 	}
 
-	Virtual_machine virtual_machine;
-	if(init_virtual_machine(&virtual_machine, &real_machine -> cpu, &real_machine -> mem) != 0) {
+	if(add_virtual_machine(real_machine) != 0) {
+		fprintf(stderr, RM_MSG_NULL_VM);
 		return;
 	}
-
-	add_virtual_machine(real_machine, &virtual_machine);
 
 	load_program_supervisor(real_machine, file_entry);
 
 	if(real_machine_validate_supervisor(real_machine, file_entry -> size) != 0) {
 		fprintf(stderr, RM_MSG_BAD_PROGRAM);
-		destroy_virtual_machine(&virtual_machine);
-		real_machine -> vm = NULL;
+		remove_virtual_machine(real_machine);
 		return;
 	}
 
@@ -77,7 +102,7 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 	real_machine -> cpu.pc = CPU_DEFAULT_PC_VALUE;
 
 	while(1) {
-		virtual_machine_execute(&virtual_machine);
+		virtual_machine_execute(real_machine -> vm);
 
 		if(real_machine -> cpu.pi + real_machine -> cpu.si > 0 || real_machine -> cpu.ti == 0) {
 			if(interupt(&real_machine -> cpu) == INTERUPT_STOP) {
@@ -86,8 +111,7 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		}	
 	}
 
-	destroy_virtual_machine(&virtual_machine);
-	real_machine -> vm = NULL;
+	remove_virtual_machine(real_machine);
 }
 
 int real_machine_validate_supervisor(Real_machine* real_machine, uint32_t expected_program_length) {

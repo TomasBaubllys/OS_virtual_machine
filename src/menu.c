@@ -42,6 +42,9 @@ void menu(Real_machine* real_machine) {
 				if(choice1 == 1){
 					real_machine -> cpu.sf |= 0x0008;
 				}
+				else {
+					real_machine -> cpu.sf &= 0xfff7;
+				}
 
 				break;
 
@@ -68,6 +71,9 @@ void menu(Real_machine* real_machine) {
 
 				if(choice == 1){
 					real_machine -> cpu.sf |= 0x0010;
+				}
+				else {
+					real_machine -> cpu.sf &= 0xfffe;
 				}
 
 				break;

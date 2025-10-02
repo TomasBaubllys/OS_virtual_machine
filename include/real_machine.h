@@ -15,6 +15,7 @@
 #define RM_MSG_NO_VMS "No added VMs!\n"
 #define RM_MSG_SUCCESS_REMOVE_VM "Virtual machine successfully removed!\n"
 #define RM_MSG_BAD_PROGRAM "Invalid program encountered exiting...\n"
+#define RM_MSG_NULL_VM "Internal error while creating the virtual machine\n"
 
 typedef struct Virtual_machine Virtual_machine;
 
@@ -29,8 +30,7 @@ typedef struct Real_machine {
 // initializes real machine
 int init_real_machine(Real_machine* real_machine); 
 
-// adds a virtual machine to a real machine
-int add_virtual_machine(Real_machine* real_machine, Virtual_machine* virtual_machine);
+int add_virtual_machine(Real_machine* real_machine);
 
 // destroys real machine
 int destroy_real_machine(Real_machine* real_machine);
@@ -46,5 +46,7 @@ int load_program_supervisor(Real_machine* real_machine, File_entry* file_entry);
 
 // loads program from supervisor memory to user memory
 int load_program_user(Real_machine* real_machine, uint32_t program_length);
+
+void remove_virtual_machine(Real_machine* real_machine);
 
 #endif // REAL_MACHINE_H_INCLUDED
