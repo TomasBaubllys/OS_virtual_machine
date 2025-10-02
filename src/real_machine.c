@@ -19,7 +19,6 @@ int init_real_machine(Real_machine* real_machine) {
 	}
 
 	if(init_channel_device(&(real_machine -> ch_dev), &(real_machine -> mem), &(real_machine -> hd)) != 0) {
-		printf("here5\n");
 		return -1;
 	}
 	
@@ -78,8 +77,6 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 	}
 
 	destroy_virtual_machine(&virtual_machine);
-	reset_channel_device(&real_machine -> ch_dev);
-	reset_cpu(&real_machine -> cpu);
 }
 
 int real_machine_validate_supervisor(Real_machine* real_machine) {

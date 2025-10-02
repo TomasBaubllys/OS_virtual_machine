@@ -33,6 +33,8 @@ int interupt(CPU* cpu) {
 	if(cpu -> pi > 0) {
 		// check if logging is on
 		// if so log the err
+		cpu -> pi = 0;
+		cpu -> si = 0;
 		return INTERUPT_STOP;
 
 	}
