@@ -32,12 +32,14 @@
 #define MEM_INVALID_PAGE_NUM_ERR 0xfe
 #define MEM_INTERNAL_PAGING_ERR_MISMATCH_SIZES 0xfd
 
+#define MEM_PROGRAM_LOS_UINT32 0x234C4F53
+#define MEM_PROGRAM_BYE_UINT32 0x23425945
+
 #define MEM_NULL_ADDR 0xffff
 
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-// #include "cpu.h"
 
 typedef struct CPU CPU;
 

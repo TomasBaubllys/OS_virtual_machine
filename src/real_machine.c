@@ -60,9 +60,16 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		return;
 	}
 
-	load_program(real_machine, file_entry);
+	load_program_supervisor(real_machine, file_entry);
 
-	real_machine_validate_supervisor(real_machine);
+	if(real_machine_validate_supervisor(real_machine, file_entry -> size) != 0) {
+		fprintf(stderr, RM_MSG_BAD_PROGRAM);
+		destroy_virtual_machine(&virtual_machine);
+		return;
+	}
+
+	// if program was valid copy it except #LOS and #BYE
+	load_program_user(real_machine, file_entry -> size - (MEM_WORD_SIZE * 2));
 
 	real_machine -> cpu.pc = CPU_DEFAULT_PC_VALUE;
 
@@ -79,41 +86,57 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 	destroy_virtual_machine(&virtual_machine);
 }
 
-int real_machine_validate_supervisor(Real_machine* real_machine) {
+int real_machine_validate_supervisor(Real_machine* real_machine, uint32_t expected_program_length) {
+	uint32_t los_count = 0;
+	uint32_t offset = 0;
+
+	while(offset < MEM_WORDS_SUPERVISOR_COUNT * MEM_WORD_SIZE) {
+		uint32_t word = read_word(&real_machine -> mem, MEM_BEG_SUPERVISOR_ADDR + offset);
+
+		if(word == MEM_PROGRAM_LOS_UINT32) {
+			++los_count;
+		}
+		else if(word == MEM_PROGRAM_BYE_UINT32) {
+			offset += MEM_WORD_SIZE;
+			break;
+		}
+
+		offset += MEM_WORD_SIZE;
+	}
+
+	if(los_count > 1 || offset != expected_program_length) {
+		printf("%d, %d\n", offset, expected_program_length);
+		return -1;
+	}
+
 	return 0;
 }
 
-int load_program(Real_machine* real_machine, File_entry* file_entry) {
-	uint32_t bytes_to_copy_super_mem = file_entry -> size;
-	// do not copy #LOS and #BYE to user mem
-	uint32_t bytes_to_copy_user_mem = bytes_to_copy_super_mem - (MEM_WORD_SIZE * 2);
-	uint32_t user_mem_dest_page = 0;
-
+int load_program_supervisor(Real_machine* real_machine, File_entry* file_entry) {
 	real_machine -> ch_dev.dt = SUPER_MEM;
 	real_machine -> ch_dev.db = MEM_SUPERVISOR_PAGE_BEGIN;
-	real_machine -> ch_dev.cb = (bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT * MEM_WORD_SIZE? MEM_WORD_SIZE * MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy_super_mem);
+	real_machine -> ch_dev.cb = (file_entry -> size < MEM_WORDS_SUPERVISOR_COUNT * MEM_WORD_SIZE? file_entry -> size : MEM_WORD_SIZE * MEM_WORDS_SUPERVISOR_COUNT);
 	real_machine -> ch_dev.st = HD_DISK;
 	real_machine -> ch_dev.sb = ((file_entry -> offset / MEM_WORD_SIZE) / MEM_PAGE_SIZE);	// calculate the hard disk page
 	real_machine -> ch_dev.of = file_entry -> offset % (MEM_PAGE_BYTE_COUNT);
-	xchg(&real_machine -> ch_dev);
-	bytes_to_copy_super_mem -= real_machine -> ch_dev.cb;
-	
+	return xchg(&real_machine -> ch_dev);
+}
+
+int load_program_user(Real_machine* real_machine, uint32_t program_length) {
 	for(uint32_t i = 0; i < MEM_SUPERVISOR_PAGE_COUNT; ++i) {
-		uint16_t r_page = translate_to_real_address(&real_machine -> mem, user_mem_dest_page * MEM_PAGE_BYTE_COUNT) / (MEM_PAGE_BYTE_COUNT);
+		uint16_t r_page = translate_to_real_address(&real_machine -> mem, i * MEM_PAGE_BYTE_COUNT) / (MEM_PAGE_BYTE_COUNT);
 		real_machine -> ch_dev.dt = USER_MEM;
 		real_machine -> ch_dev.db = r_page;
-		real_machine -> ch_dev.cb = bytes_to_copy_user_mem > MEM_PAGE_BYTE_COUNT? MEM_PAGE_BYTE_COUNT : bytes_to_copy_user_mem;
-		// printf("%x\n", real_machine -> ch_dev.cb);
+		real_machine -> ch_dev.cb = program_length > MEM_PAGE_BYTE_COUNT? MEM_PAGE_BYTE_COUNT : program_length;
 		real_machine -> ch_dev.st = SUPER_MEM;
 		real_machine -> ch_dev.sb = MEM_SUPERVISOR_PAGE_BEGIN + i;
 		real_machine -> ch_dev.of = 0;
 		real_machine -> ch_dev.sa = (i == 0? 4 : 0);
 		xchg(&real_machine -> ch_dev);
 
-		bytes_to_copy_user_mem -= real_machine -> ch_dev.cb;
-		++user_mem_dest_page;		
+		program_length -= real_machine -> ch_dev.cb;		
 
-		if(bytes_to_copy_user_mem == 0) {
+		if(program_length == 0) {
 			break;
 		}
 	}
