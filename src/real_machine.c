@@ -51,7 +51,7 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		return;
 	}
 
-	if(file_entry -> size >= MEM_PAGE_SIZE * MEM_WORD_SIZE * MEM_SUPERVISOR_PAGE_COUNT) {
+	if(file_entry -> size >= MEM_MAX_USER_VM_ADDRESS) {
 		fprintf(stderr, FILE_TOO_BIG_ERR_MSG);
 		return;
 	}
@@ -119,18 +119,18 @@ int load_program(Real_machine* real_machine, File_entry* file_entry) {
 		}
 	}
 
-	reset_channel_device(&real_machine -> ch_dev);
-	/*
-	// validate if the FILE starts with #LOS
+	// iter count
+	uint16_t i = 1;
+
 	// copy everything in between
-	while(bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT) {
+	while(bytes_to_copy_super_mem > 0) {
 
 		real_machine -> ch_dev.dt = SUPER_MEM;
 		real_machine -> ch_dev.db = MEM_SUPERVISOR_PAGE_BEGIN;
-		real_machine -> ch_dev.cb = (bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT? MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy_super_mem);
+		real_machine -> ch_dev.cb = (bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT * MEM_WORD_SIZE? MEM_WORD_SIZE * MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy_super_mem);
 		real_machine -> ch_dev.st = HD_DISK;
-		real_machine -> ch_dev.sb = ((file_entry -> offset / MEM_WORD_SIZE) / MEM_PAGE_SIZE);	// calculate the hard disk page
-		real_machine -> ch_dev.of = file_entry -> offset % (MEM_WORD_SIZE * MEM_PAGE_SIZE);
+		real_machine -> ch_dev.sb = (((file_entry -> offset +  i * MEM_SUPERVISOR_MEMORY_SIZE) / MEM_WORD_SIZE) / MEM_PAGE_SIZE);	// calculate the hard disk page
+		real_machine -> ch_dev.of = (file_entry -> offset + i * MEM_SUPERVISOR_MEMORY_SIZE) % (MEM_PAGE_BYTE_COUNT);
 		xchg(&real_machine -> ch_dev);
 		bytes_to_copy_super_mem -= real_machine -> ch_dev.cb;
 		
@@ -140,22 +140,27 @@ int load_program(Real_machine* real_machine, File_entry* file_entry) {
 
 		// check if its the last page if so check if it ends with #LOS
 		if(bytes_to_copy_super_mem == 0) {
-
+			// do nothing
 		}
 		
 		for(uint32_t i = 0; i < MEM_SUPERVISOR_PAGE_COUNT; ++i) {
-			uint16_t r_page = translate_to_real_address(&real_machine -> mem, user_mem_dest_page + MEM_PAGE_SIZE * i) / (MEM_WORD_SIZE * MEM_PAGE_SIZE);
+			uint16_t r_page = translate_to_real_address(&real_machine -> mem, user_mem_dest_page * MEM_PAGE_BYTE_COUNT) / (MEM_PAGE_BYTE_COUNT);
 			real_machine -> ch_dev.dt = USER_MEM;
 			real_machine -> ch_dev.db = r_page;
-			real_machine -> ch_dev.cb = bytes_to_copy_user_mem > MEM_PAGE_SIZE * MEM_WORD_SIZE? MEM_PAGE_SIZE * MEM_WORD_SIZE : bytes_to_copy_user_mem;
+			real_machine -> ch_dev.cb = bytes_to_copy_user_mem > MEM_PAGE_BYTE_COUNT? MEM_PAGE_BYTE_COUNT : bytes_to_copy_user_mem;
+			// printf("%x\n", real_machine -> ch_dev.cb);
 			real_machine -> ch_dev.st = SUPER_MEM;
 			real_machine -> ch_dev.sb = MEM_SUPERVISOR_PAGE_BEGIN + i;
 			real_machine -> ch_dev.of = 0;
-			real_machine -> ch_dev.sa = 0;
+			// real_machine -> ch_dev.sa = (i == 0? 4 : 0);
 			xchg(&real_machine -> ch_dev);
-
+	
 			bytes_to_copy_user_mem -= real_machine -> ch_dev.cb;
-			++user_mem_dest_page;		
+			++user_mem_dest_page;	
+			
+			if(bytes_to_copy_user_mem == 0) {
+				break;
+			}	
 		}
 	}
 	/*
