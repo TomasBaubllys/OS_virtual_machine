@@ -105,7 +105,7 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		virtual_machine_execute(real_machine -> vm);
 
 		if(real_machine -> cpu.pi + real_machine -> cpu.si > 0 || real_machine -> cpu.ti == 0) {
-			if(interupt(&real_machine -> cpu) == INTERUPT_STOP) {
+			if(interrupt(&real_machine -> cpu) == INTERUPT_STOP) {
 				break;
 			}
 		}	

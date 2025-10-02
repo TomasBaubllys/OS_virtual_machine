@@ -74,7 +74,7 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 	// read the command
 	uint32_t command = read_word(virtual_machine -> memory, com_addr);
 	
-	if(virtual_machine -> cpu -> sf == 8) {
+	if((virtual_machine -> cpu -> sf & 0x0008) >> 3 == 1) {
 		printf(
 			"PC: %04x, PI: %04x, SI: %04x, TR: %04x, PTR: %04x\n"
 			"TI: %02x, SF: %02x, MR: %02x, SS: %02x\n"

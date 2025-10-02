@@ -21,7 +21,7 @@ int init_cpu(CPU* cpu, Memory* memory, Channel_device* channel_device) {
 	return 0;
 }
 
-int interupt(CPU* cpu) {
+int interrupt(CPU* cpu) {
 	if(!cpu) {
 		return 0;
 	}
