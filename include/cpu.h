@@ -32,6 +32,13 @@
 #define CPU_SI_BG 7
 #define CPU_SI_STOP 8
 
+#define CPU_MSG_INVALID_ADDRESS "Invalid address \n"
+#define CPU_MSG_INVALID_OPCODE "Invalid opcode\n"
+#define CPU_MSG_INVALID_ASSIGNMENT "Invalid assignment\n"
+#define CPU_MSG_DIVISION_BY_ZERO "Division by zero \n"
+#define CPU_MSG_OVERFLOW "Overflow \n"
+
+
 #define INTERUPT_STOP -1
 #define SEMAFOR_BUSY 1
 #define SEMAFOR_FREE 0

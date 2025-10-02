@@ -303,14 +303,18 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 			uint8_t y = char_hex_to_decimal(command & 0x000000ff);
 
 			// if overflow encountered continue? or not but set the pi
-			if(virtual_machine -> cpu -> ra > 0xffffffff - x * 16 + y) {
+			if(virtual_machine -> cpu -> ra > 0xffffffff - (x * 16 + y)) {
 				virtual_machine -> cpu -> sf |= 0x0004;
+				printf("I come here hihi \n");
 				//virtual_machine -> cpu -> pi = CPU_PI_OVERFLOW;
 				//break;
 			}
 
 			virtual_machine -> cpu -> ra += x * 16 + y;
 			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
+
+							printf("SF virtual: %d \n", virtual_machine -> cpu -> sf);
+
 			break;
 		}
 		// ADa

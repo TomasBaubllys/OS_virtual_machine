@@ -31,6 +31,28 @@ int interupt(CPU* cpu) {
 	}
 
 	if(cpu -> pi > 0) {
+		if((cpu -> sf & 0x0010) >> 4 == 1) {
+			switch (cpu -> pi)
+			{
+			case CPU_PI_INVALID_ADDRESS:
+				printf(CPU_MSG_INVALID_ADDRESS);
+				break;
+			case CPU_PI_DIVISION_BY_ZERO:
+				printf(CPU_MSG_DIVISION_BY_ZERO);
+				break;
+			case CPU_PI_INVALID_ASSIGNMENT:
+				printf(CPU_MSG_INVALID_ASSIGNMENT);
+				break;
+			case CPU_PI_INVALID_OPCODE:
+				printf(CPU_MSG_INVALID_OPCODE);
+				break;
+			case CPU_PI_OVERFLOW:
+				printf(CPU_MSG_OVERFLOW);
+				break;
+			default:
+				break;
+			}
+		}
 		// check if logging is on
 		// if so log the err
 		cpu -> pi = 0;

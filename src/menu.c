@@ -42,6 +42,7 @@ void menu(Real_machine* real_machine) {
 				if(choice1 == 1){
 					real_machine -> cpu.sf |= 0x0008;
 				}
+
 				break;
 
 
