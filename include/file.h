@@ -5,9 +5,9 @@
 #include <stdint.h>
 
 #define FILE_NAME_SIZE 8
-#define FILE_START_MARKER "#LOS"
-#define FILE_END_MARKER "#BYE"
-#define FILE_MARKER_SIZE 4
+#define PROGRAM_START_MARKER "#LOS"
+#define PROGRAM_END_MARKER "#BYE"
+#define PROGRAM_MARKER_SIZE 4
 #define MAX_FILES HD_MAX_HARD_DISK_ADDRESS / (FILE_NAME_SIZE + FILE_MARKER_SIZE * 2)
 #define MSG_DSPL_FILES "Files: \n"
 #define MSG_SELECT_FILE "Select a file to load: \n"
