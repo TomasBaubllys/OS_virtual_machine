@@ -60,11 +60,14 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 		return;
 	}
 
+	add_virtual_machine(real_machine, &virtual_machine);
+
 	load_program_supervisor(real_machine, file_entry);
 
 	if(real_machine_validate_supervisor(real_machine, file_entry -> size) != 0) {
 		fprintf(stderr, RM_MSG_BAD_PROGRAM);
 		destroy_virtual_machine(&virtual_machine);
+		real_machine -> vm = NULL;
 		return;
 	}
 
@@ -84,6 +87,7 @@ void real_machine_run(Real_machine* real_machine, File_entry* file_entry) {
 	}
 
 	destroy_virtual_machine(&virtual_machine);
+	real_machine -> vm = NULL;
 }
 
 int real_machine_validate_supervisor(Real_machine* real_machine, uint32_t expected_program_length) {
@@ -105,7 +109,6 @@ int real_machine_validate_supervisor(Real_machine* real_machine, uint32_t expect
 	}
 
 	if(los_count > 1 || offset != expected_program_length) {
-		printf("%d, %d\n", offset, expected_program_length);
 		return -1;
 	}
 

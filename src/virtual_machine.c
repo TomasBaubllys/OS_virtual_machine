@@ -71,7 +71,6 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 		return;
 	}
 
-
 	// read the command
 	uint32_t command = read_word(virtual_machine -> memory, com_addr);
 	
@@ -312,8 +311,6 @@ void virtual_machine_execute(Virtual_machine* virtual_machine) {
 
 			virtual_machine -> cpu -> ra += x * 16 + y;
 			virtual_machine -> cpu -> pc += MEM_WORD_SIZE;
-
-							printf("SF virtual: %d \n", virtual_machine -> cpu -> sf);
 
 			break;
 		}
