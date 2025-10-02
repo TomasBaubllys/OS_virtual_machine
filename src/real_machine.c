@@ -92,18 +92,18 @@ int load_program(Real_machine* real_machine, File_entry* file_entry) {
 
 	real_machine -> ch_dev.dt = SUPER_MEM;
 	real_machine -> ch_dev.db = MEM_SUPERVISOR_PAGE_BEGIN;
-	real_machine -> ch_dev.cb = (bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT * MEM_WORD_SIZE? MEM_WORD_SIZE* MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy_super_mem);
+	real_machine -> ch_dev.cb = (bytes_to_copy_super_mem > MEM_WORDS_SUPERVISOR_COUNT * MEM_WORD_SIZE? MEM_WORD_SIZE * MEM_WORDS_SUPERVISOR_COUNT : bytes_to_copy_super_mem);
 	real_machine -> ch_dev.st = HD_DISK;
 	real_machine -> ch_dev.sb = ((file_entry -> offset / MEM_WORD_SIZE) / MEM_PAGE_SIZE);	// calculate the hard disk page
-	real_machine -> ch_dev.of = file_entry -> offset % (MEM_WORD_SIZE * MEM_PAGE_SIZE);
+	real_machine -> ch_dev.of = file_entry -> offset % (MEM_PAGE_BYTE_COUNT);
 	xchg(&real_machine -> ch_dev);
 	bytes_to_copy_super_mem -= real_machine -> ch_dev.cb;
 	
 	for(uint32_t i = 0; i < MEM_SUPERVISOR_PAGE_COUNT; ++i) {
-		uint16_t r_page = translate_to_real_address(&real_machine -> mem, user_mem_dest_page * MEM_PAGE_SIZE *  MEM_WORD_SIZE) / (MEM_WORD_SIZE * MEM_PAGE_SIZE);
+		uint16_t r_page = translate_to_real_address(&real_machine -> mem, user_mem_dest_page * MEM_PAGE_BYTE_COUNT) / (MEM_PAGE_BYTE_COUNT);
 		real_machine -> ch_dev.dt = USER_MEM;
 		real_machine -> ch_dev.db = r_page;
-		real_machine -> ch_dev.cb = bytes_to_copy_user_mem > MEM_PAGE_SIZE * MEM_WORD_SIZE? MEM_PAGE_SIZE * MEM_WORD_SIZE : bytes_to_copy_user_mem;
+		real_machine -> ch_dev.cb = bytes_to_copy_user_mem > MEM_PAGE_BYTE_COUNT? MEM_PAGE_BYTE_COUNT : bytes_to_copy_user_mem;
 		// printf("%x\n", real_machine -> ch_dev.cb);
 		real_machine -> ch_dev.st = SUPER_MEM;
 		real_machine -> ch_dev.sb = MEM_SUPERVISOR_PAGE_BEGIN + i;
@@ -158,7 +158,7 @@ int load_program(Real_machine* real_machine, File_entry* file_entry) {
 			++user_mem_dest_page;		
 		}
 	}
-
+	/*
 	// copy the last bytes if theres something left to copy
 	if(bytes_to_copy_super_mem > 0) {
 		real_machine -> ch_dev.dt = SUPER_MEM;
