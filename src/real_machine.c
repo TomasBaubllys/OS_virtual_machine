@@ -158,7 +158,7 @@ int load_program_user(Real_machine* real_machine, uint32_t program_length) {
 		real_machine -> ch_dev.st = SUPER_MEM;
 		real_machine -> ch_dev.sb = MEM_SUPERVISOR_PAGE_BEGIN + i;
 		real_machine -> ch_dev.of = 0;
-		real_machine -> ch_dev.sa = (i == 0? 4 : 0);
+		real_machine -> ch_dev.sa = MEM_WORD_SIZE;
 		xchg(&real_machine -> ch_dev);
 
 		program_length -= real_machine -> ch_dev.cb;		
