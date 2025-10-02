@@ -62,4 +62,6 @@ int interupt(CPU* cpu);
 
 uint8_t check(CPU* cpu);
 
+int reset_cpu(CPU* cpu);
+
 #endif // CPU_H_INCLUDED

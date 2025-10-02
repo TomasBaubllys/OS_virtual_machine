@@ -181,3 +181,23 @@ uint8_t check(CPU* cpu) {
 	cpu -> ti = CPU_DEFAULT_TIMER_VALUE;
 	return 0;
 }
+
+int reset_cpu(CPU* cpu) {
+	if(!cpu) {
+		return -1;
+	}
+
+	cpu -> pc = 0;
+	cpu -> pi = 0;
+	cpu -> si = 0;
+	cpu -> tr = 0;
+	cpu -> ti = CPU_DEFAULT_TIMER_VALUE;
+	cpu -> sf = 0;
+	cpu -> mr = CPU_USER_MODE;
+	cpu -> ss = 0;
+	cpu -> ra = 0;
+	cpu -> rb = 0;
+	cpu -> rc = 0;	
+
+	return 0;
+}
